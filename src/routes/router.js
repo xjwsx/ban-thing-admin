@@ -10,9 +10,9 @@ import PaymentPage from "../pages/payment/PaymentPage";
 import TodoManagementPage from "../pages/todo/TodoPage";
 import HomeRegisterPage from "../pages/HomeRegisterPage";
 import PaymentRegisterPage from "../pages/payment/PaymentRegisterPage";
-import TeachersPage from "../pages/teacher/TeachersPage";
-import TeacherRegisterPage from "../pages/teacher/TeacherRegisterPage";
-import TeacherDetailPage from "../pages/teacher/TeacherDetailPage";
+import DoctorsPage from "../pages/doctor/DoctorsPage";
+import DoctorRegisterPage from "../pages/doctor/DoctorRegisterPage";
+import DoctorDetailPage from "../pages/doctor/DoctorDetailPage";
 import { getAccessToken } from "../utils/token";
 import CoursePage from "../pages/CoursePage";
 
@@ -44,9 +44,9 @@ const Router = () => {
       Component: PaymentRegisterPage,
     },
     { path: "/todo", Component: TodoManagementPage },
-    { path: "/teachers", Component: TeachersPage },
-    { path: "/teachers/register", Component: TeacherRegisterPage },
-    { path: "/teachers/:id", Component: TeacherDetailPage },
+    { path: "/doctors", Component: DoctorsPage },
+    { path: "/doctors/register", Component: DoctorRegisterPage },
+    { path: "/doctors/:id", Component: DoctorDetailPage },
     { path: "/course", Component: CoursePage },
   ];
 

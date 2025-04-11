@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Input, Button, Checkbox, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { teacherLogin } from "../api/crm";
+import { doctorLogin } from "../api/crm";
 import {
   setAccessToken,
   setRefreshToken,
@@ -21,7 +21,7 @@ const LoginPage = () => {
         deviceType,
         deviceInfo,
       };
-      const response = await teacherLogin(loginPayload);
+      const response = await doctorLogin(loginPayload);
       console.log(response);
 
       if (response.status === 200 || response.status === 201) {

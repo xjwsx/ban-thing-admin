@@ -12,23 +12,23 @@ import {
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import { UserOutlined, BookOutlined, MailOutlined } from "@ant-design/icons";
-import { createTeacher } from "../../api/crm";
+import { createDoctor } from "../../api/crm";
 import { useMediaQuery } from "react-responsive";
 
 const { Title } = Typography;
 
-const TeacherRegisterPage = () => {
+const DoctorRegisterPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const onFinish = async (values) => {
     try {
-      await createTeacher(values);
-      message.success("선생님이 등록되었습니다");
-      navigate("/teachers");
+      await createDoctor(values);
+      message.success("의사가 등록되었습니다");
+      navigate("/doctors");
     } catch (error) {
-      message.error("선생님 등록에 실패했습니다");
+      message.error("의사 등록에 실패했습니다");
     }
   };
 
@@ -41,7 +41,7 @@ const TeacherRegisterPage = () => {
       }}
     >
       <Card>
-        <Title level={3}>선생님 등록</Title>
+        <Title level={3}>의사 등록</Title>
         <Divider />
         <Form
           form={form}
@@ -65,12 +65,12 @@ const TeacherRegisterPage = () => {
             <Col span={isMobile ? 24 : 12}>
               <Form.Item
                 name="subject"
-                label="담당 과목"
+                label="전문 분야"
                 rules={[
-                  { required: true, message: "담당 과목을 입력해주세요" },
+                  { required: true, message: "전문 분야를 입력해주세요" },
                 ]}
               >
-                <Input prefix={<BookOutlined />} placeholder="수학" />
+                <Input prefix={<BookOutlined />} placeholder="내과" />
               </Form.Item>
             </Col>
           </Row>
@@ -116,7 +116,7 @@ const TeacherRegisterPage = () => {
                 gap: "8px",
               }}
             >
-              <Button onClick={() => navigate("/teachers")}>취소</Button>
+              <Button onClick={() => navigate("/doctors")}>취소</Button>
               <Button type="primary" htmlType="submit">
                 등록
               </Button>
@@ -128,4 +128,4 @@ const TeacherRegisterPage = () => {
   );
 };
 
-export default TeacherRegisterPage;
+export default DoctorRegisterPage; 

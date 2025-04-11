@@ -1,14 +1,14 @@
-import { useTeacherStore } from "../stores/teacherStore";
+import { useDoctorStore } from "../stores/doctorStore";
 
 export const usePermission = (menuCode) => {
-  const { teacherInfo } = useTeacherStore();
+  const { doctorInfo } = useDoctorStore();
 
   const checkPermission = (permission) => {
-    if (!teacherInfo) return false;
+    if (!doctorInfo) return false;
 
-    if (teacherInfo.role === "admin") return true;
+    if (doctorInfo.role === "admin") return true;
 
-    const menuPermission = teacherInfo.permissions.find(
+    const menuPermission = doctorInfo.permissions.find(
       (p) => p.menuCode === menuCode
     );
 

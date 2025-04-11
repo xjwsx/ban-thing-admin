@@ -1,16 +1,16 @@
-.teacher-detail-page
+.doctor-detail-page
   :where(.css-dev-only-do-not-override-49qm).ant-card
   .ant-card-body {
   padding: 0;
   border-radius: 0 0 8px 8px;
 }
 
-.teacher-detail-page
+.doctor-detail-page
   :where(.css-dev-only-do-not-override-49qm).ant-table-wrapper
   .ant-table-thead
   > tr
   > th,
-.teacher-detail-page
+.doctor-detail-page
   :where(.css-dev-only-do-not-override-49qm).ant-table-wrapper
   .ant-table-thead
   > tr
@@ -24,14 +24,14 @@
   transition: background 0.2s ease;
 }
 
-.teacher-detail-page
+.doctor-detail-page
   :where(.css-dev-only-do-not-override-49qm).ant-list
   .ant-list-item {
   padding: 12px 12px;
 }
 
 @media screen and (max-width: 768px) {
-  .teacher-detail-page .ant-table-cell {
+  .doctor-detail-page .ant-table-cell {
     padding: 9px !important;
   }
-}
+} 

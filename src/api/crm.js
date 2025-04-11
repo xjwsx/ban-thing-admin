@@ -149,89 +149,89 @@ export const getStudentPaymentOverdue = async (page, limit) =>
 
 // ----------- // student-payments ---------------
 
-// ----------- teachers ---------------
-export const getTeacherList = async (page, limit) =>
-  await api.get("/teachers", {
+// ----------- doctors ---------------
+export const getDoctorList = async (page, limit) =>
+  await api.get("/doctors", {
     params: {
       page,
       limit,
     },
   });
 
-export const getTeacherDetail = async (id) => await api.get(`/teachers/${id}`);
+export const getDoctorDetail = async (id) => await api.get(`/doctors/${id}`);
 
-export const createTeacher = async (payload) =>
-  await api.post("/teachers", payload);
+export const createDoctor = async (payload) =>
+  await api.post("/doctors", payload);
 
-export const updateTeacher = async (id, payload) =>
-  await api.patch(`/teachers/${id}`, payload);
+export const updateDoctor = async (id, payload) =>
+  await api.patch(`/doctors/${id}`, payload);
 
-export const deleteTeacher = async (id) => await api.delete(`/teachers/${id}`);
+export const deleteDoctor = async (id) => await api.delete(`/doctors/${id}`);
 
-export const teacherLogin = async (payload) =>
-  await api.post("/teachers/login", payload);
+export const doctorLogin = async (payload) =>
+  await api.post("/doctors/login", payload);
 
-export const teacherRefreshToken = async () =>
-  await api.post("/teachers/refresh");
+export const doctorRefreshToken = async () =>
+  await api.post("/doctors/refresh");
 
-export const getTeacherMe = async () => await api.get("/teachers/me");
+export const getDoctorMe = async () => await api.get("/doctors/me");
 
-// ----------- // teachers ---------------
+// ----------- // doctors ---------------
 
-// ----------- teacher-task ---------------
-export const getTeacherTaskList = async (teacherId) =>
-  await api.get(`/teacher-task`, {
+// ----------- doctor-task ---------------
+export const getDoctorTaskList = async (doctorId) =>
+  await api.get(`/doctor-task`, {
     params: {
-      teacherId,
+      doctorId,
     },
   });
 
-export const getTeacherTaskDetail = async (teacherId) =>
-  await api.get(`/teacher-task/${teacherId}`);
+export const getDoctorTaskDetail = async (doctorId) =>
+  await api.get(`/doctor-task/${doctorId}`);
 
-export const createTeacherTask = async (payload) =>
-  await api.post("/teacher-task", payload);
+export const createDoctorTask = async (payload) =>
+  await api.post("/doctor-task", payload);
 
-export const updateTeacherTask = async (id, payload) =>
-  await api.patch(`/teacher-task/${id}`, payload);
+export const updateDoctorTask = async (id, payload) =>
+  await api.patch(`/doctor-task/${id}`, payload);
 
-export const deleteTeacherTask = async (id) =>
-  await api.delete(`/teacher-task/${id}`);
-// ----------- // teacher-task ---------------
+export const deleteDoctorTask = async (id) =>
+  await api.delete(`/doctor-task/${id}`);
+// ----------- // doctor-task ---------------
 
-// ----------- teacher-history ---------------
-export const getTeacherHistoryList = async (teacherId, page, limit) =>
-  await api.get(`/teacher-history`, {
+// ----------- doctor-history ---------------
+export const getDoctorHistoryList = async (doctorId, page, limit) =>
+  await api.get(`/doctor-history`, {
     params: {
       page,
       limit,
-      teacherId,
+      doctorId,
     },
   });
-// ----------- // teacher-history ---------------
+// ----------- // doctor-history ---------------
 
-// ----------- teacher-permissions ---------------
-export const getTeacherPermissions = async (teacherId) =>
-  await api.get("/teacher-permissions", {
+// ----------- doctor-permissions ---------------
+export const getDoctorPermissions = async (doctorId) =>
+  await api.get("/doctor-permissions", {
     params: {
-      teacherId,
+      doctorId,
     },
   });
 
-export const updateTeacherPermission = async (id, payload) =>
-  await api.patch(`/teacher-permissions/${id}`, payload);
-// ----------- // teacher-permissions ---------------
+export const updateDoctorPermission = async (id, payload) =>
+  await api.patch(`/doctor-permissions/${id}`, payload);
+// ----------- // doctor-permissions ---------------
 
-// ----------- teacher-schedules ---------------
-export const getTeacherSchedule = async (resourceName, startDate, endDate) =>
-  await api.get(`/teacher-schedules/schedules`, {
+// ----------- doctor-schedules ---------------
+export const getDoctorSchedule = async (resourceName, startDate, endDate) =>
+  await api.get(`/doctor-schedules/schedules`, {
     params: {
       resourceName,
       startDate,
       endDate,
     },
   });
-// ----------- // teacher-schedules ---------------
+// ----------- // doctor-schedules ---------------
 
 // ----------- courses ---------------
 export const getCourseList = async (page, limit) =>
@@ -253,23 +253,23 @@ export const updateCourse = async (id, payload) =>
 export const deleteCourse = async (id) => await api.delete(`/courses/${id}`);
 // ----------- // courses ---------------
 
-// ----------- teacher-task-comment ---------------
-export const getTeacherTaskCommentList = async (taskId) =>
-  await api.get(`/teacher-task-comment`, {
+// ----------- doctor-task-comment ---------------
+export const getDoctorTaskCommentList = async (taskId) =>
+  await api.get(`/doctor-task-comment`, {
     params: {
       taskId,
     },
   });
 
-export const getTeacherTaskCommentDetail = async (id) =>
-  await api.get(`/teacher-task-comment/${id}`);
+export const getDoctorTaskCommentDetail = async (id) =>
+  await api.get(`/doctor-task-comment/${id}`);
 
-export const createTeacherTaskComment = async (payload) =>
-  await api.post("/teacher-task-comment", payload);
+export const createDoctorTaskComment = async (payload) =>
+  await api.post("/doctor-task-comment", payload);
 
-export const updateTeacherTaskComment = async (id, payload) =>
-  await api.patch(`/teacher-task-comment/${id}`, payload);
+export const updateDoctorTaskComment = async (id, payload) =>
+  await api.patch(`/doctor-task-comment/${id}`, payload);
 
-export const deleteTeacherTaskComment = async (id) =>
-  await api.delete(`/teacher-task-comment/${id}`);
-// ----------- // teacher-task-comment ---------------
+export const deleteDoctorTaskComment = async (id) =>
+  await api.delete(`/doctor-task-comment/${id}`);
+// ----------- // doctor-task-comment ---------------

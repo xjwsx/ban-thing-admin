@@ -20,17 +20,17 @@ import {
 import { PlusOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import useStore from "../../stores/todoStore";
-import useTeacherStore from "../../stores/teacherStore";
+import useDoctorStore from "../../stores/doctorStore";
 import TodoView from "../../components/TodoManagement/TodoView";
 import {
-  getTeacherTaskList,
-  updateTeacherTask,
-  deleteTeacherTask,
-  createTeacherTask,
-  getTeacherList,
-  getTeacherTaskCommentList,
-  createTeacherTaskComment,
-  deleteTeacherTaskComment,
+  getDoctorTaskList,
+  updateDoctorTask,
+  deleteDoctorTask,
+  createDoctorTask,
+  getDoctorList,
+  getDoctorTaskCommentList,
+  createDoctorTaskComment,
+  deleteDoctorTaskComment,
 } from "../../api/crm";
 import { useMediaQuery } from "react-responsive";
 import { usePermission } from "../../hooks/usePermission";
@@ -40,19 +40,19 @@ const { confirm } = Modal;
 
 // 사용자 정의 댓글 컴포넌트
 const CommentItem = ({ comment, onDelete }) => {
-  const { teacherInfo } = useTeacherStore();
+  const { doctorInfo } = useDoctorStore();
 
   if (!comment) {
     return null;
   }
 
-  // API 응답에서 teacher 또는 author 필드를 사용
-  const author = comment.teacher || comment.author || {};
+  // API 응답에서 doctor 또는 author 필드를 사용
+  const author = comment.doctor || comment.author || {};
   const authorName = author?.name || "알 수 없음";
   const authorColor = author?.color || "#1890ff";
 
   // 현재 로그인한 사용자가 댓글 작성자인지 확인
-  const isCommentAuthor = teacherInfo && author && teacherInfo.id === author.id;
+  const isCommentAuthor = doctorInfo && author && doctorInfo.id === author.id;
 
   return (
     <div
@@ -117,8 +117,8 @@ const TodoManagementPage = () => {
 
   const { tasks, updateTask, deleteTask } = useStore();
 
-  const [teachers, setTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [doctors, setDoctors] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -143,12 +143,12 @@ const TodoManagementPage = () => {
   const [comments, setComments] = useState([]);
   const [commentForm] = Form.useForm();
 
-  const { teacherInfo, fetchTeacherInfo } = useTeacherStore();
+  const { doctorInfo, fetchDoctorInfo } = useDoctorStore();
 
-  const fetchTeacherTasks = async () => {
+  const fetchDoctorTasks = async () => {
     try {
       setLoading(true);
-      const response = await getTeacherTaskList();
+      const response = await getDoctorTaskList();
 
       const transformedTasks = {
         todo: [],
@@ -162,7 +162,7 @@ const TodoManagementPage = () => {
           // Handle both single assignedTo and multiple assignees
           const assignedTo = task.assignedTo || {};
           const assignedToNames = Array.isArray(task.assignedTo) 
-            ? task.assignedTo.map(teacher => teacher.name).join(', ')
+            ? task.assignedTo.map(doctor => doctor.name).join(', ')
             : assignedTo.name || '';
           
           // Handle both single assignedToId and multiple assignedToIds
@@ -180,7 +180,7 @@ const TodoManagementPage = () => {
             description: task.description,
             startDate: task.startDate,
             endDate: task.endDate,
-            teacher: task.assignedTo,
+            doctor: task.assignedTo,
             registeredBy: task.registeredBy.name,
             assignedTo: assignedToNames,
             registeredById: task.registeredById,
@@ -202,23 +202,23 @@ const TodoManagementPage = () => {
     }
   };
 
-  const fetchTeachers = async () => {
+  const fetchDoctors = async () => {
     try {
-      const response = await getTeacherList(1, 1000);
-      const teacherList = response.data.items || response.data.data || [];
-      setTeachers(teacherList);
+      const response = await getDoctorList(1, 1000);
+      const doctorList = response.data.items || response.data.data || [];
+      setDoctors(doctorList);
     } catch (error) {
-      console.error("Failed to fetch teachers:", error);
+      console.error("Failed to fetch doctors:", error);
       message.error("선생님 목록을 불러오는데 실패했습니다");
-      setTeachers([]);
+      setDoctors([]);
     }
   };
 
   useEffect(() => {
-    fetchTeacherTasks();
-    fetchTeachers();
-    fetchTeacherInfo().catch((error) => {
-      console.error("Failed to fetch teacher info:", error);
+    fetchDoctorTasks();
+    fetchDoctors();
+    fetchDoctorInfo().catch((error) => {
+      console.error("Failed to fetch doctor info:", error);
     });
   }, []);
 
@@ -269,7 +269,7 @@ const TodoManagementPage = () => {
           destination.droppableId === "inProgress"
             ? "inprogress"
             : destination.droppableId;
-        await updateTeacherTask(draggableId, {
+        await updateDoctorTask(draggableId, {
           status: apiStatus,
         });
       } catch (error) {
@@ -287,26 +287,26 @@ const TodoManagementPage = () => {
 
   const filteredTodoTasks = {
     todo: todoTasks.todo.filter(
-      (task) => !selectedTeacher || 
-        task.assignedToId === selectedTeacher || 
-        (task.assignedToIds && task.assignedToIds.includes(selectedTeacher))
+      (task) => !selectedDoctor || 
+        task.assignedToId === selectedDoctor || 
+        (task.assignedToIds && task.assignedToIds.includes(selectedDoctor))
     ),
     inProgress: todoTasks.inProgress.filter(
-      (task) => !selectedTeacher || 
-        task.assignedToId === selectedTeacher || 
-        (task.assignedToIds && task.assignedToIds.includes(selectedTeacher))
+      (task) => !selectedDoctor || 
+        task.assignedToId === selectedDoctor || 
+        (task.assignedToIds && task.assignedToIds.includes(selectedDoctor))
     ),
     done: todoTasks.done.filter(
-      (task) => !selectedTeacher || 
-        task.assignedToId === selectedTeacher || 
-        (task.assignedToIds && task.assignedToIds.includes(selectedTeacher))
+      (task) => !selectedDoctor || 
+        task.assignedToId === selectedDoctor || 
+        (task.assignedToIds && task.assignedToIds.includes(selectedDoctor))
     ),
   };
 
   const fetchComments = async (taskId) => {
     try {
       setCommentLoading(true);
-      const response = await getTeacherTaskCommentList(parseInt(taskId, 10));
+      const response = await getDoctorTaskCommentList(parseInt(taskId, 10));
       console.log("댓글 데이터:", response.data);
       setComments(response.data || []);
     } catch (error) {
@@ -368,7 +368,7 @@ const TodoManagementPage = () => {
           selectedTask.status === "inProgress"
             ? "inprogress"
             : selectedTask.status;
-        await updateTeacherTask(selectedTask.id, {
+        await updateDoctorTask(selectedTask.id, {
           title: values.title,
           description: values.content,
           status: apiStatus,
@@ -382,7 +382,7 @@ const TodoManagementPage = () => {
         message.success("수정되었습니다");
       } else {
         // Create new task
-        await createTeacherTask({
+        await createDoctorTask({
           title: values.title,
           description: values.content,
           status: "todo",
@@ -401,7 +401,7 @@ const TodoManagementPage = () => {
       commentForm.resetFields();
       setSelectedTask(null);
       setComments([]);
-      await fetchTeacherTasks();
+      await fetchDoctorTasks();
     } catch (error) {
       console.error("Failed to handle task:", error);
       message.error(
@@ -430,14 +430,14 @@ const TodoManagementPage = () => {
       cancelText: "취소",
       async onOk() {
         try {
-          await deleteTeacherTask(task.id);
+          await deleteDoctorTask(task.id);
           await deleteTask({
             status: status,
             taskId: task.id,
           });
           message.success("삭제되었습니다");
 
-          await fetchTeacherTasks();
+          await fetchDoctorTasks();
           setModalVisible(false);
         } catch (error) {
           console.error("Failed to delete task:", error);
@@ -467,25 +467,25 @@ const TodoManagementPage = () => {
         assignedToIds: values.assignedToId, // Using the array of IDs directly
       };
 
-      await createTeacherTask(requestData);
+      await createDoctorTask(requestData);
 
       message.success("할일이 추가되었습니다");
       setIsAddTodoModalVisible(false);
       form.resetFields();
 
-      await fetchTeacherTasks();
+      await fetchDoctorTasks();
     } catch (error) {
       console.error("Failed to add task:", error);
       message.error("할일 추가 중 오류가 발생했습니다");
     }
   };
 
-  const renderTeacherOptions = () => {
-    if (!Array.isArray(teachers)) return null;
+  const renderDoctorOptions = () => {
+    if (!Array.isArray(doctors)) return null;
 
-    return teachers.map((teacher) => (
-      <Option key={teacher.id} value={teacher.id}>
-        {teacher.name}
+    return doctors.map((doctor) => (
+      <Option key={doctor.id} value={doctor.id}>
+        {doctor.name}
       </Option>
     ));
   };
@@ -498,7 +498,7 @@ const TodoManagementPage = () => {
     try {
       if (!selectedTask) return;
 
-      if (!teacherInfo || !teacherInfo.id) {
+      if (!doctorInfo || !doctorInfo.id) {
         message.error("로그인된 선생님 정보를 찾을 수 없습니다");
         return;
       }
@@ -506,13 +506,13 @@ const TodoManagementPage = () => {
       const payload = {
         content: values.comment,
         taskId: parseInt(selectedTask.id, 10),
-        teacherId: teacherInfo.id,
-        authorId: teacherInfo.id,
+        doctorId: doctorInfo.id,
+        authorId: doctorInfo.id,
       };
 
       console.log("댓글 작성 요청 데이터:", payload);
 
-      const response = await createTeacherTaskComment(payload);
+      const response = await createDoctorTaskComment(payload);
       console.log("댓글 작성 응답:", response);
 
       message.success("댓글이 등록되었습니다");
@@ -522,7 +522,7 @@ const TodoManagementPage = () => {
       await fetchComments(selectedTask.id);
 
       // Refresh tasks to update comment count
-      await fetchTeacherTasks();
+      await fetchDoctorTasks();
     } catch (error) {
       console.error("Failed to add comment:", error);
       message.error("댓글 등록에 실패했습니다");
@@ -531,14 +531,14 @@ const TodoManagementPage = () => {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      await deleteTeacherTaskComment(commentId);
+      await deleteDoctorTaskComment(commentId);
       message.success("댓글이 삭제되었습니다");
 
       // Refresh comments
       if (selectedTask) {
         await fetchComments(selectedTask.id);
         // Refresh tasks to update comment count
-        await fetchTeacherTasks();
+        await fetchDoctorTasks();
       }
     } catch (error) {
       console.error("Failed to delete comment:", error);
@@ -577,10 +577,10 @@ const TodoManagementPage = () => {
           style={{ width: 200 }}
           placeholder="선생님 필터"
           allowClear
-          onChange={setSelectedTeacher}
-          value={selectedTeacher}
+          onChange={setSelectedDoctor}
+          value={selectedDoctor}
         >
-          {renderTeacherOptions()}
+          {renderDoctorOptions()}
         </Select>
         <Button
           type="primary"
@@ -677,7 +677,7 @@ const TodoManagementPage = () => {
                     : "등록한 사람을 선택해주세요"
                 }
               >
-                {renderTeacherOptions()}
+                {renderDoctorOptions()}
               </Select>
             </Form.Item>
             <Form.Item
@@ -695,7 +695,7 @@ const TodoManagementPage = () => {
                 mode="multiple"
                 allowClear
               >
-                {renderTeacherOptions()}
+                {renderDoctorOptions()}
               </Select>
             </Form.Item>
           </div>

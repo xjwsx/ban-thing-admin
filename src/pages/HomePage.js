@@ -7,54 +7,52 @@ import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Calendar as AntCalendar } from "antd";
 import "./HomePage.css";
-import { getTeacherSchedule, getTeacherTaskList } from "../api/crm";
-import useTeacherStore from "../stores/teacherStore";
+import { getDoctorSchedule, getDoctorTaskList } from "../api/crm";
+import useDoctorStore from "../stores/doctorStore";
+import "dayjs/locale/ko";
 
 const { Title } = Typography;
 const localizer = dayjsLocalizer(dayjs);
 
 const HomePage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [teacherSchedules, setTeacherSchedules] = useState([]);
+  const [doctorSchedules, setDoctorSchedules] = useState([]);
   const [currentStudents, setCurrentStudents] = useState([]);
-  const [teacherTasks, setTeacherTasks] = useState([]);
-  const teacherInfo = useTeacherStore((state) => state.teacherInfo);
+  const [doctorTasks, setDoctorTasks] = useState([]);
+  const doctorInfo = useDoctorStore((state) => state.doctorInfo);
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [calendarDate, setCalendarDate] = useState(dayjs().toDate());
 
   useEffect(() => {
-    const fetchTeacherTasks = async () => {
-      try {
-        if (!teacherInfo?.id) return;
+    const fetchDoctorTasks = async () => {
+      if (!doctorInfo) return;
 
-        const response = await getTeacherTaskList(teacherInfo.id);
-        console.log("Teacher tasks:", response.data);
-        setTeacherTasks(response.data);
+      try {
+        const response = await getDoctorTaskList(doctorInfo.id);
+        console.log("Doctor tasks:", response.data);
+        setDoctorTasks(response.data);
       } catch (error) {
-        console.error("Error fetching tasks:", error);
-        Modal.error({
-          title: "할 일 조회 실패",
-          content: "선생님의 할 일을 가져오는데 실패했습니다.",
-        });
+        console.error("Failed to fetch doctor tasks:", error);
+        setDoctorTasks([]);
       }
     };
 
-    fetchTeacherTasks();
-  }, [teacherInfo?.id]);
+    fetchDoctorTasks();
+  }, [doctorInfo?.id]);
 
-  const fetchTeacherSchedules = async (date) => {
+  const fetchDoctorSchedules = async (date) => {
+    if (!doctorInfo) return;
+
+    const formattedDate = date.format("YYYY-MM-DD");
+
     try {
-      if (!teacherInfo?.resourceName) return;
-
-      const startDate = date.startOf("month").format("YYYY-MM-DD");
-      const endDate = date.endOf("month").format("YYYY-MM-DD");
-      const response = await getTeacherSchedule(
-        teacherInfo.resourceName,
-        startDate,
-        endDate
+      const response = await getDoctorSchedule(
+        doctorInfo.name,
+        formattedDate,
+        formattedDate
       );
-      setTeacherSchedules(response.data);
+      setDoctorSchedules(response.data);
 
       // Transform schedules into events for Calendar
       const calendarEvents = [];
@@ -104,18 +102,16 @@ const HomePage = () => {
 
       setCurrentStudents(Array.from(students.values()));
     } catch (error) {
-      Modal.error({
-        title: "스케줄 조회 실패",
-        content: "선생님 스케줄을 가져오는데 실패했습니다.",
-      });
+      console.error("Failed to fetch schedules:", error);
+      setDoctorSchedules([]);
     }
   };
 
   useEffect(() => {
-    if (teacherInfo) {
-      fetchTeacherSchedules(selectedDate);
+    if (doctorInfo) {
+      fetchDoctorSchedules(selectedDate);
     }
-  }, [teacherInfo, selectedDate]);
+  }, [doctorInfo, selectedDate]);
 
   return (
     <div className="home-page" style={{ height: "100%" }}>
@@ -227,7 +223,7 @@ const HomePage = () => {
           >
             <List
               itemLayout="horizontal"
-              dataSource={teacherTasks.filter((task) => {
+              dataSource={doctorTasks.filter((task) => {
                 const today = dayjs().format("YYYY-MM-DD");
 
                 if (!task.startDate) return false;

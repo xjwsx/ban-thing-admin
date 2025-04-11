@@ -1,18 +1,18 @@
 import { create } from "zustand";
-import { getTeacherMe } from "../api/crm";
+import { getDoctorMe } from "../api/crm";
 import {
   getAccessToken,
   removeAccessToken,
   removeRefreshToken,
 } from "../utils/token";
 
-export const useTeacherStore = create((set) => ({
-  teacherInfo: null,
+export const useDoctorStore = create((set) => ({
+  doctorInfo: null,
   isLoading: false,
   error: null,
 
-  // 선생님 정보 가져오기
-  fetchTeacherInfo: async () => {
+  // 의사 정보 가져오기
+  fetchDoctorInfo: async () => {
     try {
       set({ isLoading: true, error: null });
       const accessToken = getAccessToken();
@@ -21,8 +21,8 @@ export const useTeacherStore = create((set) => ({
         throw new Error("No access token found");
       }
 
-      const response = await getTeacherMe();
-      set({ teacherInfo: response.data });
+      const response = await getDoctorMe();
+      set({ doctorInfo: response.data });
       return response.data;
     } catch (error) {
       set({ error: error.message });
@@ -36,13 +36,13 @@ export const useTeacherStore = create((set) => ({
   logout: () => {
     removeAccessToken();
     removeRefreshToken();
-    set({ teacherInfo: null });
+    set({ doctorInfo: null });
   },
 
-  // 선생님 정보 초기화
-  clearTeacherInfo: () => {
-    set({ teacherInfo: null, error: null });
+  // 의사 정보 초기화
+  clearDoctorInfo: () => {
+    set({ doctorInfo: null, error: null });
   },
 }));
 
-export default useTeacherStore;
+export default useDoctorStore; 

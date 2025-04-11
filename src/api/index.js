@@ -7,7 +7,7 @@ import {
   removeAccessToken,
   removeRefreshToken,
 } from "../utils/token";
-import { teacherRefreshToken } from "./crm";
+import { doctorRefreshToken } from "./crm";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -49,7 +49,7 @@ api.interceptors.response.use(
         }
 
         // refreshToken을 요청 본문에 포함
-        const response = await teacherRefreshToken({ refreshToken });
+        const response = await doctorRefreshToken({ refreshToken });
         const { accessToken, refreshToken: newRefreshToken } = response.data;
 
         // 새로운 토큰 저장

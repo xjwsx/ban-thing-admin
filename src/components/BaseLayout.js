@@ -13,12 +13,12 @@ import {
   AuditOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Drawer, Modal } from "antd";
-import { useTeacherStore } from "../stores/teacherStore";
+import { useDoctorStore } from "../stores/doctorStore";
 const { Sider, Content } = Layout;
 
 const BaseLayout = ({ children }) => {
   const navigate = useNavigate();
-  const { fetchTeacherInfo, teacherInfo, logout } = useTeacherStore();
+  const { fetchDoctorInfo, doctorInfo, logout } = useDoctorStore();
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1200 });
   const isDesktop = useMediaQuery({ minWidth: 1201 });
@@ -29,13 +29,13 @@ const BaseLayout = ({ children }) => {
   } = theme.useToken();
 
   const checkPermission = (menuCode) => {
-    if (!teacherInfo) return false;
+    if (!doctorInfo) return false;
 
     // admin role은 모든 페이지 접근 가능
-    if (teacherInfo.role === "admin") return true;
+    if (doctorInfo.role === "admin") return true;
 
-    // teacher role은 permissions 체크
-    const permission = teacherInfo.permissions.find(
+    // doctor role은 permissions 체크
+    const permission = doctorInfo.permissions.find(
       (p) => p.menuCode === menuCode
     );
 
@@ -106,20 +106,20 @@ const BaseLayout = ({ children }) => {
     {
       key: "7",
       icon: <UserOutlined />,
-      label: "선생님 관리",
-      onClick: () => handleMenuClick("MENU006", "/teachers"),
+      label: "의사 관리",
+      onClick: () => handleMenuClick("MENU006", "/doctors"),
       menuCode: "MENU006",
     },
   ];
 
   const menuItems = React.useMemo(() => {
-    if (!teacherInfo) return [];
+    if (!doctorInfo) return [];
 
-    if (teacherInfo.role === "admin") {
+    if (doctorInfo.role === "admin") {
       return allMenuItems;
     }
 
-    if (teacherInfo.role === "teacher") {
+    if (doctorInfo.role === "doctor") {
       const allowedMenuCodes = ["MENU000", "MENU001", "MENU002", "MENU003"];
       return allMenuItems.filter((item) =>
         allowedMenuCodes.includes(item.menuCode)
@@ -127,7 +127,7 @@ const BaseLayout = ({ children }) => {
     }
 
     return allMenuItems;
-  }, [teacherInfo]);
+  }, [doctorInfo]);
 
   const goToLogin = () => {
     Modal.confirm({
@@ -152,17 +152,17 @@ const BaseLayout = ({ children }) => {
   ];
 
   useEffect(() => {
-    const initializeTeacher = async () => {
+    const initializeDoctor = async () => {
       try {
-        await fetchTeacherInfo();
+        await fetchDoctorInfo();
       } catch (error) {
-        console.error("Failed to fetch teacher info:", error);
+        console.error("Failed to fetch doctor info:", error);
         navigate("/");
       }
     };
 
-    initializeTeacher();
-  }, [fetchTeacherInfo, navigate]);
+    initializeDoctor();
+  }, [fetchDoctorInfo, navigate]);
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden" }}>
