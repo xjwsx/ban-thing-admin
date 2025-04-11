@@ -37,7 +37,7 @@ import {
   updateCustomerCourse,
   deleteCustomerCourse,
 } from "../../api/crm";
-import TeacherTag from "../../components/molecules/TeacherTag";
+import DoctorTag from "../../components/molecules/DoctorTag";
 import { useMediaQuery } from "react-responsive";
 import { useDoctorStore } from "../../stores/doctorStore";
 import { usePermission } from "../../hooks/usePermission";
@@ -309,7 +309,7 @@ const CustomerDetailPage = () => {
       dataIndex: "teacher",
       key: "teacher",
       width: 120,
-      render: (_, record) => <TeacherTag doctorId={record.doctorId} />,
+      render: (_, record) => <DoctorTag doctorId={record.doctorId} />,
     },
     {
       title: "관리",
@@ -684,7 +684,7 @@ const CustomerDetailPage = () => {
                         description={
                           <Space direction="vertical" size="small">
                             <div style={{ color: "#666" }}>{diary.content}</div>
-                            <TeacherTag doctorId={diary.doctorId} />
+                            <DoctorTag doctorId={diary.doctorId} />
                           </Space>
                         }
                       />
