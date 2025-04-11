@@ -273,3 +273,60 @@ export const updateDoctorTaskComment = async (id, payload) =>
 export const deleteDoctorTaskComment = async (id) =>
   await api.delete(`/doctor-task-comment/${id}`);
 // ----------- // doctor-task-comment ---------------
+
+// ----------- reservations ---------------
+export const createReservation = async (payload) =>
+  await api.post("/reservations", payload);
+
+export const getReservationList = async (
+  page = 1,
+  limit = 10,
+  filters = {
+    customerName: null,
+    customerId: null,
+    doctorId: null,
+    status: null,
+    startDate: null,
+    endDate: null,
+    sessionTreatment: null,
+    visitType: null,
+  }
+) => {
+  const requiredParams = {
+    page,
+    limit,
+  };
+
+  const optionalParams = Object.entries(filters).reduce((acc, [key, value]) => {
+    if (value !== null && value !== undefined) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
+  return await api.get(`/reservations`, {
+    params: {
+      ...requiredParams,
+      ...optionalParams,
+    },
+  });
+};
+
+export const getReservationDetail = async (id) => 
+  await api.get(`/reservations/${id}`);
+
+export const updateReservation = async (id, payload) =>
+  await api.patch(`/reservations/${id}`, payload);
+
+export const deleteReservation = async (id) =>
+  await api.delete(`/reservations/${id}`);
+
+export const getReservationAvailableSlots = async (date, doctorId = null) => {
+  const params = { date };
+  if (doctorId) params.doctorId = doctorId;
+  
+  return await api.get(`/reservations/available-slots`, {
+    params,
+  });
+};
+// ----------- // reservations ---------------
