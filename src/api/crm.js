@@ -330,3 +330,81 @@ export const getReservationAvailableSlots = async (date, doctorId = null) => {
   });
 };
 // ----------- // reservations ---------------
+
+// ----------- notices ---------------
+export const getNoticeList = async (
+  page = 1,
+  limit = 10,
+  filters = {
+    search: null,
+    isImportant: null,
+    target: null,
+    authorId: null,
+    startDate: null,
+    endDate: null,
+    isActive: null,
+  }
+) => {
+  const requiredParams = {
+    page,
+    limit,
+  };
+
+  const optionalParams = Object.entries(filters).reduce((acc, [key, value]) => {
+    if (value !== null && value !== undefined) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
+  return await api.get(`/notices`, {
+    params: {
+      ...requiredParams,
+      ...optionalParams,
+    },
+  });
+};
+
+export const getNoticeDetail = async (id) => 
+  await api.get(`/notices/${id}`);
+
+export const createNotice = async (payload) =>
+  await api.post("/notices", payload);
+
+export const updateNotice = async (id, payload) =>
+  await api.patch(`/notices/${id}`, payload);
+
+export const deleteNotice = async (id) =>
+  await api.delete(`/notices/${id}`);
+
+export const incrementNoticeViewCount = async (id) =>
+  await api.patch(`/notices/${id}/view`);
+
+export const getDoctorNotices = async (
+  page = 1,
+  limit = 10,
+  filters = {
+    search: null,
+    isImportant: null,
+  }
+) => {
+  const requiredParams = {
+    page,
+    limit,
+  };
+
+  const optionalParams = Object.entries(filters).reduce((acc, [key, value]) => {
+    if (value !== null && value !== undefined) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
+  return await api.get(`/notices/doctor`, {
+    params: {
+      ...requiredParams,
+      ...optionalParams,
+    },
+  });
+};
+// ----------- // notices ---------------
