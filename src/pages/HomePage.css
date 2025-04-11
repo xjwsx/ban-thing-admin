@@ -1,0 +1,44 @@
+.home-page .ant-picker-calendar {
+  background: transparent;
+}
+
+.home-page .ant-picker-calendar .ant-picker-panel {
+  background: transparent;
+  border: none;
+}
+
+.home-page .ant-picker-calendar .ant-picker-content {
+  background: transparent;
+}
+
+.home-page .ant-picker-calendar .ant-picker-calendar-header {
+  padding: 12px;
+}
+
+.home-page .ant-picker-calendar .ant-picker-cell {
+  padding: 4px 0;
+}
+
+.home-page
+  .ant-picker-calendar
+  .ant-picker-cell-selected
+  .ant-picker-calendar-date {
+  background: #1890ff;
+  color: white;
+  border-radius: 50%;
+}
+
+.home-page .ant-picker-calendar .ant-picker-calendar-date {
+  height: 24px;
+  width: 24px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.home-page .ant-picker-calendar .ant-picker-calendar-date:hover {
+  background: #e6f7ff;
+  border-radius: 50%;
+}

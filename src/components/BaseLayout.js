@@ -110,13 +110,6 @@ const BaseLayout = ({ children }) => {
       onClick: () => handleMenuClick("MENU006", "/teachers"),
       menuCode: "MENU006",
     },
-    // {
-    //   key: "7",
-    //   icon: <GlobalOutlined />,
-    //   label: "한국어 관리",
-    //   onClick: () => handleMenuClick("MENU001", "/korean"),
-    //   menuCode: "MENU001",
-    // },
   ];
 
   const menuItems = React.useMemo(() => {
