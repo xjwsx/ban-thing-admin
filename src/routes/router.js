@@ -4,8 +4,8 @@ import LoginPage from "../pages/LoginPage";
 import BaseLayout from "../components/BaseLayout";
 import HomePage from "../pages/HomePage";
 import StatisticsPage from "../pages/StatisticsPage";
-import StudentsPage from "../pages/student/StudentsPage";
-import StudentDetailPage from "../pages/student/StudentDetailPage";
+import CustomersPage from "../pages/customer/CustomersPage";
+import CustomerDetailPage from "../pages/customer/CustomerDetailPage";
 import PaymentPage from "../pages/payment/PaymentPage";
 import TodoManagementPage from "../pages/todo/TodoPage";
 import HomeRegisterPage from "../pages/HomeRegisterPage";
@@ -36,8 +36,8 @@ const Router = () => {
     { path: "/home", Component: HomePage },
     { path: "/home/register", Component: HomeRegisterPage },
     { path: "/statistics", Component: StatisticsPage },
-    { path: "/student", Component: StudentsPage },
-    { path: "/student/:id", Component: StudentDetailPage },
+    { path: "/customer", Component: CustomersPage },
+    { path: "/customer/:id", Component: CustomerDetailPage },
     { path: "/payment", Component: PaymentPage },
     {
       path: "/payment/register",

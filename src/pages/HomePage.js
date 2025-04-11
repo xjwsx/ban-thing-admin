@@ -17,7 +17,7 @@ const localizer = dayjsLocalizer(dayjs);
 const HomePage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [doctorSchedules, setDoctorSchedules] = useState([]);
-  const [currentStudents, setCurrentStudents] = useState([]);
+  const [currentCustomers, setCurrentCustomers] = useState([]);
   const [doctorTasks, setDoctorTasks] = useState([]);
   const doctorInfo = useDoctorStore((state) => state.doctorInfo);
   const [events, setEvents] = useState([]);
@@ -80,14 +80,14 @@ const HomePage = () => {
       );
       setEvents(calendarEvents);
 
-      // Extract unique students from schedules
-      const students = new Map();
+      // Extract unique customers from schedules
+      const customers = new Map();
       Object.entries(response.data.weeklySchedules).forEach(
         ([date, schedules]) => {
           schedules.forEach((schedule) => {
-            const studentId = schedule.contactId;
-            if (!students.has(studentId)) {
-              students.set(studentId, {
+            const customerId = schedule.contactId;
+            if (!customers.has(customerId)) {
+              customers.set(customerId, {
                 name: `${schedule.contactFirstName}${
                   schedule.contactLastName ? ` ${schedule.contactLastName}` : ""
                 }`,
@@ -100,7 +100,7 @@ const HomePage = () => {
         }
       );
 
-      setCurrentStudents(Array.from(students.values()));
+      setCurrentCustomers(Array.from(customers.values()));
     } catch (error) {
       console.error("Failed to fetch schedules:", error);
       setDoctorSchedules([]);
@@ -287,7 +287,7 @@ const HomePage = () => {
           </Card>
 
           <Card
-            title="현재 수강중인 학생"
+            title="현재 방문중인 고객"
             style={{
               marginBottom: "16px",
               height: "297px",
@@ -305,13 +305,13 @@ const HomePage = () => {
           >
             <List
               itemLayout="horizontal"
-              dataSource={currentStudents}
-              renderItem={(student) => (
+              dataSource={currentCustomers}
+              renderItem={(customer) => (
                 <List.Item>
                   <List.Item.Meta
-                    avatar={<Avatar src={student.avatar} />}
-                    title={student.name}
-                    description={`${student.subject} / ${student.level}`}
+                    avatar={<Avatar src={customer.avatar} />}
+                    title={customer.name}
+                    description={`${customer.subject} / ${customer.level}`}
                   />
                 </List.Item>
               )}

@@ -71,8 +71,8 @@ const BaseLayout = ({ children }) => {
     {
       key: "2",
       icon: <TeamOutlined />,
-      label: "학생 관리",
-      onClick: () => handleMenuClick("MENU001", "/student"),
+      label: "고객 관리",
+      onClick: () => handleMenuClick("MENU001", "/customer"),
       menuCode: "MENU001",
     },
     {

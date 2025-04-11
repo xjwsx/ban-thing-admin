@@ -1,8 +1,8 @@
 import api from ".";
 
-// ----------- students ---------------
-export const getStudentList = async (page, limit, filters = {}) =>
-  await api.get("/students", {
+// ----------- customers ---------------
+export const getCustomerList = async (page, limit, filters = {}) =>
+  await api.get("/customers", {
     params: {
       page,
       limit,
@@ -10,27 +10,27 @@ export const getStudentList = async (page, limit, filters = {}) =>
     },
   });
 
-export const getStudentsByRegistrationYear = async (year) =>
-  await api.get(`/students/registration/${year}`);
+export const getCustomersByRegistrationYear = async (year) =>
+  await api.get(`/customers/registration/${year}`);
 
-export const getStudentsByRegistrationMonth = async (year, month) =>
-  await api.get(`/students/registration/${year}/${month}`);
+export const getCustomersByRegistrationMonth = async (year, month) =>
+  await api.get(`/customers/registration/${year}/${month}`);
 
-export const getStudentDetail = async (id) => await api.get(`/students/${id}`);
+export const getCustomerDetail = async (id) => await api.get(`/customers/${id}`);
 
-export const createStudent = async (payload) =>
-  await api.post("/students", payload);
+export const createCustomer = async (payload) =>
+  await api.post("/customers", payload);
 
-export const uploadStudents = async (payload) =>
-  await api.post("/students/upload", payload);
+export const uploadCustomers = async (payload) =>
+  await api.post("/customers/upload", payload);
 
-export const updateStudent = async (id, payload) =>
-  await api.patch(`/students/${id}`, payload);
+export const updateCustomer = async (id, payload) =>
+  await api.patch(`/customers/${id}`, payload);
 
-export const deleteStudent = async (id) => await api.delete(`/students/${id}`);
+export const deleteCustomer = async (id) => await api.delete(`/customers/${id}`);
 
-export const searchStudents = async (query) =>
-  await api.get("/students/search", {
+export const searchCustomers = async (query) =>
+  await api.get("/customers/search", {
     params: {
       query,
       page: 1,
@@ -38,43 +38,43 @@ export const searchStudents = async (query) =>
     },
   });
 
-// ----------- // students ---------------
+// ----------- // customers ---------------
 
-// ----------- student-diary ---------------
-export const getStudentDiaryList = async (studentId, page, limit) =>
-  await api.get(`/student-diary/student/${studentId}`, {
+// ----------- customer-diary ---------------
+export const getCustomerDiaryList = async (customerId, page, limit) =>
+  await api.get(`/customer-diary/customer/${customerId}`, {
     params: {
       page,
       limit,
     },
   });
 
-export const createStudentDiary = async (payload) =>
-  await api.post("/student-diary", payload);
+export const createCustomerDiary = async (payload) =>
+  await api.post("/customer-diary", payload);
 
-export const updateStudentDiary = async (id, payload) =>
-  await api.patch(`/student-diary/${id}`, payload);
+export const updateCustomerDiary = async (id, payload) =>
+  await api.patch(`/customer-diary/${id}`, payload);
 
-export const deleteStudentDiary = async (id) =>
-  await api.delete(`/student-diary/${id}`);
-// ----------- // student-diary ---------------
+export const deleteCustomerDiary = async (id) =>
+  await api.delete(`/customer-diary/${id}`);
+// ----------- // customer-diary ---------------
 
-// ----------- student-course ---------------
-export const getStudentCourseList = async (studentId) =>
-  await api.get(`/student-course/${studentId}`);
+// ----------- customer-course ---------------
+export const getCustomerCourseList = async (customerId) =>
+  await api.get(`/customer-course/${customerId}`);
 
-export const createStudentCourse = async (payload) =>
-  await api.post("/student-course", payload);
+export const createCustomerCourse = async (payload) =>
+  await api.post("/customer-course", payload);
 
-export const updateStudentCourse = async (id, payload) =>
-  await api.patch(`/student-course/${id}`, payload);
+export const updateCustomerCourse = async (id, payload) =>
+  await api.patch(`/customer-course/${id}`, payload);
 
-export const deleteStudentCourse = async (id) =>
-  await api.delete(`/student-course/${id}`);
-// ----------- // student-course ---------------
+export const deleteCustomerCourse = async (id) =>
+  await api.delete(`/customer-course/${id}`);
+// ----------- // customer-course ---------------
 
-// ----------- student-payments ---------------
-export const getStudentPaymentList = async (
+// ----------- customer-payments ---------------
+export const getCustomerPaymentList = async (
   page,
   limit,
   filters = {
@@ -83,9 +83,9 @@ export const getStudentPaymentList = async (
     minAmount: null,
     maxAmount: null,
     paymentMethod: null,
-    studentId: null,
+    customerId: null,
     monthOfClass: null,
-    studentName: null,
+    customerName: null,
   }
 ) => {
   const requiredParams = {
@@ -100,7 +100,7 @@ export const getStudentPaymentList = async (
     return acc;
   }, {});
 
-  return await api.get(`/student-payments`, {
+  return await api.get(`/customer-payments`, {
     params: {
       ...requiredParams,
       ...optionalParams,
@@ -108,30 +108,30 @@ export const getStudentPaymentList = async (
   });
 };
 
-export const getStudentPaymentDetail = async (studentId, page, limit) =>
-  await api.get(`/student-payments/student/${studentId}`, {
+export const getCustomerPaymentDetail = async (customerId, page, limit) =>
+  await api.get(`/customer-payments/customer/${customerId}`, {
     params: {
       page,
       limit,
     },
   });
 
-export const createStudentPayment = async (payload) =>
-  await api.post("/student-payments", payload);
+export const createCustomerPayment = async (payload) =>
+  await api.post("/customer-payments", payload);
 
-export const updateStudentPayment = async (id, payload) =>
-  await api.patch(`/student-payments/${id}`, payload);
+export const updateCustomerPayment = async (id, payload) =>
+  await api.patch(`/customer-payments/${id}`, payload);
 
-export const deleteStudentPayment = async (id) =>
-  await api.delete(`/student-payments/${id}`);
+export const deleteCustomerPayment = async (id) =>
+  await api.delete(`/customer-payments/${id}`);
 
 export const uploadPayments = async (payload) =>
-  await api.post("/student-payments/upload", payload);
-// ----------- // student-payments ---------------
+  await api.post("/customer-payments/upload", payload);
+// ----------- // customer-payments ---------------
 
 // 결제 통계 API 추가
-export const getStudentPaymentStats = async (startMonth, endMonth) =>
-  await api.get("/student-payments/stats", {
+export const getCustomerPaymentStats = async (startMonth, endMonth) =>
+  await api.get("/customer-payments/stats", {
     params: {
       startMonth,
       endMonth,
@@ -139,15 +139,15 @@ export const getStudentPaymentStats = async (startMonth, endMonth) =>
   });
 
 // 연체 데이터 API 추가
-export const getStudentPaymentOverdue = async (page, limit) =>
-  await api.get("/student-payments/overdue", {
+export const getCustomerPaymentOverdue = async (page, limit) =>
+  await api.get("/customer-payments/overdue", {
     params: {
       page,
       limit,
     },
   });
 
-// ----------- // student-payments ---------------
+// ----------- // customer-payments ---------------
 
 // ----------- doctors ---------------
 export const getDoctorList = async (page, limit) =>
