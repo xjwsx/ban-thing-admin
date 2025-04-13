@@ -38,6 +38,9 @@ export const searchCustomers = async (query) =>
     },
   });
 
+// API 함수명 별칭 (Customer -> Student)
+export const searchStudents = searchCustomers;
+
 // ----------- // customers ---------------
 
 // ----------- customer-diary ---------------
@@ -108,6 +111,9 @@ export const getCustomerPaymentList = async (
   });
 };
 
+// API 함수명 별칭 (Customer -> Student)
+export const getStudentPaymentList = getCustomerPaymentList;
+
 export const getCustomerPaymentDetail = async (customerId, page = 1, limit = 10) =>
   await api.get(`/customer-payments/customer/${customerId}`, {
     params: {
@@ -119,11 +125,20 @@ export const getCustomerPaymentDetail = async (customerId, page = 1, limit = 10)
 export const createCustomerPayment = async (payload) =>
   await api.post("/customer-payments", payload);
 
+// API 함수명 별칭 (Customer -> Student)
+export const createStudentPayment = createCustomerPayment;
+
 export const updateCustomerPayment = async (id, payload) =>
   await api.patch(`/customer-payments/${id}`, payload);
 
+// API 함수명 별칭 (Customer -> Student) 
+export const updateStudentPayment = updateCustomerPayment;
+
 export const deleteCustomerPayment = async (id) =>
   await api.delete(`/customer-payments/${id}`);
+
+// API 함수명 별칭 (Customer -> Student)
+export const deleteStudentPayment = deleteCustomerPayment;
 
 export const uploadPayments = async (payload) =>
   await api.post("/customer-payments/upload", payload);
@@ -138,6 +153,9 @@ export const getCustomerPaymentStats = async (startMonth, endMonth) =>
     },
   });
 
+// API 함수명 별칭 (Customer -> Student)
+export const getStudentPaymentStats = getCustomerPaymentStats;
+
 // 연체 데이터 API 추가
 export const getCustomerPaymentOverdue = async (page = 1, limit = 10) =>
   await api.get("/customer-payments/overdue", {
@@ -146,6 +164,9 @@ export const getCustomerPaymentOverdue = async (page = 1, limit = 10) =>
       limit,
     },
   });
+
+// API 함수명 별칭 (Customer -> Student)
+export const getStudentPaymentOverdue = getCustomerPaymentOverdue;
 
 // ----------- // customer-payments ---------------
 
@@ -406,14 +427,4 @@ export const getDoctorNotices = async (
       ...optionalParams,
     },
   });
-};
-// ----------- // notices ---------------
-
-// API 함수명 수정 (Customer -> Student) 호환성을 위한 별칭
-export const searchStudents = searchCustomers;
-export const getStudentPaymentList = getCustomerPaymentList;
-export const getStudentPaymentStats = getCustomerPaymentStats;
-export const getStudentPaymentOverdue = getCustomerPaymentOverdue;
-export const createStudentPayment = createCustomerPayment;
-export const updateStudentPayment = updateCustomerPayment;
-export const deleteStudentPayment = deleteCustomerPayment;
+}; 
