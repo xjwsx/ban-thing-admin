@@ -408,3 +408,12 @@ export const getDoctorNotices = async (
   });
 };
 // ----------- // notices ---------------
+
+// API 함수명 수정 (Customer -> Student) 호환성을 위한 별칭
+export const searchStudents = searchCustomers;
+export const getStudentPaymentList = getCustomerPaymentList;
+export const getStudentPaymentStats = getCustomerPaymentStats;
+export const getStudentPaymentOverdue = getCustomerPaymentOverdue;
+export const createStudentPayment = createCustomerPayment;
+export const updateStudentPayment = updateCustomerPayment;
+export const deleteStudentPayment = deleteCustomerPayment;
