@@ -3,18 +3,16 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 import BaseLayout from "../components/BaseLayout";
 import HomePage from "../pages/HomePage";
-import StatisticsPage from "../pages/StatisticsPage";
 import CustomersPage from "../pages/customer/CustomersPage";
 import CustomerDetailPage from "../pages/customer/CustomerDetailPage";
-import PaymentPage from "../pages/payment/PaymentPage";
-import TodoManagementPage from "../pages/todo/TodoPage";
-import HomeRegisterPage from "../pages/HomeRegisterPage";
-import PaymentRegisterPage from "../pages/payment/PaymentRegisterPage";
-import DoctorsPage from "../pages/doctor/DoctorsPage";
-import DoctorRegisterPage from "../pages/doctor/DoctorRegisterPage";
-import DoctorDetailPage from "../pages/doctor/DoctorDetailPage";
-import { getAccessToken } from "../utils/token";
 import CoursePage from "../pages/CoursePage";
+import HomeRegisterPage from "../pages/HomeRegisterPage";
+import { getAccessToken } from "../utils/token";
+
+// TODO: 실제 페이지 컴포넌트가 생성된 후 import
+// 예약 관리와 공지사항 페이지는 아직 구현되지 않았으므로 추후 구현 후 import 필요
+const ReservationPage = () => <div>예약 관리 페이지 (개발 중)</div>;
+const NoticePage = () => <div>공지사항 페이지 (개발 중)</div>;
 
 const isAuthenticated = () => {
   const token = getAccessToken();
@@ -35,19 +33,11 @@ const Router = () => {
   const privateRoutes = [
     { path: "/home", Component: HomePage },
     { path: "/home/register", Component: HomeRegisterPage },
-    { path: "/statistics", Component: StatisticsPage },
     { path: "/customer", Component: CustomersPage },
     { path: "/customer/:id", Component: CustomerDetailPage },
-    { path: "/payment", Component: PaymentPage },
-    {
-      path: "/payment/register",
-      Component: PaymentRegisterPage,
-    },
-    { path: "/todo", Component: TodoManagementPage },
-    { path: "/doctors", Component: DoctorsPage },
-    { path: "/doctors/register", Component: DoctorRegisterPage },
-    { path: "/doctors/:id", Component: DoctorDetailPage },
     { path: "/course", Component: CoursePage },
+    { path: "/reservation", Component: ReservationPage },
+    { path: "/notice", Component: NoticePage },
   ];
 
   return (

@@ -77,38 +77,24 @@ const BaseLayout = ({ children }) => {
     },
     {
       key: "3",
-      icon: <PayCircleOutlined />,
-      label: "결제 관리",
-      onClick: () => handleMenuClick("MENU002", "/payment"),
+      icon: <AuditOutlined />,
+      label: "코스 관리",
+      onClick: () => handleMenuClick("MENU002", "/course"),
       menuCode: "MENU002",
     },
     {
       key: "4",
       icon: <FileTextOutlined />,
-      label: "할일 관리",
-      onClick: () => handleMenuClick("MENU003", "/todo"),
+      label: "예약 관리",
+      onClick: () => handleMenuClick("MENU003", "/reservation"),
       menuCode: "MENU003",
     },
     {
       key: "5",
-      icon: <LineChartOutlined />,
-      label: "통계",
-      onClick: () => handleMenuClick("MENU004", "/statistics"),
+      icon: <FileTextOutlined />,
+      label: "공지사항",
+      onClick: () => handleMenuClick("MENU004", "/notice"),
       menuCode: "MENU004",
-    },
-    {
-      key: "6",
-      icon: <AuditOutlined />,
-      label: "코스 관리",
-      onClick: () => handleMenuClick("MENU005", "/course"),
-      menuCode: "MENU005",
-    },
-    {
-      key: "7",
-      icon: <UserOutlined />,
-      label: "의사 관리",
-      onClick: () => handleMenuClick("MENU006", "/doctors"),
-      menuCode: "MENU006",
     },
   ];
 
@@ -120,7 +106,7 @@ const BaseLayout = ({ children }) => {
     }
 
     if (doctorInfo.role === "doctor") {
-      const allowedMenuCodes = ["MENU000", "MENU001", "MENU002", "MENU003"];
+      const allowedMenuCodes = ["MENU000", "MENU001", "MENU002", "MENU003", "MENU004"];
       return allMenuItems.filter((item) =>
         allowedMenuCodes.includes(item.menuCode)
       );
@@ -197,7 +183,12 @@ const BaseLayout = ({ children }) => {
               border: "none",
             }}
           >
-            zarada
+            <div 
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/home")}
+            >
+              zarada
+            </div>
           </div>
 
           <Menu
@@ -246,10 +237,12 @@ const BaseLayout = ({ children }) => {
               }}
             >
               <span
-                style={{ fontSize: "20px", marginLeft: "10px" }}
+                style={{ fontSize: "20px", marginLeft: "10px", cursor: "pointer" }}
                 onClick={() => navigate("/home")}
               >
-                zarada
+                <div style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
+                  zarada
+                </div>
               </span>
               <MenuOutlined
                 style={{ marginRight: "10px", fontSize: "15px" }}
