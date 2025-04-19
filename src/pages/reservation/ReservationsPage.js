@@ -22,12 +22,8 @@ import {
 import {
   SearchOutlined,
   PlusOutlined,
-  CalendarOutlined,
   EditOutlined,
   DeleteOutlined,
-  UserOutlined,
-  ClockCircleOutlined,
-  MedicineBoxOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useMediaQuery } from "react-responsive";

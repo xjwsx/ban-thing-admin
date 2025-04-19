@@ -24,7 +24,6 @@ import {
   Card,
   Typography,
   Tooltip,
-  Pagination
 } from "antd";
 import {
   PlusOutlined,
@@ -32,8 +31,6 @@ import {
   EditOutlined,
   EyeOutlined,
   SearchOutlined,
-  ExclamationCircleOutlined,
-  FilterOutlined
 } from "@ant-design/icons";
 import styled from "styled-components";
 import dayjs from "dayjs";
@@ -42,31 +39,6 @@ const { Title, Text } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-
-// Styled Components
-const Container = styled.div`
-  padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-`;
-
-const FilterWrapper = styled(Card)`
-  margin-bottom: 20px;
-`;
-
-const TableActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
-`;
-
-const StyledTag = styled(Tag)`
-  cursor: pointer;
-`;
-
-const ImportantTag = styled(Tag)`
-  margin-right: 8px;
-`;
 
 const NoticesPage = () => {
   const [notices, setNotices] = useState([]);
@@ -88,17 +60,13 @@ const NoticesPage = () => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    authorId: 1, // 현재 로그인한 사용자의 ID를 기본값으로 설정
+    authorId: 1,
     isImportant: false,
     target: NOTICE_TARGET.ALL,
     startDate: dayjs().format("YYYY-MM-DD"),
     endDate: dayjs().add(30, 'day').format("YYYY-MM-DD"),
     isActive: true,
   });
-
-  useEffect(() => {
-    fetchNotices();
-  }, [page, rowsPerPage, filters]);
 
   const fetchNotices = async () => {
     try {
@@ -108,15 +76,6 @@ const NoticesPage = () => {
     } catch (error) {
       console.error("공지사항 목록을 불러오는 중 오류가 발생했습니다:", error);
     }
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   const handleOpenDialog = (mode, notice = null) => {
@@ -248,6 +207,10 @@ const NoticesPage = () => {
         return "";
     }
   };
+
+  useEffect(() => {
+    fetchNotices();
+  }, [page, rowsPerPage, filters]);
 
   return (
     <Container>
@@ -613,3 +576,27 @@ const NoticesPage = () => {
 };
 
 export default NoticesPage; 
+
+const Container = styled.div`
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const FilterWrapper = styled(Card)`
+  margin-bottom: 20px;
+`;
+
+const TableActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+`;
+
+const StyledTag = styled(Tag)`
+  cursor: pointer;
+`;
+
+const ImportantTag = styled(Tag)`
+  margin-right: 8px;
+`;
