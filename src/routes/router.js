@@ -7,12 +7,12 @@ import CustomersPage from "../pages/customer/CustomersPage";
 import CustomerDetailPage from "../pages/customer/CustomerDetailPage";
 import CoursePage from "../pages/CoursePage";
 import HomeRegisterPage from "../pages/HomeRegisterPage";
+import NoticePage from "../pages/notice/NoticesPage";
 import { getAccessToken } from "../utils/token";
 
 // TODO: 실제 페이지 컴포넌트가 생성된 후 import
 // 예약 관리와 공지사항 페이지는 아직 구현되지 않았으므로 추후 구현 후 import 필요
 const ReservationPage = () => <div>예약 관리 페이지 (개발 중)</div>;
-const NoticePage = () => <div>공지사항 페이지 (개발 중)</div>;
 
 const isAuthenticated = () => {
   const token = getAccessToken();
