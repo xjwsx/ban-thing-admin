@@ -8,39 +8,65 @@ import {
 } from "../../api/crm";
 import { NOTICE_TARGET } from "../../types/notice";
 import {
-  Box,
+  Form,
+  Input,
   Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Paper,
+  Table,
+  Space,
+  Modal,
   Select,
   Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
+  DatePicker,
+  Tag,
+  Divider,
+  Row,
+  Col,
+  Card,
   Typography,
-  IconButton,
-  Chip,
-} from "@mui/material";
-import { Add, Delete, Edit, Visibility } from "@mui/icons-material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { ko } from "date-fns/locale";
+  Tooltip,
+  Pagination
+} from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  SearchOutlined,
+  ExclamationCircleOutlined,
+  FilterOutlined
+} from "@ant-design/icons";
+import styled from "styled-components";
 import dayjs from "dayjs";
+
+const { Title, Text } = Typography;
+const { TextArea } = Input;
+const { Option } = Select;
+const { RangePicker } = DatePicker;
+
+// Styled Components
+const Container = styled.div`
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const FilterWrapper = styled(Card)`
+  margin-bottom: 20px;
+`;
+
+const TableActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+`;
+
+const StyledTag = styled(Tag)`
+  cursor: pointer;
+`;
+
+const ImportantTag = styled(Tag)`
+  margin-right: 8px;
+`;
 
 const NoticesPage = () => {
   const [notices, setNotices] = useState([]);
@@ -140,11 +166,28 @@ const NoticesPage = () => {
     });
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value, checked, type } = e.target;
+    setFilters({
+      ...filters,
+      [name]: type === "checkbox" ? checked : value,
+    });
+    setPage(0);
+  };
+
   const handleDateChange = (name, date) => {
     setFormData({
       ...formData,
-      [name]: dayjs(date).format("YYYY-MM-DD"),
+      [name]: date ? dayjs(date).format("YYYY-MM-DD") : null,
     });
+  };
+
+  const handleFilterDateChange = (name, date) => {
+    setFilters({
+      ...filters,
+      [name]: date ? dayjs(date).format("YYYY-MM-DD") : null,
+    });
+    setPage(0);
   };
 
   const handleSubmit = async () => {
@@ -182,23 +225,6 @@ const NoticesPage = () => {
     }
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value, checked, type } = e.target;
-    setFilters({
-      ...filters,
-      [name]: type === "checkbox" ? checked : value,
-    });
-    setPage(0);
-  };
-
-  const handleFilterDateChange = (name, date) => {
-    setFilters({
-      ...filters,
-      [name]: date ? dayjs(date).format("YYYY-MM-DD") : null,
-    });
-    setPage(0);
-  };
-
   const resetFilters = () => {
     setFilters({
       search: "",
@@ -224,377 +250,364 @@ const NoticesPage = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          공지사항 관리
-        </Typography>
+    <Container>
+      <Title level={4}>공지사항 관리</Title>
 
-        {/* 필터 영역 */}
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            필터
-          </Typography>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={3}>
-              <TextField
-                fullWidth
-                label="검색어"
-                name="search"
-                value={filters.search}
-                onChange={handleFilterChange}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <FormControl fullWidth size="small">
-                <InputLabel>대상</InputLabel>
+      {/* 필터 영역 */}
+      <FilterWrapper>
+        <Form layout="vertical">
+          <Row gutter={16}>
+            <Col xs={24} sm={6}>
+              <Form.Item label="검색어">
+                <Input
+                  placeholder="제목 검색"
+                  name="search"
+                  value={filters.search}
+                  onChange={handleFilterChange}
+                  prefix={<SearchOutlined />}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={6}>
+              <Form.Item label="대상">
                 <Select
-                  label="대상"
+                  placeholder="대상 선택"
+                  style={{ width: '100%' }}
                   name="target"
                   value={filters.target}
-                  onChange={handleFilterChange}
+                  onChange={(value) => setFilters({...filters, target: value})}
                 >
-                  <MenuItem value="">전체</MenuItem>
-                  <MenuItem value={NOTICE_TARGET.ALL}>모든 사용자</MenuItem>
-                  <MenuItem value={NOTICE_TARGET.DOCTORS}>의사</MenuItem>
-                  <MenuItem value={NOTICE_TARGET.STAFF}>스태프</MenuItem>
+                  <Option value="">전체</Option>
+                  <Option value={NOTICE_TARGET.ALL}>모든 사용자</Option>
+                  <Option value={NOTICE_TARGET.DOCTORS}>의사</Option>
+                  <Option value={NOTICE_TARGET.STAFF}>스태프</Option>
                 </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={2}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={filters.isImportant || false}
-                    onChange={handleFilterChange}
-                    name="isImportant"
-                  />
-                }
-                label="중요 공지만"
-              />
-            </Grid>
-            <Grid item xs={12} sm={2}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={filters.isActive || false}
-                    onChange={handleFilterChange}
-                    name="isActive"
-                  />
-                }
-                label="활성화 공지만"
-              />
-            </Grid>
-            <Grid item xs={12} sm={2}>
-              <Button 
-                variant="outlined" 
-                onClick={resetFilters}
-                fullWidth
-              >
-                필터 초기화
-              </Button>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
-                <DatePicker
-                  label="시작일"
-                  value={filters.startDate ? dayjs(filters.startDate).toDate() : null}
-                  onChange={(date) => handleFilterDateChange("startDate", date)}
-                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={4}>
+              <Form.Item label="중요 공지">
+                <Switch
+                  checked={filters.isImportant || false}
+                  onChange={(checked) => setFilters({...filters, isImportant: checked})}
                 />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
-                <DatePicker
-                  label="종료일"
-                  value={filters.endDate ? dayjs(filters.endDate).toDate() : null}
-                  onChange={(date) => handleFilterDateChange("endDate", date)}
-                  renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={4}>
+              <Form.Item label="활성화 공지">
+                <Switch
+                  checked={filters.isActive || false}
+                  onChange={(checked) => setFilters({...filters, isActive: checked})}
                 />
-              </LocalizationProvider>
-            </Grid>
-          </Grid>
-        </Paper>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={4}>
+              <Form.Item label=" ">
+                <Button onClick={resetFilters}>필터 초기화</Button>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col xs={24} sm={12}>
+              <Form.Item label="기간">
+                <RangePicker
+                  style={{ width: '100%' }}
+                  value={[
+                    filters.startDate ? dayjs(filters.startDate) : null,
+                    filters.endDate ? dayjs(filters.endDate) : null
+                  ]}
+                  onChange={(dates) => {
+                    if (dates) {
+                      handleFilterDateChange("startDate", dates[0]);
+                      handleFilterDateChange("endDate", dates[1]);
+                    } else {
+                      setFilters({
+                        ...filters,
+                        startDate: null,
+                        endDate: null
+                      });
+                    }
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </FilterWrapper>
 
-        {/* 공지사항 목록 */}
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Add />}
-            onClick={() => handleOpenDialog("create")}
-          >
-            새 공지사항
-          </Button>
-        </Box>
+      {/* 공지사항 추가 버튼 */}
+      <TableActions>
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />} 
+          onClick={() => handleOpenDialog("create")}
+        >
+          새 공지사항
+        </Button>
+      </TableActions>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell width="5%">ID</TableCell>
-                <TableCell width="40%">제목</TableCell>
-                <TableCell width="15%">대상</TableCell>
-                <TableCell width="10%">중요</TableCell>
-                <TableCell width="10%">조회수</TableCell>
-                <TableCell width="10%">활성화</TableCell>
-                <TableCell width="10%">작업</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {notices.map((notice) => (
-                <TableRow key={notice.id}>
-                  <TableCell>{notice.id}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      {notice.isImportant && (
-                        <Chip 
-                          label="중요" 
-                          color="error" 
-                          size="small" 
-                          sx={{ mr: 1 }}
-                        />
-                      )}
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          cursor: 'pointer',
-                          '&:hover': { textDecoration: 'underline' },
-                        }}
-                        onClick={() => handleViewNotice(notice)}
-                      >
-                        {notice.title}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>{getTargetLabel(notice.target)}</TableCell>
-                  <TableCell>{notice.isImportant ? "예" : "아니오"}</TableCell>
-                  <TableCell>{notice.viewCount}</TableCell>
-                  <TableCell>{notice.isActive ? "예" : "아니오"}</TableCell>
-                  <TableCell>
-                    <IconButton 
-                      size="small" 
-                      color="primary" 
-                      onClick={() => handleViewNotice(notice)}
-                    >
-                      <Visibility fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                      size="small" 
-                      color="primary" 
-                      onClick={() => handleOpenDialog("edit", notice)}
-                    >
-                      <Edit fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                      size="small" 
-                      color="error" 
-                      onClick={() => handleDelete(notice.id)}
-                    >
-                      <Delete fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {notices.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    공지사항이 없습니다.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={total}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="페이지당 행 수:"
-            labelDisplayedRows={({ from, to, count }) =>
-              `${from}-${to} / ${count}`
-            }
-          />
-        </TableContainer>
-      </Box>
+      {/* 공지사항 테이블 */}
+      <Table
+        dataSource={notices}
+        rowKey="id"
+        pagination={{
+          current: page + 1,
+          pageSize: rowsPerPage,
+          total: total,
+          onChange: (page, pageSize) => {
+            setPage(page - 1);
+            setRowsPerPage(pageSize);
+          },
+          showSizeChanger: true,
+          pageSizeOptions: [5, 10, 25]
+        }}
+        columns={[
+          {
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
+            width: '5%'
+          },
+          {
+            title: '제목',
+            dataIndex: 'title',
+            key: 'title',
+            width: '40%',
+            render: (text, record) => (
+              <Space>
+                {record.isImportant && (
+                  <ImportantTag color="error">중요</ImportantTag>
+                )}
+                <StyledTag onClick={() => handleViewNotice(record)}>
+                  {text}
+                </StyledTag>
+              </Space>
+            )
+          },
+          {
+            title: '대상',
+            dataIndex: 'target',
+            key: 'target',
+            width: '15%',
+            render: (target) => getTargetLabel(target)
+          },
+          {
+            title: '중요',
+            dataIndex: 'isImportant',
+            key: 'isImportant',
+            width: '10%',
+            render: (isImportant) => isImportant ? '예' : '아니오'
+          },
+          {
+            title: '조회수',
+            dataIndex: 'viewCount',
+            key: 'viewCount',
+            width: '10%'
+          },
+          {
+            title: '활성화',
+            dataIndex: 'isActive',
+            key: 'isActive',
+            width: '10%',
+            render: (isActive) => isActive ? '예' : '아니오'
+          },
+          {
+            title: '작업',
+            key: 'actions',
+            width: '10%',
+            render: (_, record) => (
+              <Space>
+                <Tooltip title="보기">
+                  <Button 
+                    icon={<EyeOutlined />} 
+                    size="small" 
+                    onClick={() => handleViewNotice(record)}
+                  />
+                </Tooltip>
+                <Tooltip title="수정">
+                  <Button 
+                    icon={<EditOutlined />} 
+                    size="small" 
+                    onClick={() => handleOpenDialog("edit", record)}
+                  />
+                </Tooltip>
+                <Tooltip title="삭제">
+                  <Button 
+                    icon={<DeleteOutlined />} 
+                    size="small" 
+                    danger
+                    onClick={() => handleDelete(record.id)}
+                  />
+                </Tooltip>
+              </Space>
+            )
+          }
+        ]}
+        locale={{
+          emptyText: '공지사항이 없습니다.'
+        }}
+      />
 
-      {/* 공지사항 생성/수정 다이얼로그 */}
-      <Dialog
+      {/* 공지사항 생성/수정 모달 */}
+      <Modal
+        title={dialogMode === "create" ? "공지사항 생성" : "공지사항 수정"}
         open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          {dialogMode === "create" ? "공지사항 생성" : "공지사항 수정"}
-        </DialogTitle>
-        <DialogContent dividers>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="제목"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="내용"
-                name="content"
-                value={formData.content}
-                onChange={handleInputChange}
-                multiline
-                rows={8}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>대상</InputLabel>
-                <Select
-                  label="대상"
-                  name="target"
-                  value={formData.target}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem value={NOTICE_TARGET.ALL}>모든 사용자</MenuItem>
-                  <MenuItem value={NOTICE_TARGET.DOCTORS}>의사</MenuItem>
-                  <MenuItem value={NOTICE_TARGET.STAFF}>스태프</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.isImportant}
-                    onChange={handleInputChange}
-                    name="isImportant"
-                  />
-                }
-                label="중요 공지사항"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
-                <DatePicker
-                  label="시작일"
-                  value={formData.startDate ? dayjs(formData.startDate).toDate() : null}
-                  onChange={(date) => handleDateChange("startDate", date)}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ko}>
-                <DatePicker
-                  label="종료일"
-                  value={formData.endDate ? dayjs(formData.endDate).toDate() : null}
-                  onChange={(date) => handleDateChange("endDate", date)}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.isActive}
-                    onChange={handleInputChange}
-                    name="isActive"
-                  />
-                }
-                label="활성화"
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>취소</Button>
-          <Button onClick={handleSubmit} variant="contained" color="primary">
+        onCancel={handleCloseDialog}
+        footer={[
+          <Button key="cancel" onClick={handleCloseDialog}>
+            취소
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            onClick={handleSubmit}
+          >
             저장
           </Button>
-        </DialogActions>
-      </Dialog>
+        ]}
+        width={800}
+      >
+        <Form layout="vertical">
+          <Form.Item 
+            label="제목" 
+            required
+          >
+            <Input
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item 
+            label="내용" 
+            required
+          >
+            <TextArea
+              name="content"
+              value={formData.content}
+              onChange={handleInputChange}
+              rows={8}
+            />
+          </Form.Item>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item 
+                label="대상" 
+              >
+                <Select
+                  name="target"
+                  value={formData.target}
+                  onChange={(value) => setFormData({...formData, target: value})}
+                  style={{ width: '100%' }}
+                >
+                  <Option value={NOTICE_TARGET.ALL}>모든 사용자</Option>
+                  <Option value={NOTICE_TARGET.DOCTORS}>의사</Option>
+                  <Option value={NOTICE_TARGET.STAFF}>스태프</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="중요 공지사항">
+                <Switch
+                  checked={formData.isImportant}
+                  onChange={(checked) => setFormData({...formData, isImportant: checked})}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="시작일">
+                <DatePicker
+                  value={formData.startDate ? dayjs(formData.startDate) : null}
+                  onChange={(date) => handleDateChange("startDate", date)}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="종료일">
+                <DatePicker
+                  value={formData.endDate ? dayjs(formData.endDate) : null}
+                  onChange={(date) => handleDateChange("endDate", date)}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item label="활성화">
+            <Switch
+              checked={formData.isActive}
+              onChange={(checked) => setFormData({...formData, isActive: checked})}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
 
-      {/* 공지사항 상세 보기 다이얼로그 */}
-      <Dialog
+      {/* 공지사항 상세 보기 모달 */}
+      <Modal
+        title={
+          selectedNotice && (
+            <Space>
+              {selectedNotice.isImportant && (
+                <ImportantTag color="error">중요</ImportantTag>
+              )}
+              {selectedNotice?.title}
+            </Space>
+          )
+        }
         open={viewDialogOpen}
-        onClose={() => setViewDialogOpen(false)}
-        maxWidth="md"
-        fullWidth
+        onCancel={() => setViewDialogOpen(false)}
+        footer={[
+          <Button key="close" onClick={() => setViewDialogOpen(false)}>
+            닫기
+          </Button>,
+          <Button
+            key="edit"
+            type="primary"
+            onClick={() => {
+              setViewDialogOpen(false);
+              selectedNotice && handleOpenDialog("edit", selectedNotice);
+            }}
+          >
+            수정
+          </Button>
+        ]}
+        width={800}
       >
         {selectedNotice && (
           <>
-            <DialogTitle>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {selectedNotice.isImportant && (
-                  <Chip 
-                    label="중요" 
-                    color="error" 
-                    size="small" 
-                    sx={{ mr: 1 }}
-                  />
-                )}
-                {selectedNotice.title}
-              </Box>
-            </DialogTitle>
-            <DialogContent dividers>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    작성자: {selectedNotice.author?.name || '관리자'}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="textSecondary" align="right">
-                    조회수: {selectedNotice.viewCount + 1}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    대상: {getTargetLabel(selectedNotice.target)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="textSecondary" align="right">
-                    게시 기간: {dayjs(selectedNotice.startDate).format('YYYY-MM-DD')} ~ 
-                    {dayjs(selectedNotice.endDate).format('YYYY-MM-DD')}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Box sx={{ mt: 3, whiteSpace: 'pre-line' }}>
-                    {selectedNotice.content}
-                  </Box>
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setViewDialogOpen(false)}>닫기</Button>
-              <Button
-                color="primary"
-                onClick={() => {
-                  setViewDialogOpen(false);
-                  handleOpenDialog("edit", selectedNotice);
-                }}
-              >
-                수정
-              </Button>
-            </DialogActions>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Text type="secondary">
+                  작성자: {selectedNotice.author?.name || '관리자'}
+                </Text>
+              </Col>
+              <Col span={12} style={{ textAlign: 'right' }}>
+                <Text type="secondary">
+                  조회수: {selectedNotice.viewCount + 1}
+                </Text>
+              </Col>
+            </Row>
+            <Row gutter={16} style={{ marginTop: 8 }}>
+              <Col span={12}>
+                <Text type="secondary">
+                  대상: {getTargetLabel(selectedNotice.target)}
+                </Text>
+              </Col>
+              <Col span={12} style={{ textAlign: 'right' }}>
+                <Text type="secondary">
+                  게시 기간: {dayjs(selectedNotice.startDate).format('YYYY-MM-DD')} ~ 
+                  {dayjs(selectedNotice.endDate).format('YYYY-MM-DD')}
+                </Text>
+              </Col>
+            </Row>
+            <Divider />
+            <div style={{ whiteSpace: 'pre-line', marginTop: 16 }}>
+              {selectedNotice.content}
+            </div>
           </>
         )}
-      </Dialog>
+      </Modal>
     </Container>
   );
 };
