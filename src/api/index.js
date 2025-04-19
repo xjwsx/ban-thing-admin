@@ -66,7 +66,7 @@ api.interceptors.response.use(
         console.error("Token refresh failed:", refreshError);
         removeAccessToken();
         removeRefreshToken();
-        window.location.href = "/";
+        //window.location.href = "/";
         return Promise.reject(refreshError);
       }
     }

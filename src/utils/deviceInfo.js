@@ -22,6 +22,7 @@ export const getDeviceInfo = () => {
     return "Unknown";
   };
 
+  // 요청 형식에 맞게 장치 정보 반환
   return {
     deviceType: "web",
     deviceInfo: {
