@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import { getDoctorMe } from "../api/crm";
+import { getDoctorMe, doctorLogout } from "../api/crm";
 import {
   getAccessToken,
+  getRefreshToken,
   removeAccessToken,
   removeRefreshToken,
 } from "../utils/token";
@@ -33,10 +34,32 @@ export const useDoctorStore = create((set) => ({
   },
 
   // 로그아웃
-  logout: () => {
-    removeAccessToken();
-    removeRefreshToken();
-    set({ doctorInfo: null });
+  logout: async () => {
+    try {
+      const refreshToken = getRefreshToken();
+      if (refreshToken) {
+        const response = await doctorLogout(refreshToken);
+        if (response.data && response.data.success === true) {
+          removeAccessToken();
+          removeRefreshToken();
+          set({ doctorInfo: null });
+          return true;
+        }
+      } else {
+        // 리프레시 토큰이 없는 경우에도 클라이언트에서 로그아웃 처리
+        removeAccessToken();
+        removeRefreshToken();
+        set({ doctorInfo: null });
+        return true;
+      }
+    } catch (error) {
+      console.error("로그아웃 중 오류 발생:", error);
+      // 서버 오류가 있더라도 클라이언트에서는 로그아웃 처리
+      removeAccessToken();
+      removeRefreshToken();
+      set({ doctorInfo: null });
+      return false;
+    }
   },
 
   // 의사 정보 초기화

@@ -135,8 +135,8 @@ const BaseLayout = ({ children }) => {
       content: "정말 로그아웃 하시겠습니까?",
       okText: "확인",
       cancelText: "취소",
-      onOk: () => {
-        logout();
+      onOk: async () => {
+        await logout();
         navigate("/");
       },
     });

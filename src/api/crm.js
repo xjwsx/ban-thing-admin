@@ -192,6 +192,9 @@ export const deleteDoctor = async (id) => await api.delete(`/doctors/${id}`);
 export const doctorLogin = async (payload) =>
   await api.post("/doctors/login", payload);
 
+export const doctorLogout = async (refreshToken) =>
+  await api.post("/doctors/logout", { refreshToken });
+
 export const doctorRefreshToken = async (payload) =>
   await api.post("/doctors/refresh", payload);
 
