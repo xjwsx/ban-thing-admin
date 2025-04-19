@@ -1,9 +1,8 @@
 import React from "react";
-import { DragDropContext, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable } from "@hello-pangea/dnd";
 import { Card } from "antd";
 import {
   CalendarOutlined,
-  DeleteOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
 import { StrictModeDroppable } from "../StrictModeDroppable";

@@ -1,6 +1,5 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { Droppable } from "react-beautiful-dnd";
+import React, { useEffect, useState } from "react"
+import { Droppable } from "@hello-pangea/dnd";
 
 export const StrictModeDroppable = ({ children, ...props }) => {
   const [enabled, setEnabled] = useState(false);
