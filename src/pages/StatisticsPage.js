@@ -1,17 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Card,
-  Typography,
-  Row,
-  Col,
-  Statistic,
-  Table,
-  Select,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
   Tabs,
-  List,
-  Spin,
-  message,
-} from "antd";
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../components/ui/table";
+import { ScrollArea } from "../components/ui/scroll-area";
+import { Badge } from "../components/ui/badge";
 import {
   LineChart,
   Line,
@@ -23,71 +39,28 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import dayjs from "dayjs";
-import { useMediaQuery } from "react-responsive";
-import { getStudentPaymentStats, getStudentPaymentOverdue } from "../api/crm";
-
-const { Title } = Typography;
-const { TabPane } = Tabs;
 
 const StatisticsPage = () => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [loading, setLoading] = useState(false);
-  const [paymentStats, setPaymentStats] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(dayjs().format("M월"));
   const [selectedYear, setSelectedYear] = useState(dayjs().format("YYYY"));
-  const [overdueData, setOverdueData] = useState([]);
-  const [overdueLoading, setOverdueLoading] = useState(false);
-  const [overduePage, setOverduePage] = useState(1);
-  const [overdueTotal, setOverdueTotal] = useState(0);
-  const [totalOverdueDays, setTotalOverdueDays] = useState(0);
-  const [totalOverdueFees, setTotalOverdueFees] = useState(0);
 
-  useEffect(() => {
-    fetchPaymentStats();
-  }, [selectedYear]);
-
-  useEffect(() => {
-    fetchOverdueData();
-  }, [overduePage]);
-
-  const fetchPaymentStats = async () => {
-    setLoading(true);
-    try {
-      const startMonth = `${selectedYear}01`;
-      const endMonth = `${selectedYear}12`;
-
-      const { data } = await getStudentPaymentStats(startMonth, endMonth);
-
-      const formattedData = data.map((item) => ({
-        name: dayjs(item.month).format("M월"),
-        매출: item.revenue,
-        환불: item.refundAmount,
-        결제건수: item.count,
-      }));
-
-      setPaymentStats(formattedData);
-    } catch (error) {
-      console.error("통계 데이터 로딩 실패:", error);
-      message.error("통계 데이터를 불러오는데 실패했습니다.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchOverdueData = async () => {
-    setOverdueLoading(true);
-    try {
-      const response = await getStudentPaymentOverdue(overduePage, 10);
-      setOverdueData(response.data.data);
-      setOverdueTotal(response.data.total);
-      setTotalOverdueDays(response.data.totalOverdueDays);
-      setTotalOverdueFees(response.data.totalOverdueFees);
-    } catch (error) {
-      console.error("연체 데이터 로딩 실패:", error);
-      message.error("연체 데이터를 불러오는데 실패했습니다.");
-    } finally {
-      setOverdueLoading(false);
-    }
+  // 임시 통계 데이터
+  const statistics = {
+    dailyStats: {
+      totalAppointments: 24,
+      completedAppointments: 18,
+      canceledAppointments: 2,
+      newCustomers: 3,
+    },
+    weeklyStats: {
+      totalRevenue: 2450000,
+      appointmentCount: 156,
+      customerSatisfaction: 4.8,
+      topServices: [
+        { name: "정기검진", count: 45 },
+        { name: "상담", count: 32 },
+        { name: "치료", count: 28 },
+      ],
+    },
   };
 
   const yearOptions = Array.from({ length: 11 }, (_, i) => {
@@ -98,211 +71,355 @@ const StatisticsPage = () => {
     };
   });
 
-  const monthOptions = paymentStats.map((item) => ({
-    value: item.name,
-    label: item.name,
-  }));
-
-  const getSelectedMonthValues = () => {
-    const currentData = paymentStats.length ? paymentStats : [];
-    return (
-      currentData.find((item) => item.name === selectedMonth) ||
-      currentData[currentData.length - 1] || { 매출: 0, 환불: 0, 결제건수: 0 }
-    );
-  };
-
-  const delinquentColumns = [
-    {
-      title: "학생명",
-      dataIndex: "name",
-      key: "name",
-      render: (name, record) =>
-        `${name}${record.koreanName ? ` (${record.koreanName})` : ""}`,
-    },
-    {
-      title: "회원번호",
-      dataIndex: "memberCode",
-      key: "memberCode",
-    },
-    {
-      title: "연락처",
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
-    },
-    {
-      title: "연체일수",
-      dataIndex: "overdueDays",
-      key: "overdueDays",
-      render: (days) => `${days}일`,
-    },
-    {
-      title: "연체료",
-      dataIndex: "overdueFee",
-      key: "overdueFee",
-      render: (fee) => `￥${fee.toLocaleString()}`,
-    },
-  ];
-
-  if (loading) {
-    return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
-    <div style={{ padding: isMobile ? "0" : "0 0 24px 0" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-        }}
-      >
-        <Title level={3} style={{ margin: 0 }}>
-          통계
-        </Title>
-        <Select
-          value={selectedYear}
-          style={{ width: 100 }}
-          onChange={setSelectedYear}
-          options={yearOptions}
-        />
+    <div className="container mx-auto p-6 max-w-7xl">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">통계</h1>
+          <p className="text-muted-foreground mt-1">
+            병원 운영 현황과 통계를 확인하세요
+          </p>
+        </div>
+        <Select value={selectedYear} onValueChange={setSelectedYear}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="연도 선택" />
+          </SelectTrigger>
+          <SelectContent>
+            {yearOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      <Tabs defaultActiveKey="sales">
-        <TabPane tab="매출 통계" key="sales">
-          <Row gutter={isMobile ? 12 : 24}>
-            {!isMobile && (
-              <Col span={16}>
-                <div style={{ height: "400px" }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={paymentStats}
-                      margin={{
-                        top: 20,
-                        right: 20,
-                        left: 50,
-                        bottom: 5,
-                      }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="매출"
-                        stroke="#8884d8"
-                        activeDot={{ r: 8 }}
-                      />
-                      <Line type="monotone" dataKey="환불" stroke="#ff0000" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </Col>
-            )}
-            <Col span={isMobile ? 24 : 8}>
-              <Card
-                title={`${selectedYear}년 통계`}
-                style={{ marginTop: isMobile ? 0 : 18 }}
-                extra={
-                  <Select
-                    value={selectedMonth}
-                    style={{ width: 100 }}
-                    onChange={setSelectedMonth}
-                    options={monthOptions}
+      {/* 일일 통계 카드 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">전체 예약</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {statistics.dailyStats.totalAppointments}
+            </div>
+            <p className="text-xs text-muted-foreground">오늘</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">완료된 예약</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {statistics.dailyStats.completedAppointments}
+            </div>
+            <p className="text-xs text-muted-foreground">오늘</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">취소된 예약</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <rect width="20" height="14" x="2" y="5" rx="2" />
+              <path d="M2 10h20" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {statistics.dailyStats.canceledAppointments}
+            </div>
+            <p className="text-xs text-muted-foreground">오늘</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">신규 고객</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" x2="19" y1="8" y2="14" />
+              <line x1="22" x2="16" y1="11" y2="11" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {statistics.dailyStats.newCustomers}
+            </div>
+            <p className="text-xs text-muted-foreground">오늘</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 주간 통계 */}
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-6 mb-6">
+        <Card className="lg:col-span-4">
+          <CardHeader>
+            <CardTitle>주간 매출</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={[
+                    { name: "월", 매출: 1200000 },
+                    { name: "화", 매출: 1400000 },
+                    { name: "수", 매출: 1100000 },
+                    { name: "목", 매출: 1600000 },
+                    { name: "금", 매출: 1800000 },
+                  ]}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="매출"
+                    stroke="#8884d8"
+                    activeDot={{ r: 8 }}
                   />
-                }
-              >
-                <Statistic
-                  title="매출"
-                  value={getSelectedMonthValues().매출}
-                  prefix="￥"
-                  style={{ marginBottom: 16 }}
-                />
-                <Statistic
-                  title="환불"
-                  value={getSelectedMonthValues().환불}
-                  prefix="￥"
-                  valueStyle={{ color: "#cf1322" }}
-                  style={{ marginBottom: 16 }}
-                />
-                <Statistic
-                  title="결제건수"
-                  value={getSelectedMonthValues().결제건수}
-                  suffix="건"
-                />
-              </Card>
-            </Col>
-          </Row>
-        </TabPane>
-        <TabPane tab="연체 현황" key="delinquent">
-          <Card>
-            <Row gutter={isMobile ? 12 : 24} style={{ marginBottom: 24 }}>
-              <Col span={isMobile ? 12 : 8}>
-                <Statistic
-                  title="총 연체 건수"
-                  value={overdueTotal}
-                  suffix="건"
-                />
-              </Col>
-              <Col span={isMobile ? 12 : 8}>
-                <Statistic
-                  title="총 연체일수"
-                  value={totalOverdueDays}
-                  suffix="일"
-                />
-              </Col>
-              <Col span={isMobile ? 24 : 8}>
-                <Statistic
-                  title="총 연체료"
-                  value={totalOverdueFees}
-                  prefix="￥"
-                />
-              </Col>
-            </Row>
-            {isMobile ? (
-              <List
-                loading={overdueLoading}
-                dataSource={overdueData}
-                renderItem={(item) => (
-                  <List.Item extra={`￥${item.overdueFee.toLocaleString()}`}>
-                    <List.Item.Meta
-                      title={`${item.name}${
-                        item.koreanName ? ` (${item.koreanName})` : ""
-                      }`}
-                      description={`${item.overdueDays}일 연체`}
-                    />
-                  </List.Item>
-                )}
-                pagination={{
-                  current: overduePage,
-                  total: overdueTotal,
-                  pageSize: 10,
-                  onChange: setOverduePage,
-                }}
-              />
-            ) : (
-              <Table
-                columns={delinquentColumns}
-                dataSource={overdueData}
-                loading={overdueLoading}
-                pagination={{
-                  current: overduePage,
-                  total: overdueTotal,
-                  pageSize: 10,
-                  onChange: setOverduePage,
-                }}
-                rowKey="studentId"
-              />
-            )}
-          </Card>
-        </TabPane>
-      </Tabs>
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>인기 서비스</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[300px]">
+              <div className="space-y-4">
+                {statistics.weeklyStats.topServices.map((service, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {service.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {service.count}회 예약
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      {Math.round(
+                        (service.count /
+                          statistics.weeklyStats.appointmentCount) *
+                          100
+                      )}
+                      %
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 상세 통계 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>상세 통계</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="revenue" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="revenue">매출</TabsTrigger>
+              <TabsTrigger value="appointments">예약</TabsTrigger>
+              <TabsTrigger value="customers">고객</TabsTrigger>
+            </TabsList>
+            <TabsContent value="revenue">
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        이번 달 매출
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {statistics.weeklyStats.totalRevenue.toLocaleString()}원
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        전월 대비 12% 증가
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        평균 객단가
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">
+                        {Math.round(
+                          statistics.weeklyStats.totalRevenue /
+                            statistics.weeklyStats.appointmentCount
+                        ).toLocaleString()}
+                        원
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        전월 대비 5% 증가
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="appointments">
+              <div className="space-y-4">
+                <div className="grid gap-4">
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        예약 현황
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>구분</TableHead>
+                            <TableHead>건수</TableHead>
+                            <TableHead>비율</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell>예약확정</TableCell>
+                            <TableCell>
+                              {statistics.dailyStats.completedAppointments}
+                            </TableCell>
+                            <TableCell>
+                              {Math.round(
+                                (statistics.dailyStats.completedAppointments /
+                                  statistics.dailyStats.totalAppointments) *
+                                  100
+                              )}
+                              %
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>취소</TableCell>
+                            <TableCell>
+                              {statistics.dailyStats.canceledAppointments}
+                            </TableCell>
+                            <TableCell>
+                              {Math.round(
+                                (statistics.dailyStats.canceledAppointments /
+                                  statistics.dailyStats.totalAppointments) *
+                                  100
+                              )}
+                              %
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="customers">
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      고객 통계
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium leading-none">
+                            신규 고객
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            이번 달 새로 등록한 고객 수
+                          </p>
+                        </div>
+                        <div className="text-2xl font-bold">
+                          {statistics.dailyStats.newCustomers * 20}명
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium leading-none">
+                            재방문율
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            한 달 이내 재방문한 고객 비율
+                          </p>
+                        </div>
+                        <div className="text-2xl font-bold">68%</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };

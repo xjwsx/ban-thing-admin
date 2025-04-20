@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Divider, Card, List, Avatar, Modal, Tooltip } from "antd";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useMediaQuery } from "react-responsive";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Calendar as AntCalendar } from "antd";
 import "./HomePage.css";
 import { getDoctorSchedule, getDoctorTaskList } from "../api/crm";
 import useDoctorStore from "../stores/doctorStore";
 import "dayjs/locale/ko";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Button } from "../components/ui/button";
+import { Checkbox } from "../components/ui/checkbox";
+import { Badge } from "../components/ui/badge";
 
-const { Title } = Typography;
 const localizer = dayjsLocalizer(dayjs);
 
 const HomePage = () => {
@@ -114,286 +122,130 @@ const HomePage = () => {
   }, [doctorInfo, selectedDate]);
 
   return (
-    <div className="home-page" style={{ height: "100%" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Title level={3} style={{ margin: 0 }}>
-          홈
-        </Title>
-      </div>
-      <Divider />
+    <div className="container mx-auto p-4 md:p-8 max-w-7xl">
+      <div className="grid gap-4 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Overview Card */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>일일 개요</CardTitle>
+            <CardDescription>오늘의 주요 통계</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">전체 예약</span>
+                <Badge variant="secondary" className="text-lg">
+                  24
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">완료된 예약</span>
+                <Badge
+                  variant="success"
+                  className="text-lg bg-green-100 text-green-800"
+                >
+                  18
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">대기 중</span>
+                <Badge variant="outline" className="text-lg">
+                  6
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "24px",
-          height: "calc(100% - 80px)",
-          overflow: "hidden",
-          flexDirection: isMobile ? "column" : "row",
-        }}
-      >
-        <div
-          style={{
-            width: "300px",
-            flexShrink: 0,
-            overflow: "auto",
-          }}
-        >
-          <Card
-            style={{
-              marginBottom: "16px",
-              padding: "0",
-              height: "297px",
-            }}
-            styles={{
-              body: {
-                padding: "0",
-                height: "297px",
-              },
-            }}
-          >
-            <AntCalendar
-              fullscreen={false}
-              style={{
-                border: "none",
-                background: "transparent",
-                height: "100%",
-              }}
-              value={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setCalendarDate(date.toDate());
-              }}
-              headerRender={({ value, onChange }) => {
-                const current = value.clone();
-                const handlePrevMonth = () => {
-                  const newValue = value.clone().subtract(1, "month");
-                  onChange(newValue);
-                };
-                const handleNextMonth = () => {
-                  const newValue = value.clone().add(1, "month");
-                  onChange(newValue);
-                };
-
-                return (
-                  <div
-                    style={{
-                      padding: "8px 16px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <LeftOutlined
-                      style={{ cursor: "pointer", fontSize: "12px" }}
-                      onClick={handlePrevMonth}
+        {/* Recent Appointments Card */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>최근 예약</CardTitle>
+            <CardDescription>오늘의 예약 현황</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((_, i) => (
+                <div key={i} className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage
+                      src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`}
                     />
-                    <span>{current.format("MMMM YYYY")}</span>
-                    <RightOutlined
-                      style={{ cursor: "pointer", fontSize: "12px" }}
-                      onClick={handleNextMonth}
-                    />
+                    <AvatarFallback>고객</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium">홍길동</p>
+                    <p className="text-xs text-muted-foreground">
+                      14:00 - 15:00
+                    </p>
                   </div>
-                );
-              }}
-            />
-          </Card>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button variant="link" className="px-0">
+              모든 예약 보기
+            </Button>
+          </CardFooter>
+        </Card>
 
-          <Card
-            title="오늘 할 일"
-            style={{
-              marginBottom: "16px",
-              height: "297px",
-            }}
-            styles={{
-              header: {
-                padding: "0 12px",
-              },
-              body: {
-                height: "calc(297px - 57px)",
-                overflowY: "auto",
-                padding: "0 12px",
-              },
-            }}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={doctorTasks.filter((task) => {
-                const today = dayjs().format("YYYY-MM-DD");
+        {/* Tasks Card */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>할 일</CardTitle>
+            <CardDescription>오늘의 할 일 목록</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((_, i) => (
+                <div key={i} className="flex items-center space-x-2">
+                  <Checkbox id={`task-${i}`} />
+                  <label
+                    htmlFor={`task-${i}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    환자 기록 업데이트
+                  </label>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button variant="link" className="px-0">
+              새로운 할 일 추가
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
 
-                if (!task.startDate) return false;
-
-                if (!task.endDate) {
-                  return task.startDate === today && task.status !== "done";
-                }
-
-                const isAfterStart = dayjs(today).isAfter(
-                  dayjs(task.startDate).subtract(1, "day")
-                );
-                const isBeforeEnd = dayjs(today).isBefore(
-                  dayjs(task.endDate).add(1, "day")
-                );
-
-                return isAfterStart && isBeforeEnd && task.status !== "done";
-              })}
-              renderItem={(item) => (
-                <List.Item>
-                  <List.Item.Meta
-                    title={
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <span>{item.title}</span>
-                        <span
-                          style={{
-                            fontSize: "12px",
-                            padding: "2px 8px",
-                            borderRadius: "4px",
-                            backgroundColor:
-                              item.status === "inprogress"
-                                ? "#e6f7ff"
-                                : item.status === "todo"
-                                ? "#fffbe6"
-                                : "#f5f5f5",
-                            color:
-                              item.status === "inprogress"
-                                ? "#1890ff"
-                                : item.status === "todo"
-                                ? "#faad14"
-                                : "#666",
-                          }}
-                        >
-                          {item.status === "inprogress"
-                            ? "진행중"
-                            : item.status === "todo"
-                            ? "할 일"
-                            : item.status}
-                        </span>
-                      </div>
-                    }
-                    description={item.description || "설명 없음"}
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-
-          <Card
-            title="현재 방문중인 고객"
-            style={{
-              marginBottom: "16px",
-              height: "297px",
-            }}
-            styles={{
-              header: {
-                padding: "0 12px",
-              },
-              body: {
-                height: "calc(297px - 57px)",
-                overflowY: "auto",
-                padding: " 0 12px",
-              },
-            }}
-          >
-            <List
-              itemLayout="horizontal"
-              dataSource={currentCustomers}
-              renderItem={(customer) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar src={customer.avatar} />}
-                    title={customer.name}
-                    description={`${customer.subject} / ${customer.level}`}
-                  />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </div>
-
-        <div
-          style={{
-            flex: 1,
-            overflow: "auto",
-          }}
-        >
-          <Card
-            style={{
-              height: "922px",
-              padding: 0,
-            }}
-            styles={{ body: { height: "100%", padding: "16px" } }}
-          >
+      {/* Calendar */}
+      <Card className="col-span-full mt-6 md:mt-8 shadow-sm">
+        <CardHeader>
+          <CardTitle>일정</CardTitle>
+          <CardDescription>예약 일정을 확인하세요</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[500px] md:h-[600px]">
             <Calendar
               localizer={localizer}
               events={events}
               startAccessor="start"
               endAccessor="end"
-              defaultView="week"
-              views={["week"]}
-              date={calendarDate}
-              step={60}
-              timeslots={1}
-              min={dayjs()
-                .set("hour", 0)
-                .set("minute", 0)
-                .set("second", 0)
-                .toDate()}
-              max={dayjs()
-                .set("hour", 23)
-                .set("minute", 59)
-                .set("second", 59)
-                .toDate()}
               style={{ height: "100%" }}
-              formats={{
-                timeGutterFormat: "HH:mm",
-                dayHeaderFormat: "MM/DD ddd",
-                eventTimeRangeFormat: () => "",
-              }}
-              messages={{
-                week: "주간",
-                previous: "이전",
-                next: "다음",
-                today: "오늘",
-                showMore: (total) => `+${total} 더보기`,
-              }}
-              onNavigate={(newDate) => {
-                const date = dayjs(newDate);
-                if (date.format("YYYY-MM") !== selectedDate.format("YYYY-MM")) {
-                  setSelectedDate(date);
-                }
-                setCalendarDate(newDate);
-              }}
-              components={{
-                event: (props) => {
-                  const { event } = props;
-                  return (
-                    <Tooltip
-                      title={
-                        <div>
-                          <p>이름: {event.tooltip.name}</p>
-                          <p>이메일: {event.tooltip.email}</p>
-                          <p>장소: {event.tooltip.location}</p>
-                        </div>
-                      }
-                    >
-                      <div style={{ height: "100%" }}>{event.title}</div>
-                    </Tooltip>
-                  );
-                },
+              defaultView={isMobile ? "day" : "week"}
+              tooltipAccessor={(event) =>
+                `${event.tooltip.name}\n${event.tooltip.email}\n${event.tooltip.location}`
+              }
+              date={calendarDate}
+              onNavigate={(date) => {
+                setCalendarDate(date);
+                setSelectedDate(dayjs(date));
               }}
             />
-          </Card>
-        </div>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

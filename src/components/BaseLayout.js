@@ -2,49 +2,40 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import {
-  LogoutOutlined,
-  HomeOutlined,
-  FileTextOutlined,
-  PayCircleOutlined,
-  LineChartOutlined,
-  TeamOutlined,
-  UserOutlined,
-  MenuOutlined,
-  AuditOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu, theme, Drawer, Modal } from "antd";
+  ChevronLeft,
+  Home,
+  Users,
+  FileText,
+  Calendar,
+  Bell,
+  LogOut,
+  Menu as MenuIcon,
+  Settings,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import { useDoctorStore } from "../stores/doctorStore";
-const { Sider, Content } = Layout;
+import { Modal } from "antd";
 
 const BaseLayout = ({ children }) => {
   const navigate = useNavigate();
   const { fetchDoctorInfo, doctorInfo, logout } = useDoctorStore();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1200 });
-  const isDesktop = useMediaQuery({ minWidth: 1201 });
+  const [isExpanded, setIsExpanded] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
   const checkPermission = (menuCode) => {
     if (!doctorInfo) return false;
-
-    // admin role은 모든 페이지 접근 가능
     if (doctorInfo.role === "admin") return true;
-
-    // doctor role은 permissions 체크
     const permission = doctorInfo.permissions.find(
       (p) => p.menuCode === menuCode
     );
-
     return permission?.canRead || false;
   };
 
   const handleMenuClick = (menuCode, path) => {
     if (menuCode === "MENU000") {
-      // 홈 메뉴는 항상 접근 가능
       navigate(path);
       return;
     }
@@ -63,35 +54,35 @@ const BaseLayout = ({ children }) => {
   const allMenuItems = [
     {
       key: "1",
-      icon: <HomeOutlined />,
+      icon: <Home size={16} />,
       label: "홈",
       onClick: () => handleMenuClick("MENU000", "/home"),
       menuCode: "MENU000",
     },
     {
       key: "2",
-      icon: <TeamOutlined />,
+      icon: <Users size={16} />,
       label: "고객 관리",
       onClick: () => handleMenuClick("MENU001", "/customer"),
       menuCode: "MENU001",
     },
     {
       key: "3",
-      icon: <AuditOutlined />,
+      icon: <Settings size={16} />,
       label: "코스 관리",
       onClick: () => handleMenuClick("MENU002", "/course"),
       menuCode: "MENU002",
     },
     {
       key: "4",
-      icon: <FileTextOutlined />,
+      icon: <Calendar size={16} />,
       label: "예약 관리",
       onClick: () => handleMenuClick("MENU003", "/reservation"),
       menuCode: "MENU003",
     },
     {
       key: "5",
-      icon: <FileTextOutlined />,
+      icon: <Bell size={16} />,
       label: "공지사항",
       onClick: () => handleMenuClick("MENU004", "/notice"),
       menuCode: "MENU004",
@@ -100,18 +91,19 @@ const BaseLayout = ({ children }) => {
 
   const menuItems = React.useMemo(() => {
     if (!doctorInfo) return [];
-
-    if (doctorInfo.role === "admin") {
-      return allMenuItems;
-    }
-
+    if (doctorInfo.role === "admin") return allMenuItems;
     if (doctorInfo.role === "doctor") {
-      const allowedMenuCodes = ["MENU000", "MENU001", "MENU002", "MENU003", "MENU004"];
+      const allowedMenuCodes = [
+        "MENU000",
+        "MENU001",
+        "MENU002",
+        "MENU003",
+        "MENU004",
+      ];
       return allMenuItems.filter((item) =>
         allowedMenuCodes.includes(item.menuCode)
       );
     }
-
     return allMenuItems;
   }, [doctorInfo]);
 
@@ -128,15 +120,6 @@ const BaseLayout = ({ children }) => {
     });
   };
 
-  const bottomMenuItem = [
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: "로그아웃",
-      onClick: goToLogin,
-    },
-  ];
-
   useEffect(() => {
     const initializeDoctor = async () => {
       try {
@@ -151,147 +134,138 @@ const BaseLayout = ({ children }) => {
   }, [fetchDoctorInfo, navigate]);
 
   return (
-    <Layout style={{ height: "100vh", overflow: "hidden" }}>
-      <Sider
-        width={isTablet ? 150 : 200}
-        style={{
-          background: "#6A00FF",
-          height: "100vh",
-          position: "fixed",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          display: isMobile ? "none" : "block",
-        }}
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <div
+        className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
+          isExpanded ? "w-60" : "w-14"
+        } ${isMobile ? "hidden" : "block"}`}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100vh",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "24px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: 50,
-              color: "white",
-              margin: 10,
-              border: "none",
-            }}
-          >
-            <div 
-              style={{ cursor: "pointer" }}
+        <div className="px-3 py-4 flex flex-col h-full">
+          <div className="flex items-center justify-between mb-6">
+            <div
+              className={`font-medium text-lg text-gray-800 cursor-pointer transition-opacity duration-300 ease-in-out overflow-hidden ${
+                isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
+              }`}
               onClick={() => navigate("/home")}
             >
               zarada
             </div>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1 hover:bg-gray-100 rounded text-gray-500"
+              title={isExpanded ? "메뉴 접기" : "메뉴 펼치기"}
+            >
+              {isExpanded ? (
+                <PanelLeftClose size={18} />
+              ) : (
+                <PanelLeftOpen size={18} />
+              )}
+            </button>
           </div>
 
-          <Menu
-            theme="green"
-            mode="inline"
-            defaultSelectedKeys={["1"]}
-            items={menuItems}
-            style={{
-              background: "#6A00FF",
-              color: "white",
-              flex: "1 1 auto",
-            }}
-          />
-
-          <Menu
-            theme="green"
-            mode="inline"
-            items={bottomMenuItem}
-            style={{
-              background: "#6A00FF",
-              color: "white",
-              marginBottom: "23px",
-            }}
-          />
-        </div>
-      </Sider>
-      <Layout
-        style={{
-          marginLeft: isMobile ? 0 : isTablet ? 150 : 200,
-          height: "100vh",
-          overflow: "auto",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {isMobile && (
-          <>
-            <div
-              style={{
-                padding: "15px 10px",
-                background: "#6A00FF",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                color: "white",
-              }}
-            >
-              <span
-                style={{ fontSize: "20px", marginLeft: "10px", cursor: "pointer" }}
-                onClick={() => navigate("/home")}
+          <nav className="mt-4 space-y-1 flex-1">
+            {menuItems.map((item) => (
+              <div
+                key={item.key}
+                onClick={item.onClick}
+                className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer transition-all"
               >
-                <div style={{ cursor: "pointer" }} onClick={() => navigate("/home")}>
-                  zarada
+                <div className="text-gray-500 min-w-[16px]">{item.icon}</div>
+                <div
+                  className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${
+                    isExpanded
+                      ? "max-w-[200px] opacity-100"
+                      : "max-w-0 opacity-0"
+                  }`}
+                >
+                  {item.label}
                 </div>
-              </span>
-              <MenuOutlined
-                style={{ marginRight: "10px", fontSize: "15px" }}
-                onClick={() => setMobileMenuOpen(true)}
-              />
+              </div>
+            ))}
+          </nav>
+
+          {/* 로그아웃 버튼을 아래에 고정 */}
+          <div
+            onClick={goToLogin}
+            className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer transition-all mt-auto mb-2"
+          >
+            <div className="text-gray-500 min-w-[16px]">
+              <LogOut size={16} />
             </div>
-            <Drawer
-              title="메뉴"
-              placement="right"
-              onClose={() => setMobileMenuOpen(false)}
-              open={mobileMenuOpen}
-              styles={{ body: { padding: 0 } }}
+            <div
+              className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${
+                isExpanded ? "max-w-[200px] opacity-100" : "max-w-0 opacity-0"
+              }`}
             >
-              <Menu
-                theme="light"
-                mode="vertical"
-                items={menuItems}
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ border: "none" }}
-              />
-              <Menu
-                theme="light"
-                mode="vertical"
-                items={bottomMenuItem}
-                onClick={() => setMobileMenuOpen(false)}
-                style={{
-                  border: "none",
-                  position: "absolute",
-                  bottom: "23px",
-                  width: "100%",
-                }}
-              />
-            </Drawer>
-          </>
-        )}
-        <Content
-          style={{
-            margin: isMobile ? "8px" : "24px 16px",
-            padding: isMobile ? 16 : 24,
-            minHeight: "280px",
-            flex: "1 0 auto",
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
+              로그아웃
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="fixed top-4 left-4 p-2 bg-white rounded-md z-50 shadow-sm text-gray-600"
         >
-          {children}
-        </Content>
-      </Layout>
-    </Layout>
+          <MenuIcon size={20} />
+        </button>
+      )}
+
+      {/* Mobile Menu */}
+      {isMobile && mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className="fixed left-0 top-0 h-full w-60 bg-white p-4 shadow-lg flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="font-medium text-lg text-gray-800">zarada</div>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-1 hover:bg-gray-100 rounded text-gray-500"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <nav className="space-y-1 flex-1">
+              {menuItems.map((item) => (
+                <div
+                  key={item.key}
+                  onClick={() => {
+                    item.onClick();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer transition-all"
+                >
+                  <div className="text-gray-500">{item.icon}</div>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </nav>
+            <div
+              onClick={goToLogin}
+              className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer transition-all mt-auto mb-2"
+            >
+              <div className="text-gray-500">
+                <LogOut size={16} />
+              </div>
+              <span>로그아웃</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto notion-style-scrollbar">
+        <main className="h-full w-full">{children}</main>
+      </div>
+    </div>
   );
 };
 

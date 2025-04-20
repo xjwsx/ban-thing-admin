@@ -322,7 +322,8 @@ const ManageCustomerPage = () => {
 
     const customersInMonth = yearlyCustomers.filter(
       (customer) =>
-        dayjs(customer.registrationDate).format("YYYY-MM") === `${year}-${formattedMonth}`
+        dayjs(customer.registrationDate).format("YYYY-MM") ===
+        `${year}-${formattedMonth}`
     );
 
     if (customersInMonth.length === 0) return null;
@@ -572,7 +573,11 @@ const ManageCustomerPage = () => {
   ) => {
     setLoading(true);
     try {
-      const response = await getCustomerList(currentPage, PAGE_SIZE, currentFilters);
+      const response = await getCustomerList(
+        currentPage,
+        PAGE_SIZE,
+        currentFilters
+      );
       setCustomers(response.data.data || []);
       setMetadata({
         totalCount: response.data.totalCount || 0,
@@ -951,11 +956,7 @@ const ManageCustomerPage = () => {
               <Input placeholder="그룹" allowClear />
             </Form.Item>
             <Form.Item name="doctorId" style={{ marginBottom: 8 }}>
-              <Select
-                placeholder="담당 의사"
-                style={{ width: 120 }}
-                allowClear
-              >
+              <Select placeholder="담당 의사" style={{ width: 120 }} allowClear>
                 {doctors.map((doctor) => (
                   <Option key={doctor.id} value={doctor.id}>
                     {doctor.name}
