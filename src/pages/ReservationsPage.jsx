@@ -25,6 +25,16 @@ import {
   CardFooter 
 } from "../components/ui/card";
 import { Search, Calendar, Plus, Check, X } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../components/ui/alert-dialog";
 
 // 샘플 데이터
 const RESERVATIONS = [
@@ -79,6 +89,8 @@ const ReservationsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [reservations, setReservations] = useState(RESERVATIONS);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [reservationToCancel, setReservationToCancel] = useState(null);
 
   const filteredReservations = reservations
     .filter(reservation => 
@@ -95,12 +107,23 @@ const ReservationsPage = () => {
     );
   };
 
-  const cancelReservation = (id) => {
-    setReservations(
-      reservations.map(res => 
-        res.id === id ? { ...res, status: "취소" } : res
-      )
-    );
+  const handleCancelReservation = (id) => {
+    setReservationToCancel(id);
+    setCancelDialogOpen(true);
+  };
+
+  const confirmCancel = () => {
+    if (reservationToCancel) {
+      setReservations(
+        reservations.map((reservation) =>
+          reservation.id === reservationToCancel
+            ? { ...reservation, status: "취소" }
+            : reservation
+        )
+      );
+      setCancelDialogOpen(false);
+      setReservationToCancel(null);
+    }
   };
 
   const getStatusCount = (status) => {
@@ -233,7 +256,7 @@ const ReservationsPage = () => {
                         <Button 
                           size="sm" 
                           variant="ghost" 
-                          onClick={() => cancelReservation(reservation.id)}
+                          onClick={() => handleCancelReservation(reservation.id)}
                           className="h-8 w-8 p-0"
                         >
                           <X className="h-4 w-4 text-red-600" />
@@ -254,6 +277,21 @@ const ReservationsPage = () => {
           </Table>
         </NotionSection>
       </NotionPage>
+
+      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>예약 취소 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              정말로 이 예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCancel}>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </NotionContainer>
   );
 };
