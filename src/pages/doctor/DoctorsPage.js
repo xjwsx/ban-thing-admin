@@ -6,7 +6,6 @@ import {
   Table,
   Card,
   Divider,
-  Badge,
   List,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";

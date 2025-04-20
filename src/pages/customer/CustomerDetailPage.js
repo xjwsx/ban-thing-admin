@@ -16,10 +16,6 @@ import {
   Space,
   Modal as AntModal,
   List,
-  Descriptions,
-  Tag,
-  Divider,
-  Timeline,
 } from "antd";
 import dayjs from "dayjs";
 import {
@@ -33,26 +29,11 @@ import {
   getCustomerPaymentDetail,
   getDoctorList,
   getCustomerCourseList,
-  createCustomerCourse,
-  updateCustomerCourse,
-  deleteCustomerCourse,
 } from "../../api/crm";
 import DoctorTag from "../../components/molecules/DoctorTag";
 import { useMediaQuery } from "react-responsive";
 import { useDoctorStore } from "../../stores/doctorStore";
 import { usePermission } from "../../hooks/usePermission";
-import {
-  PhoneOutlined,
-  MailOutlined,
-  HomeOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  EnvironmentOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
 
 const { Title } = Typography;
 const { Option } = Select;
