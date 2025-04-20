@@ -159,59 +159,60 @@ const ReservationsPage = () => {
 
   // 예약 목록 가져오기
   useEffect(() => {
-    const fetchReservations = async () => {
-      try {
-        setLoading(true);
-        // API 필터 구성
-        const filters = {
-          status: statusFilter !== "all" ? statusFilter : null,
-        };
-        
-        // 검색어가 있으면 고객 이름 필터 추가
-        if (searchTerm) {
-          filters.customerName = searchTerm;
-        }
-        
-        const response = await getReservationList(page, limit, filters);
-        const reservationData = response.data.data || [];
-        setReservations(reservationData);
-        setTotal(response.data.total || 0);
-        setError(null);
-
-        // 캘린더용 이벤트 데이터 변환
-        const events = reservationData.map(reservation => {
-          const reservationDate = dayjs(reservation.reservationDate);
-          const startTime = reservation.startTime || '09:00';
-          const endTime = reservation.endTime || '10:00';
-          
-          // 시작 시간과 종료 시간을 Date 객체로 변환
-          const [startHour, startMinute] = startTime.split(':').map(Number);
-          const [endHour, endMinute] = endTime.split(':').map(Number);
-          
-          const startDate = reservationDate.hour(startHour).minute(startMinute).toDate();
-          const endDate = reservationDate.hour(endHour).minute(endMinute).toDate();
-          
-          return {
-            id: reservation.id,
-            title: reservation.customer?.name || '이름 없음',
-            start: startDate,
-            end: endDate,
-            status: reservation.status,
-            resource: reservation
-          };
-        });
-        
-        setCalendarEvents(events);
-      } catch (err) {
-        console.error("예약 목록을 불러오는데 실패했습니다:", err);
-        setError("예약 목록을 불러오는데 실패했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchReservations();
   }, [searchTerm, statusFilter, page, limit]);
+
+  // fetchReservations 함수를 useEffect 밖으로 이동하여 재사용 가능하게 변경
+  const fetchReservations = async () => {
+    try {
+      setLoading(true);
+      // API 필터 구성
+      const filters = {
+        status: statusFilter !== "all" ? statusFilter : null,
+      };
+      
+      // 검색어가 있으면 고객 이름 필터 추가
+      if (searchTerm) {
+        filters.customerName = searchTerm;
+      }
+      
+      const response = await getReservationList(page, limit, filters);
+      const reservationData = response.data.data || [];
+      setReservations(reservationData);
+      setTotal(response.data.total || 0);
+      setError(null);
+
+      // 캘린더용 이벤트 데이터 변환
+      const events = reservationData.map(reservation => {
+        const reservationDate = dayjs(reservation.reservationDate);
+        const startTime = reservation.startTime || '09:00';
+        const endTime = reservation.endTime || '10:00';
+        
+        // 시작 시간과 종료 시간을 Date 객체로 변환
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+        
+        const startDate = reservationDate.hour(startHour).minute(startMinute).toDate();
+        const endDate = reservationDate.hour(endHour).minute(endMinute).toDate();
+        
+        return {
+          id: reservation.id,
+          title: reservation.customer?.name || '이름 없음',
+          start: startDate,
+          end: endDate,
+          status: reservation.status,
+          resource: reservation
+        };
+      });
+      
+      setCalendarEvents(events);
+    } catch (err) {
+      console.error("예약 목록을 불러오는데 실패했습니다:", err);
+      setError("예약 목록을 불러오는데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 고객 및 의사 목록 가져오기
   useEffect(() => {
@@ -235,21 +236,14 @@ const ReservationsPage = () => {
     }
   }, [createDialogOpen]);
 
-  // 예약 확정
+  // 예약 확정 - fetchReservations 호출로 업데이트
   const confirmReservation = async (id) => {
     try {
       setLoading(true);
       await updateReservation(id, { status: RESERVATION_STATUS.CONFIRMED });
       
-      // 목록 새로고침
-      const filters = {
-        status: statusFilter !== "all" ? statusFilter : null,
-        customerName: searchTerm || null,
-      };
-      
-      const response = await getReservationList(page, limit, filters);
-      setReservations(response.data.data || []);
-      setTotal(response.data.total || 0);
+      // 예약 목록과 캘린더 이벤트 새로고침
+      await fetchReservations();
     } catch (err) {
       console.error("예약 확정에 실패했습니다:", err);
       setError("예약 확정에 실패했습니다.");
@@ -264,22 +258,15 @@ const ReservationsPage = () => {
     setCancelDialogOpen(true);
   };
 
-  // 예약 취소 확인
+  // 예약 취소 확인 - fetchReservations 호출로 업데이트
   const confirmCancel = async () => {
     if (reservationToCancel) {
       try {
         setLoading(true);
         await updateReservation(reservationToCancel, { status: RESERVATION_STATUS.CANCELED });
         
-        // 목록 새로고침
-        const filters = {
-          status: statusFilter !== "all" ? statusFilter : null,
-          customerName: searchTerm || null,
-        };
-        
-        const response = await getReservationList(page, limit, filters);
-        setReservations(response.data.data || []);
-        setTotal(response.data.total || 0);
+        // 예약 목록과 캘린더 이벤트 새로고침
+        await fetchReservations();
         
         setCancelDialogOpen(false);
         setReservationToCancel(null);
@@ -317,7 +304,7 @@ const ReservationsPage = () => {
     }));
   };
   
-  // 예약 생성 핸들러
+  // 예약 생성 핸들러 - fetchReservations 호출로 업데이트
   const handleCreateReservation = async () => {
     try {
       setCreateLoading(true);
@@ -363,15 +350,8 @@ const ReservationsPage = () => {
         notes: ""
       });
       
-      // 목록 새로고침
-      const filters = {
-        status: statusFilter !== "all" ? statusFilter : null,
-        customerName: searchTerm || null,
-      };
-      
-      const response = await getReservationList(page, limit, filters);
-      setReservations(response.data.data || []);
-      setTotal(response.data.total || 0);
+      // 예약 목록과 캘린더 이벤트 새로고침
+      await fetchReservations();
       
       // 추가: 성공 알림 다이얼로그 표시
       setSuccessDialogOpen(true);
@@ -390,21 +370,15 @@ const ReservationsPage = () => {
     setEditReservationDialogOpen(true);
   };
 
-  // 예약 정보 변경사항 저장
+  // 예약 정보 변경사항 저장 - fetchReservations 호출로 업데이트
   const saveReservationChanges = async (id, data) => {
     try {
       setLoading(true);
       await updateReservation(id, data);
       
-      // 목록 새로고침
-      const filters = {
-        status: statusFilter !== "all" ? statusFilter : null,
-        customerName: searchTerm || null,
-      };
+      // 예약 목록과 캘린더 이벤트 새로고침
+      await fetchReservations();
       
-      const response = await getReservationList(page, limit, filters);
-      setReservations(response.data.data || []);
-      setTotal(response.data.total || 0);
       setError(null);
       
       // 성공 메시지 설정 및 다이얼로그 표시
@@ -545,9 +519,6 @@ const ReservationsPage = () => {
 
         <NotionSection title="일정표">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">예약 캘린더</CardTitle>
-            </CardHeader>
             <CardContent>
               <div className="h-[600px]">
                 <Calendar

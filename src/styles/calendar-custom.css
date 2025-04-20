@@ -73,16 +73,80 @@
   position: relative;
 }
 
-.notion-calendar .rbc-month-header::after,
-.notion-calendar .rbc-time-header-content::after {
+/* 월의 첫 날(1일) 표시 강화 - Notion 캘린더 */
+.notion-calendar .rbc-date-cell[aria-label*="1일"],
+.notion-calendar .rbc-date-cell[aria-label*=" 1,"],
+.notion-calendar .rbc-date-cell[aria-label*=" 1 "] {
+  position: relative;
+}
+
+.notion-calendar .rbc-date-cell[aria-label*="1일"]::before,
+.notion-calendar .rbc-date-cell[aria-label*=" 1,"]::before,
+.notion-calendar .rbc-date-cell[aria-label*=" 1 "]::before {
   content: '';
   position: absolute;
+  top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent);
-  pointer-events: none;
+  width: 2px;
+  height: 100%;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* 날짜 셀 */
+.rbc-date-cell {
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 14px;
+  position: relative;
+}
+
+.rbc-date-cell.rbc-now {
+  font-weight: 600;
+}
+
+/* 날짜 셀 구분선 강화 */
+.rbc-month-view .rbc-day-bg {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+  position: relative;
+}
+
+/* 월의 첫 날(1일) 표시 강화 - 기본 캘린더 */
+.rbc-date-cell[aria-label*="1일"],
+.rbc-date-cell[aria-label*=" 1,"],
+.rbc-date-cell[aria-label*=" 1 "] {
+  position: relative;
+}
+
+.rbc-date-cell[aria-label*="1일"]::before,
+.rbc-date-cell[aria-label*=" 1,"]::before,
+.rbc-date-cell[aria-label*=" 1 "]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -1px;
+  width: 3px;
+  height: 100%;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 1;
+}
+
+/* 월 전환 시 off-range 셀과 정규 셀 사이 경계 강화 */
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg) {
+  border-left: 2px solid var(--primary);
+}
+
+/* off-range 셀과 현재 달 셀 사이의 마지막과 첫 날 경계 강화 */
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg:last-of-type {
+  border-right: 2px solid var(--border);
+}
+
+.rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg):first-of-type {
+  border-left: 2px solid var(--primary);
 }
 
 .notion-calendar .rbc-date-cell {
@@ -451,6 +515,7 @@
 
 .rbc-day-bg {
   border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .rbc-day-bg:last-child {
@@ -691,4 +756,663 @@
   border-radius: 50%;
   top: -3px;
   left: -4px;
+}
+
+/* 전 달/다음 달 날짜 셀 배경색 및 테두리 개선 */
+.rbc-month-view .rbc-off-range-bg {
+  background-color: var(--accent); 
+  opacity: 0.06; /* 약간 더 진하게 */
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.rbc-off-range {
+  color: var(--muted-foreground);
+  opacity: 0.6; /* 텍스트 색상 약간 진하게 */
+}
+
+/* 전 달/다음 달 경계 구분 */
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg) + .rbc-day-bg.rbc-off-range-bg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+/* 노션 캘린더 클래스에도 동일하게 적용 */
+.notion-calendar .rbc-month-view .rbc-off-range-bg {
+  background-color: var(--accent);
+  opacity: 0.06;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.notion-calendar .rbc-month-row .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.notion-calendar .rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg) + .rbc-day-bg.rbc-off-range-bg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+/* 월의 마지막 셀 (오른쪽 끝) 테두리 수정 */
+.rbc-month-view .rbc-day-bg:last-child,
+.rbc-month-view .rbc-off-range-bg:last-child {
+  border-right: none;
+}
+
+/* 월의 마지막 행 (맨 아래) 테두리 수정 */
+.rbc-month-row:last-child .rbc-day-bg,
+.rbc-month-row:last-child .rbc-off-range-bg {
+  border-bottom: none;
+}
+
+/* 전/다음 달 경계선 색상 강화 */
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg {
+  border-color: var(--border);
+  border-style: solid;
+  border-width: 0 1px 1px 0;
+}
+
+.notion-calendar .rbc-month-view .rbc-day-bg.rbc-off-range-bg {
+  border-color: var(--border);
+  border-style: solid;
+  border-width: 0 1px 1px 0;
+}
+
+/* 주 경계선 강화 */
+.rbc-month-row {
+  position: relative;
+}
+
+.rbc-month-row + .rbc-month-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--border);
+  z-index: 2;
+}
+
+/* 월 경계 구분선 수정 (30일과 01일 사이) - 이전 코드 제거하고 새로 작성 */
+.rbc-month-view .rbc-date-cell {
+  position: relative;
+}
+
+/* 1일 날짜 왼쪽에 항상 구분선 추가 (월 시작일) */
+.rbc-month-view .rbc-date-cell[aria-label*="1 "]::before,
+.rbc-month-view .rbc-date-cell[aria-label*="1일"]::before,
+.rbc-month-view .rbc-date-cell[aria-label*="1st "]::before,
+.rbc-month-view .rbc-date-cell[aria-label*=" 1,"]::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+/* 노션 캘린더에도 적용 */
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*="1 "]::before,
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*="1일"]::before,
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*="1st "]::before,
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*=" 1,"]::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+/* 월 변경 경계 (다음/이전 달) 구분선 더 확실하게 */
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg),
+.rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg) + .rbc-day-bg.rbc-off-range-bg {
+  position: relative;
+}
+
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+.rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg) + .rbc-day-bg.rbc-off-range-bg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+/* 노션 캘린더에도 동일하게 적용 */
+.notion-calendar .rbc-month-row .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg)::before,
+.notion-calendar .rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg) + .rbc-day-bg.rbc-off-range-bg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+/* 모든 날짜 셀에 테두리 강화 */
+.rbc-day-bg {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* 1일 날짜 텍스트 강조 - 제거 */
+.rbc-date-cell[aria-label*="1 "] .rbc-button-link,
+.rbc-date-cell[aria-label*="1일"] .rbc-button-link,
+.rbc-date-cell[aria-label*="1st "] .rbc-button-link,
+.rbc-date-cell[aria-label*=" 1,"] .rbc-button-link {
+  font-weight: normal; /* 원래대로 복원 */
+  color: inherit; /* 원래대로 복원 */
+  position: relative;
+}
+
+/* 1일 셀 배경색 약간 강조 */
+.rbc-day-bg:has(+ .rbc-date-cell[aria-label*="1 "]),
+.rbc-day-bg:has(+ .rbc-date-cell[aria-label*="1일"]),
+.rbc-day-bg:has(+ .rbc-date-cell[aria-label*="1st "]),
+.rbc-day-bg:has(+ .rbc-date-cell[aria-label*=" 1,"]) {
+  border-right: 2px solid var(--primary);
+}
+
+/* 월의 마지막 날짜(30일, 31일) 셀 우측 경계선 강화 */
+.rbc-month-row .rbc-day-bg:not(.rbc-off-range-bg):last-of-type {
+  border-right: 2px solid var(--border);
+}
+
+/* 월 경계 구분을 위한 특별 스타일 */
+.rbc-month-view .rbc-month-row {
+  position: relative;
+}
+
+/* 1일이 포함된 셀 왼쪽에 특별한 구분선 - 제거 */
+.rbc-month-view .rbc-day-bg:has(.rbc-date-cell[aria-label*="1 "]),
+.rbc-month-view .rbc-day-bg:has(.rbc-date-cell[aria-label*="1일"]),
+.rbc-month-view .rbc-day-bg:has(.rbc-date-cell[aria-label*="1st "]),
+.rbc-month-view .rbc-day-bg:has(.rbc-date-cell[aria-label*=" 1,"]) {
+  border-left: none; /* 원래대로 복원 */
+}
+
+/* 강조된 1일 라벨 - 제거 */
+.rbc-date-cell[aria-label*="1 "] .rbc-button-link::after,
+.rbc-date-cell[aria-label*="1일"] .rbc-button-link::after,
+.rbc-date-cell[aria-label*="1st "] .rbc-button-link::after,
+.rbc-date-cell[aria-label*=" 1,"] .rbc-button-link::after {
+  display: none; /* 원래대로 복원 */
+}
+
+/* :has 선택자를 사용하지 않는 대체 방법 */
+/* 1일 날짜 셀 특별 스타일 */
+.rbc-date-cell[aria-label*="1 "],
+.rbc-date-cell[aria-label*="1일"],
+.rbc-date-cell[aria-label*="1st "],
+.rbc-date-cell[aria-label*=" 1,"] {
+  position: relative;
+  z-index: 1;
+}
+
+/* 1일 날짜 셀 테두리 강화 */
+.rbc-date-cell[aria-label*="1 "]::before,
+.rbc-date-cell[aria-label*="1일"]::before,
+.rbc-date-cell[aria-label*="1st "]::before,
+.rbc-date-cell[aria-label*=" 1,"]::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+/* 월 경계 강화를 위한 추가 스타일 */
+.rbc-month-view .rbc-row-content {
+  z-index: 1; /* 내용물이 경계선 위에 표시되도록 */
+}
+
+/* 월의 첫날(1일)을 시각적으로 더 강조 - 제거 */
+.rbc-date-cell[aria-label*="1 "] .rbc-button-link,
+.rbc-date-cell[aria-label*="1일"] .rbc-button-link,
+.rbc-date-cell[aria-label*="1st "] .rbc-button-link,
+.rbc-date-cell[aria-label*=" 1,"] .rbc-button-link {
+  font-weight: normal; /* 원래대로 복원 */
+  color: inherit; /* 원래대로 복원 */
+  background-color: transparent; /* 원래대로 복원 */
+  border-radius: 0; /* 원래대로 복원 */
+  padding: inherit; /* 원래대로 복원 */
+  min-width: auto; /* 원래대로 복원 */
+  display: inline; /* 원래대로 복원 */
+  text-align: inherit; /* 원래대로 복원 */
+}
+
+/* 월 경계선을 표시하기 위한 가상 요소 */
+.rbc-month-view .rbc-month-row {
+  position: relative;
+}
+
+/* 이전달/다음달 구분선 강화 */
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg {
+  position: relative;
+}
+
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg:last-child,
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg:first-child {
+  position: relative;
+}
+
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg:last-child::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+.rbc-month-view .rbc-day-bg.rbc-off-range-bg:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.5;
+  z-index: 2;
+}
+
+/* 월 변경 경계 구분선은 유지하고 색상만 변경 */
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg + .rbc-day-bg:not(.rbc-off-range-bg)::before {
+  background-color: var(--primary);
+  opacity: 0.5;
+}
+
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg:last-child::after,
+.rbc-month-row .rbc-day-bg.rbc-off-range-bg:first-child::before {
+  background-color: var(--primary);
+  opacity: 0.5;
+}
+
+/* 노션 캘린더에도 동일하게 적용 */
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*="1 "]::before,
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*="1일"]::before,
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*="1st "]::before,
+.notion-calendar .rbc-month-view .rbc-date-cell[aria-label*=" 1,"]::before {
+  background-color: var(--primary);
+  opacity: 0.5;
+}
+
+/* 30일과 1일 사이(월 변경 지점) 구분선 강화 - 새로운 접근법 */
+.rbc-month-view .rbc-day-bg {
+  position: relative;
+}
+
+/* 날짜 값 설정에 따른 선택자 - 1일 셀에 왼쪽 테두리 강화 */
+.rbc-date-cell[aria-label^="1 "],
+.rbc-date-cell[aria-label^="1일"],
+.rbc-date-cell[aria-label^="1st"],
+.rbc-date-cell[aria-label^="1, "] {
+  position: relative;
+}
+
+/* 1일 날짜 셀의 왼쪽 경계에 진한 구분선 추가 */
+.rbc-date-cell[aria-label^="1 "] .rbc-button-link,
+.rbc-date-cell[aria-label^="1일"] .rbc-button-link,
+.rbc-date-cell[aria-label^="1st"] .rbc-button-link,
+.rbc-date-cell[aria-label^="1, "] .rbc-button-link {
+  position: relative;
+}
+
+/* 1일 셀의 컨테이너 (날짜 셀의 부모 요소) */
+.rbc-date-cell[aria-label^="1 "],
+.rbc-date-cell[aria-label^="1일"],
+.rbc-date-cell[aria-label^="1st"],
+.rbc-date-cell[aria-label^="1, "] {
+  border-left: 4px solid var(--primary) !important;
+  background-clip: padding-box;
+  z-index: 3;
+}
+
+/* 1일 셀 전체에 배경 효과 추가 */
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1 "]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1일"]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1st"]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1, "]) {
+  border-left: 4px solid var(--primary) !important;
+  background-clip: padding-box;
+  z-index: 2;
+}
+
+/* :has 선택자를 지원하지 않는 브라우저를 위한 대체 방식 */
+.rbc-day-bg:first-child {
+  position: relative;
+}
+
+/* 1일이 첫 요일에 오지 않을 때를 위한 처리 - 모든 1일 셀에 적용할 스타일 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1 "]:not(:first-child),
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1일"]:not(:first-child),
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1st"]:not(:first-child),
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1, "]:not(:first-child) {
+  position: relative;
+}
+
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1 "]:not(:first-child)::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1일"]:not(:first-child)::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1st"]:not(:first-child)::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell[aria-label^="1, "]:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -30px; /* 셀 높이보다 더 크게 설정하여 완전히 덮도록 */
+  height: 100vh; /* 매우 큰 값으로 설정하여 전체 셀 높이를 커버 */
+  width: 4px;
+  background-color: var(--primary);
+  opacity: 0.7;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 특정 위치의 1일 셀에 직접 적용 */
+/* 일요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+}
+
+/* 월요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+}
+
+/* 화요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+}
+
+/* 수요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+}
+
+/* 목요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+}
+
+/* 금요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+}
+
+/* 토요일 위치 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1, "] {
+  border-left: 4px solid var(--primary);
+} 
+
+/* 30일과 1일 사이 구분선 문제 해결을 위한 새로운 접근법 */
+/* 수정: 모든 마지막 날짜와 첫 날짜 사이의 구분선을 확실하게 표시 */
+
+/* 마지막 날짜 셀 뒤에 구분선 추가 - 월의 마지막 날 확인 */
+.rbc-month-view .rbc-day-bg:last-child {
+  position: relative;
+  border-right: 3px solid var(--primary) !important;
+}
+
+/* 모든 경우에 1일 셀 앞에 구분선 추가 - 처음부터 강력한 구분선 설정 */
+.rbc-date-cell[aria-label*="1일"]::before,
+.rbc-date-cell[aria-label*=" 1,"]::before,
+.rbc-date-cell[aria-label*=" 1 "]::before,
+.rbc-date-cell[aria-label^="1 "]::before,
+.rbc-date-cell[aria-label^="1,"]::before,
+.rbc-date-cell[aria-label^="1st"]::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 0;
+  height: 1000px; /* 충분히 길게 설정 */
+  width: 5px;
+  background-color: var(--primary);
+  opacity: 0.8;
+  z-index: 10;
+}
+
+/* 1일이 포함된 날짜 셀 컨테이너에 명확한 왼쪽 경계 추가 */
+.rbc-day-bg:has(.rbc-date-cell[aria-label*="1일"]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label*=" 1,"]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label*=" 1 "]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1 "]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1,"]),
+.rbc-day-bg:has(.rbc-date-cell[aria-label^="1st"]) {
+  border-left: 3px solid var(--primary) !important;
+}
+
+/* 수정: 직접 인접 셀에 대한 처리 - 월 변경점에서 작동하도록 */
+.rbc-month-row .rbc-day-bg + .rbc-day-bg:has(.rbc-date-cell[aria-label*="1일"]),
+.rbc-month-row .rbc-day-bg + .rbc-day-bg:has(.rbc-date-cell[aria-label*=" 1,"]),
+.rbc-month-row .rbc-day-bg + .rbc-day-bg:has(.rbc-date-cell[aria-label*=" 1 "]),
+.rbc-month-row .rbc-day-bg + .rbc-day-bg:has(.rbc-date-cell[aria-label^="1 "]),
+.rbc-month-row .rbc-day-bg + .rbc-day-bg:has(.rbc-date-cell[aria-label^="1,"]),
+.rbc-month-row .rbc-day-bg + .rbc-day-bg:has(.rbc-date-cell[aria-label^="1st"]) {
+  border-right: 3px solid var(--primary) !important;
+}
+
+/* 날짜 셀 내부 구분선 - 1일에 대해 더 뚜렷한 테두리 */
+.rbc-date-cell[aria-label*="1일"] .rbc-button-link,
+.rbc-date-cell[aria-label*=" 1,"] .rbc-button-link,
+.rbc-date-cell[aria-label*=" 1 "] .rbc-button-link,
+.rbc-date-cell[aria-label^="1 "] .rbc-button-link,
+.rbc-date-cell[aria-label^="1,"] .rbc-button-link,
+.rbc-date-cell[aria-label^="1st"] .rbc-button-link {
+  position: relative;
+  border-left: 3px solid var(--primary);
+  margin-left: -3px;
+  padding-left: 5px;
+}
+
+/* :has 선택자를 사용하지 않는 대체 접근법 */
+/* 모든 가능한 위치에서의 1일 셀에 대한 명시적 왼쪽 경계 설정 */
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1st"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label*="1일"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label*=" 1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label*=" 1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1 "],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1,"],
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1st"] {
+  position: relative;
+}
+
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(1)[aria-label^="1st"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(2)[aria-label^="1st"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(3)[aria-label^="1st"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(4)[aria-label^="1st"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(5)[aria-label^="1st"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(6)[aria-label^="1st"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label*="1일"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label*=" 1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label*=" 1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1 "]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1,"]::before,
+.rbc-month-row .rbc-row-content .rbc-row .rbc-date-cell:nth-child(7)[aria-label^="1st"]::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: -20px;
+  height: 500px;
+  width: 3px;
+  background-color: var(--primary);
+  opacity: 0.8;
+  z-index: 10;
+}
+
+/* 직접적인 셀 경계 추가 - 모든 날짜 셀 */
+.rbc-month-view .rbc-day-bg {
+  position: relative;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* 마지막 달의 날짜와 1일 사이의 구분선을 위한 추가 스타일 */
+.rbc-month-view .rbc-day-bg:last-of-type {
+  border-right: 2px solid var(--border);
+}
+
+/* 캘린더의 특정 열에 직접 독립적인 경계선 설정 - 1일 셀의 왼쪽 */
+.rbc-month-row .rbc-day-bg:has(+ .rbc-day-bg .rbc-date-cell[aria-label*="1일"]),
+.rbc-month-row .rbc-day-bg:has(+ .rbc-day-bg .rbc-date-cell[aria-label*=" 1,"]),
+.rbc-month-row .rbc-day-bg:has(+ .rbc-day-bg .rbc-date-cell[aria-label*=" 1 "]),
+.rbc-month-row .rbc-day-bg:has(+ .rbc-day-bg .rbc-date-cell[aria-label^="1 "]),
+.rbc-month-row .rbc-day-bg:has(+ .rbc-day-bg .rbc-date-cell[aria-label^="1,"]),
+.rbc-month-row .rbc-day-bg:has(+ .rbc-day-bg .rbc-date-cell[aria-label^="1st"]) {
+  border-right: 3px solid var(--primary) !important;
 } 
