@@ -4,7 +4,6 @@ import {
   NotionHeader, 
   NotionPage, 
   NotionSection, 
-  NotionDivider 
 } from "../components/NotionLayout";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";

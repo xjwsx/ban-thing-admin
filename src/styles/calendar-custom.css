@@ -1,0 +1,694 @@
+/* 노션 스타일 캘린더 커스텀 스타일 */
+
+/* 노션 스타일 캘린더 특별 클래스 */
+.notion-calendar.rbc-calendar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04);
+  background-color: var(--background);
+  overflow: hidden;
+}
+
+.notion-calendar .rbc-toolbar {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.notion-calendar .rbc-toolbar-label {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.notion-calendar .rbc-btn-group {
+  background-color: var(--muted);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.notion-calendar .rbc-btn-group button {
+  border: none;
+  border-radius: 4px;
+  margin: 0 2px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background-color: transparent;
+}
+
+.notion-calendar .rbc-btn-group button:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.notion-calendar .rbc-btn-group button.rbc-active {
+  background-color: var(--popover);
+  color: var(--foreground);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 요일 헤더 구분선 강화 */
+.notion-calendar .rbc-header {
+  border-bottom: 2px solid var(--border);
+  padding: 10px 0;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* 월간 뷰 요일 헤더 구분선 강화 */
+.notion-calendar .rbc-month-view .rbc-month-header .rbc-header {
+  border-bottom: 2px solid var(--border);
+}
+
+/* 주간/일간 뷰 요일 헤더 구분선 강화 */
+.notion-calendar .rbc-time-header-content .rbc-header {
+  border-bottom: 2px solid var(--border);
+}
+
+/* 요일 헤더 아래 그림자 효과 추가 */
+.notion-calendar .rbc-month-header,
+.notion-calendar .rbc-time-header-content {
+  position: relative;
+}
+
+.notion-calendar .rbc-month-header::after,
+.notion-calendar .rbc-time-header-content::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent);
+  pointer-events: none;
+}
+
+.notion-calendar .rbc-date-cell {
+  padding: 6px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.notion-calendar .rbc-date-cell.rbc-now {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.notion-calendar .rbc-off-range-bg {
+  background-color: var(--muted);
+  opacity: 0.08;
+}
+
+.notion-calendar .rbc-day-bg.rbc-today {
+  background-color: var(--muted);
+  opacity: 0.2;
+}
+
+.notion-calendar .rbc-day-slot .rbc-event {
+  border-left: 4px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.notion-calendar .rbc-event {
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.notion-calendar .rbc-event-label {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.notion-calendar .rbc-time-slot {
+  font-size: 12px;
+  opacity: 0.7;
+  color: var(--muted-foreground);
+}
+
+.notion-calendar .rbc-label {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.notion-calendar .rbc-current-time-indicator {
+  background-color: var(--primary);
+  height: 2px;
+}
+
+.notion-calendar .rbc-today .rbc-time-slot {
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+.notion-calendar .rbc-timeslot-group {
+  border-bottom: 1px solid var(--border);
+  min-height: 40px;
+}
+
+.notion-calendar .rbc-time-view .rbc-allday-cell {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--border);
+  min-height: 30px;
+}
+
+.notion-calendar .rbc-time-content {
+  border-top: 1px solid var(--border);
+}
+
+.notion-calendar .rbc-time-header-content {
+  border-left: 1px solid var(--border);
+}
+
+.notion-calendar .rbc-time-header-gutter {
+  background-color: var(--background);
+  opacity: 0.8;
+}
+
+.notion-calendar .rbc-agenda-view table.rbc-agenda-table {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.notion-calendar .rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  background-color: var(--muted);
+  opacity: 0.1;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  text-transform: uppercase;
+}
+
+.notion-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.notion-calendar .rbc-agenda-view table.rbc-agenda-table tbody > tr:hover {
+  background-color: var(--accent);
+  cursor: pointer;
+}
+
+.notion-calendar .rbc-agenda-empty {
+  background-color: var(--background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+.notion-calendar .rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid var(--border);
+  opacity: 0.5;
+}
+
+/* 캘린더 전체 컨테이너 */
+.rbc-calendar {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  border-radius: 8px;
+  background-color: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+/* 헤더 스타일링 */
+.rbc-toolbar {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.rbc-toolbar button {
+  color: var(--foreground);
+  background-color: var(--background);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.rbc-toolbar button:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.rbc-toolbar button.rbc-active:hover {
+  background-color: var(--primary);
+  opacity: 0.9;
+}
+
+.rbc-toolbar-label {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* 달력 헤더 (요일) */
+.rbc-header {
+  padding: 12px 6px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  border-bottom: 2px solid var(--border);
+  position: relative;
+}
+
+/* 월간 뷰 요일 헤더 구분선 강화 */
+.rbc-month-view .rbc-month-header .rbc-header {
+  border-bottom: 2px solid var(--border);
+}
+
+/* 주간/일간 뷰 요일 헤더 구분선 강화 */
+.rbc-time-header-content .rbc-header {
+  border-bottom: 2px solid var(--border);
+}
+
+/* 요일 헤더 아래 그림자 효과 추가 */
+.rbc-month-header,
+.rbc-time-header-content {
+  position: relative;
+}
+
+.rbc-month-header::after,
+.rbc-time-header-content::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.05), transparent);
+  pointer-events: none;
+}
+
+/* 날짜 셀 */
+.rbc-date-cell {
+  padding: 4px 6px;
+  text-align: center;
+  font-size: 14px;
+  position: relative;
+}
+
+.rbc-date-cell.rbc-now {
+  font-weight: 600;
+}
+
+/* 날짜 셀 구분선 강화 */
+.rbc-month-view .rbc-day-bg {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+  position: relative;
+}
+
+.rbc-month-view .rbc-day-bg:hover {
+  background-color: var(--accent);
+  opacity: 0.3;
+}
+
+/* 날짜 선택 시 강조 효과 */
+.rbc-day-bg.rbc-selected-cell {
+  background-color: var(--accent);
+  opacity: 0.3;
+}
+
+.rbc-day-bg.rbc-today {
+  background-color: var(--accent);
+  opacity: 0.4;
+  position: relative;
+}
+
+/* 오늘 날짜에 테두리 추가 */
+.rbc-day-bg.rbc-today::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid var(--primary);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 이벤트 */
+.rbc-event {
+  border-radius: 4px;
+  font-size: 13px;
+  padding: 2px 6px;
+  opacity: 0.95;
+  border: none;
+  transition: opacity 0.2s ease;
+}
+
+.rbc-event:hover {
+  opacity: 1;
+}
+
+.rbc-event-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.rbc-event-content {
+  font-weight: 500;
+}
+
+/* 타임 그리드 */
+.rbc-time-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.rbc-time-content {
+  border-top: 1px solid var(--border);
+}
+
+.rbc-time-slot {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid var(--border);
+  min-height: 40px;
+}
+
+.rbc-time-content > .rbc-time-gutter {
+  border-right: 2px solid var(--border);
+}
+
+.rbc-time-content > * + * > * {
+  border-left: 1px solid var(--border);
+}
+
+.rbc-time-header.rbc-overflowing {
+  border-right: 2px solid var(--border);
+}
+
+.rbc-time-view {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.rbc-time-view .rbc-row {
+  min-height: 28px;
+}
+
+.rbc-time-header-content {
+  border-left: 1px solid var(--border);
+}
+
+.rbc-time-header-gutter {
+  background-color: var(--muted);
+  opacity: 0.5;
+}
+
+.rbc-time-gutter.rbc-time-column {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+
+.rbc-label {
+  padding: 5px 8px;
+}
+
+/* 월간 뷰 스타일링 */
+.rbc-month-view {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.rbc-month-header {
+  margin-top: 8px;
+}
+
+.rbc-month-row {
+  border-bottom: 1px solid var(--border);
+}
+
+.rbc-month-row:last-child {
+  border-bottom: none;
+}
+
+.rbc-day-bg {
+  border-right: 1px solid var(--border);
+}
+
+.rbc-day-bg:last-child {
+  border-right: none;
+}
+
+/* 주간 뷰 스타일링 */
+.rbc-row-content {
+  z-index: 0;
+}
+
+.rbc-row-bg {
+  border-bottom: 1px solid var(--border);
+}
+
+.rbc-off-range {
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+.rbc-off-range-bg {
+  background-color: var(--muted);
+  opacity: 0.1;
+}
+
+/* 더보기 버튼 */
+.rbc-show-more {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary);
+  background-color: transparent;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.rbc-show-more:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* 툴팁 스타일링 */
+.rbc-tooltip {
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 12px;
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 250px;
+  white-space: pre-line;
+}
+
+/* 아젠다 뷰 */
+.rbc-agenda-view {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.rbc-agenda-view table.rbc-agenda-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.rbc-agenda-view table.rbc-agenda-table thead > tr > th {
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.rbc-agenda-view table.rbc-agenda-table tbody > tr:hover {
+  background-color: var(--accent);
+}
+
+.rbc-agenda-view .rbc-agenda-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 15px;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  .rbc-toolbar span {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .rbc-toolbar .rbc-btn-group {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .rbc-toolbar .rbc-btn-group button {
+    flex: 1;
+    padding: 6px 0;
+    margin: 0 2px;
+  }
+  
+  .rbc-event {
+    padding: 1px 4px;
+    font-size: 12px;
+  }
+}
+
+/* 상태별 이벤트 스타일 */
+.reservation-status-pending:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.reservation-status-confirmed:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.reservation-status-canceled {
+  opacity: 0.8;
+  text-decoration: line-through;
+}
+
+.reservation-status-canceled:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.reservation-status-completed:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* 다크 모드 조정 */
+:root[class~="dark"] .notion-calendar.rbc-calendar {
+  background-color: var(--background);
+  border-color: var(--border);
+}
+
+:root[class~="dark"] .notion-calendar .rbc-header {
+  color: var(--muted-foreground);
+  border-color: var(--border);
+}
+
+:root[class~="dark"] .notion-calendar .rbc-toolbar button {
+  color: var(--muted-foreground);
+}
+
+:root[class~="dark"] .notion-calendar .rbc-toolbar-label {
+  color: var(--foreground);
+}
+
+:root[class~="dark"] .notion-calendar .rbc-off-range-bg {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+:root[class~="dark"] .notion-calendar .rbc-day-bg.rbc-today {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+:root[class~="dark"] .notion-calendar .rbc-time-slot {
+  color: var(--muted-foreground);
+}
+
+/* notion-calendar 클래스용 날짜 셀 스타일 강화 */
+.notion-calendar .rbc-month-view .rbc-day-bg {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+  position: relative;
+}
+
+.notion-calendar .rbc-month-view .rbc-day-bg:hover {
+  background-color: var(--accent);
+  opacity: 0.3;
+}
+
+.notion-calendar .rbc-day-bg.rbc-selected-cell {
+  background-color: var(--accent);
+  opacity: 0.3;
+}
+
+.notion-calendar .rbc-day-bg.rbc-today {
+  background-color: var(--accent);
+  opacity: 0.4;
+  position: relative;
+}
+
+.notion-calendar .rbc-day-bg.rbc-today::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid var(--primary);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 타임그리드에서의 요일-날짜 구분선 강화 */
+.notion-calendar .rbc-time-header > .rbc-time-header-content {
+  border-left: 2px solid var(--border);
+}
+
+/* 현재 시간 표시선 강화 */
+.rbc-current-time-indicator {
+  background-color: var(--primary);
+  height: 2px;
+  z-index: 3;
+  position: relative;
+}
+
+.rbc-current-time-indicator::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  top: -3px;
+  left: -4px;
+} 
