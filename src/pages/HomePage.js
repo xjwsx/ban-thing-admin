@@ -19,6 +19,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { Badge } from "../components/ui/badge";
+import { 
+  NotionHeader, 
+  NotionSection, 
+  NotionDivider 
+} from "../components/NotionLayout";
 
 const localizer = dayjsLocalizer(dayjs);
 
@@ -122,110 +127,115 @@ const HomePage = () => {
   }, [doctorInfo, selectedDate]);
 
   return (
-    <div className="container mx-auto p-4 md:p-8 max-w-7xl">
-      <div className="grid gap-4 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {/* Overview Card */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>일일 개요</CardTitle>
-            <CardDescription>오늘의 주요 통계</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">전체 예약</span>
-                <Badge variant="secondary" className="text-lg">
-                  24
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">완료된 예약</span>
-                <Badge
-                  variant="success"
-                  className="text-lg bg-green-100 text-green-800"
-                >
-                  18
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">대기 중</span>
-                <Badge variant="outline" className="text-lg">
-                  6
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Appointments Card */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>최근 예약</CardTitle>
-            <CardDescription>오늘의 예약 현황</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[1, 2, 3].map((_, i) => (
-                <div key={i} className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`}
-                    />
-                    <AvatarFallback>고객</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-medium">홍길동</p>
-                    <p className="text-xs text-muted-foreground">
-                      14:00 - 15:00
-                    </p>
+    <div className="container mx-auto px-4 py-6">
+      <div className="max-w-6xl mx-auto">
+        <NotionHeader 
+          title="대시보드" 
+          description="오늘의 예약 및 할 일 현황을 확인하세요"
+        />
+        
+        <NotionSection title="일일 현황">
+          <div className="grid gap-4 md:gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {/* Overview Card */}
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>일일 개요</CardTitle>
+                <CardDescription>오늘의 주요 통계</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">전체 예약</span>
+                    <Badge variant="secondary" className="text-lg">
+                      24
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">완료된 예약</span>
+                    <Badge
+                      variant="success"
+                      className="text-lg bg-green-100 text-green-800"
+                    >
+                      18
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">대기 중</span>
+                    <Badge variant="outline" className="text-lg">
+                      6
+                    </Badge>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button variant="link" className="px-0">
-              모든 예약 보기
-            </Button>
-          </CardFooter>
-        </Card>
+              </CardContent>
+            </Card>
 
-        {/* Tasks Card */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>할 일</CardTitle>
-            <CardDescription>오늘의 할 일 목록</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[1, 2, 3].map((_, i) => (
-                <div key={i} className="flex items-center space-x-2">
-                  <Checkbox id={`task-${i}`} />
-                  <label
-                    htmlFor={`task-${i}`}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    환자 기록 업데이트
-                  </label>
+            {/* Recent Appointments Card */}
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>최근 예약</CardTitle>
+                <CardDescription>오늘의 예약 현황</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarImage
+                          src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`}
+                        />
+                        <AvatarFallback>고객</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">홍길동</p>
+                        <p className="text-xs text-muted-foreground">
+                          14:00 - 15:00
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button variant="link" className="px-0">
-              새로운 할 일 추가
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+              </CardContent>
+              <CardFooter>
+                <Button variant="link" className="px-0">
+                  모든 예약 보기
+                </Button>
+              </CardFooter>
+            </Card>
 
-      {/* Calendar */}
-      <Card className="col-span-full mt-6 md:mt-8 shadow-sm">
-        <CardHeader>
-          <CardTitle>일정</CardTitle>
-          <CardDescription>예약 일정을 확인하세요</CardDescription>
-        </CardHeader>
-        <CardContent>
+            {/* Tasks Card */}
+            <Card className="shadow-sm">
+              <CardHeader>
+                <CardTitle>할 일</CardTitle>
+                <CardDescription>오늘의 할 일 목록</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-2">
+                      <Checkbox id={`task-${i}`} />
+                      <label
+                        htmlFor={`task-${i}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        환자 기록 업데이트
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button variant="link" className="px-0">
+                  새로운 할 일 추가
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </NotionSection>
+
+        <NotionDivider />
+
+        {/* Calendar */}
+        <NotionSection title="예약 일정">
           <div className="h-[500px] md:h-[600px]">
             <Calendar
               localizer={localizer}
@@ -244,8 +254,8 @@ const HomePage = () => {
               }}
             />
           </div>
-        </CardContent>
-      </Card>
+        </NotionSection>
+      </div>
     </div>
   );
 };
