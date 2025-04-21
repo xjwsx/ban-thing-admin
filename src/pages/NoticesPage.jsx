@@ -52,6 +52,7 @@ const NoticesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [notices, setNotices] = useState([]);
   const [filter, setFilter] = useState("all"); // all, important
+  const [targetFilter, setTargetFilter] = useState("all"); // all, doctors, staff
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
@@ -85,7 +86,7 @@ const NoticesPage = () => {
   const [apiFilters, setApiFilters] = useState({
     search: "",
     isImportant: filter === "important" ? true : undefined,
-    target: undefined,
+    target: targetFilter !== "all" ? targetFilter : undefined,
     startDate: undefined,
     endDate: undefined,
     isActive: true,
@@ -173,11 +174,12 @@ const NoticesPage = () => {
       ...prev,
       search: searchTerm || undefined,
       isImportant: filter === "important" ? true : undefined,
+      target: targetFilter !== "all" ? targetFilter : undefined,
     }));
     
     // 페이지를 첫 페이지로 리셋
     setPage(1);
-  }, [searchTerm, filter]);
+  }, [searchTerm, filter, targetFilter]);
 
   // API 필터, 페이지, 한계 변경 시 데이터 가져오기
   useEffect(() => {
@@ -328,21 +330,36 @@ const NoticesPage = () => {
                 className="pl-8"
               />
             </div>
-            <div className="flex gap-2">
-              <Button 
-                variant="ghost" 
-                onClick={() => setFilter("all")}
-                className={filter === "all" ? "bg-accent" : ""}
-              >
-                전체
-              </Button>
-              <Button 
-                variant="ghost" 
-                onClick={() => setFilter("important")}
-                className={filter === "important" ? "bg-accent" : ""}
-              >
-                중요 공지
-              </Button>
+            <div className="flex gap-4 items-center">
+              <div className="flex gap-2">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setFilter("all")}
+                  className={filter === "all" ? "bg-accent" : ""}
+                >
+                  전체
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setFilter("important")}
+                  className={filter === "important" ? "bg-accent" : ""}
+                >
+                  중요 공지
+                </Button>
+              </div>
+              
+              <div className="w-40">
+                <Select value={targetFilter} onValueChange={setTargetFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="대상 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">전체 대상</SelectItem>
+                    <SelectItem value={NOTICE_TARGET.DOCTORS}>의사 대상</SelectItem>
+                    <SelectItem value={NOTICE_TARGET.STAFF}>스태프 대상</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <Button onClick={openCreateDialog}>
@@ -366,29 +383,33 @@ const NoticesPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {notices.filter(notice => notice.isImportant).slice(0, 3).map(notice => (
-                <Card key={notice.id} className="overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg line-clamp-1">{notice.title}</CardTitle>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                        중요
-                      </span>
-                    </div>
-                    <CardDescription className="flex items-center text-xs">
-                      <Calendar className="h-3 w-3 mr-1" /> 
-                      {notice.startDate ? dayjs(notice.startDate).format("YYYY-MM-DD") : '-'}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm line-clamp-2 min-h-[2.5rem]">{notice.content}</p>
-                  </CardContent>
-                  <CardFooter className="pt-1 pb-3 border-t flex justify-between text-xs text-muted-foreground h-8">
-                    <span>작성자: {notice.author?.name || '관리자'}</span>
-                    <span>조회수: {notice.viewCount}</span>
-                  </CardFooter>
-                </Card>
-              ))}
+              {notices
+                .filter(notice => notice.isImportant)
+                .filter(notice => targetFilter === "all" ? true : notice.target === targetFilter)
+                .slice(0, 3)
+                .map(notice => (
+                  <Card key={notice.id} className="overflow-hidden">
+                    <CardHeader className="pb-3">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg line-clamp-1">{notice.title}</CardTitle>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          중요
+                        </span>
+                      </div>
+                      <CardDescription className="flex items-center text-xs">
+                        <Calendar className="h-3 w-3 mr-1" /> 
+                        {notice.startDate ? dayjs(notice.startDate).format("YYYY-MM-DD") : '-'}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm line-clamp-2 min-h-[2.5rem]">{notice.content}</p>
+                    </CardContent>
+                    <CardFooter className="pt-1 pb-3 border-t flex justify-between text-xs text-muted-foreground h-8">
+                      <span>작성자: {notice.author?.name || '관리자'}</span>
+                      <span>조회수: {notice.viewCount}</span>
+                    </CardFooter>
+                  </Card>
+                ))}
               {notices.filter(notice => notice.isImportant).length === 0 && (
                 <div className="col-span-3 text-center py-10 text-muted-foreground">
                   중요 공지사항이 없습니다.
@@ -409,6 +430,8 @@ const NoticesPage = () => {
               {(filter === "important" 
                 ? notices.filter(notice => notice.isImportant) 
                 : notices
+              ).filter(notice => 
+                targetFilter === "all" ? true : notice.target === targetFilter
               ).map((notice) => (
                 <Card key={notice.id} className="overflow-hidden hover:border-primary/50 transition-colors">
                   <div className="flex flex-col md:flex-row">
