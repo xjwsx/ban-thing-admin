@@ -6,8 +6,7 @@ import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { DatePicker } from "../components/ui/date-picker";
 import { Label } from "../components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "../components/ui/card";
-import { NotionHeader, NotionSection, NotionDivider } from "../components/NotionLayout";
+import { NotionHeader, NotionSection } from "../components/NotionLayout";
 
 const HomeRegisterPage = () => {
   const navigate = useNavigate();
