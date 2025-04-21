@@ -4,8 +4,6 @@ import LoginPage from "../pages/LoginPage";
 import BaseLayout from "../components/BaseLayout";
 import HomePage from "../pages/HomePage";
 import HomeRegisterPage from "../pages/HomeRegisterPage";
-
-// 새로운 Notion 스타일 페이지
 import CustomersPage from "../pages/CustomersPage";
 import CoursesPage from "../pages/CoursesPage";
 import ReservationsPage from "../pages/ReservationsPage";
@@ -33,11 +31,7 @@ const Router = () => {
   const privateRoutes = [
     { path: "/home", Component: HomePage },
     { path: "/home/register", Component: HomeRegisterPage },
-    
-    // CustomerDetailPage 유지
     { path: "/customer/:id", Component: CustomerDetailPage },
-    
-    // 새로운 Notion 스타일 페이지 라우트
     { path: "/customer", Component: CustomersPage },
     { path: "/course", Component: CoursesPage },
     { path: "/reservation", Component: ReservationsPage },
