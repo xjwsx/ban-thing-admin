@@ -315,7 +315,7 @@ const NoticesPage = () => {
     <NotionContainer>
       <NotionHeader 
         title="공지사항" 
-        description="자라다 회원님들을 위한 공지사항 관리 페이지입니다."
+        description="zarada 공지사항 관리 페이지입니다."
       />
       
       <NotionPage>
@@ -331,21 +331,16 @@ const NoticesPage = () => {
               />
             </div>
             <div className="flex gap-4 items-center">
-              <div className="flex gap-2">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setFilter("all")}
-                  className={filter === "all" ? "bg-accent" : ""}
-                >
-                  전체
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setFilter("important")}
-                  className={filter === "important" ? "bg-accent" : ""}
-                >
-                  중요 공지
-                </Button>
+              <div className="w-40">
+                <Select value={filter} onValueChange={setFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="중요도 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">전체 공지</SelectItem>
+                    <SelectItem value="important">중요 공지</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="w-40">
