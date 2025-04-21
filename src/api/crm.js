@@ -369,24 +369,18 @@ export const getNoticeList = async (
     isActive: null,
   }
 ) => {
-  const requiredParams = {
+  const params = {
     page,
     limit,
   };
-
-  const optionalParams = Object.entries(filters).reduce((acc, [key, value]) => {
-    if (value !== null && value !== undefined) {
-      acc[key] = value;
+  
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== '') {
+      params[key] = value;
     }
-    return acc;
-  }, {});
-
-  return await api.get(`/notices`, {
-    params: {
-      ...requiredParams,
-      ...optionalParams,
-    },
   });
+  
+  return await api.get('/notices', { params });
 };
 
 export const getNoticeDetail = async (id) => 
@@ -412,22 +406,13 @@ export const getDoctorNotices = async (
     isImportant: null,
   }
 ) => {
-  const requiredParams = {
+  const params = {
     page,
     limit,
+    ...Object.entries(filters)
+      .filter(([_, value]) => value !== null && value !== undefined)
+      .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
   };
 
-  const optionalParams = Object.entries(filters).reduce((acc, [key, value]) => {
-    if (value !== null && value !== undefined) {
-      acc[key] = value;
-    }
-    return acc;
-  }, {});
-
-  return await api.get(`/notices/doctor`, {
-    params: {
-      ...requiredParams,
-      ...optionalParams,
-    },
-  });
+  return await api.get(`/notices/doctor`, { params });
 }; 
