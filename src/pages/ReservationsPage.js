@@ -21,7 +21,7 @@ import {
   CardTitle,  
   CardContent, 
 } from "../components/ui/card";
-import { Search, Calendar as CalendarIcon, Plus, Check, X, Loader2 } from "lucide-react";
+import { Search, Calendar as CalendarIcon, Plus, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,7 +53,6 @@ import { RESERVATION_STATUS, VISIT_TYPE } from "../types/reservation";
 import {
   getReservationList,
   updateReservation,
-  deleteReservation,
   createReservation,
   getCustomerList,
   getDoctorList,
@@ -63,15 +62,12 @@ import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useMediaQuery } from "react-responsive";
 import "dayjs/locale/ko";
-import "../styles/calendar-custom.css"; // 커스텀 캘린더 스타일 추가
+import "../styles/calendar-custom.css"; 
 
-// dayjs 한국어 로케일 설정
 dayjs.locale('ko');
 
-// dayjs 로컬라이저 설정
 const localizer = dayjsLocalizer(dayjs);
 
-// 캘린더 한국어 레이블
 const messages = {
   allDay: '종일',
   previous: '이전',
@@ -87,7 +83,6 @@ const messages = {
   noEventsInRange: '이 기간에 예약이 없습니다.'
 };
 
-// 상태 레이블 매핑
 const statusLabels = {
   [RESERVATION_STATUS.PENDING]: "대기중",
   [RESERVATION_STATUS.CONFIRMED]: "확정됨",
@@ -95,7 +90,6 @@ const statusLabels = {
   [RESERVATION_STATUS.COMPLETED]: "완료됨",
 };
 
-// 상태별 색상 클래스 매핑
 const statusClasses = {
   [RESERVATION_STATUS.PENDING]: "bg-yellow-100 text-yellow-800",
   [RESERVATION_STATUS.CONFIRMED]: "bg-green-100 text-green-800",
@@ -103,7 +97,6 @@ const statusClasses = {
   [RESERVATION_STATUS.COMPLETED]: "bg-blue-100 text-blue-800",
 };
 
-// 방문 경로 옵션
 const visitRouteOptions = [
   "인스타그램",
   "페이스북",

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Typography,
-  Button,
   Select,
   Space,
   Modal,
@@ -10,14 +8,13 @@ import {
   message,
   Form,
   Spin,
-  Alert,
   List,
   Tooltip,
   Divider,
   Popconfirm,
   Avatar,
 } from "antd";
-import { PlusOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
+import { DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import useStore from "../../stores/todoStore";
 import useDoctorStore from "../../stores/doctorStore";
@@ -34,7 +31,18 @@ import {
 } from "../../api/crm";
 import { useMediaQuery } from "react-responsive";
 import { usePermission } from "../../hooks/usePermission";
-const { Title } = Typography;
+import { 
+  NotionContainer, 
+  NotionHeader, 
+  NotionSection, 
+  NotionDivider 
+} from "../../components/NotionLayout";
+import {
+  Alert,
+  AlertDescription,
+} from "../../components/ui/alert";
+import { Button } from "../../components/ui/button";
+import { PlusIcon, InfoIcon } from "lucide-react";
 const { Option } = Select;
 const { confirm } = Modal;
 
@@ -105,7 +113,7 @@ const CommentItem = ({ comment, onDelete }) => {
   );
 };
 
-const TodoManagementPage = () => {
+const TodoPage = () => {
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -137,7 +145,7 @@ const TodoManagementPage = () => {
     },
   };
 
-  const { checkPermission } = usePermission("MENU003");
+  const { checkPermission } = usePermission("todo");
 
   const [commentLoading, setCommentLoading] = useState(false);
   const [comments, setComments] = useState([]);
@@ -146,6 +154,12 @@ const TodoManagementPage = () => {
   const { doctorInfo, fetchDoctorInfo } = useDoctorStore();
 
   const fetchDoctorTasks = async () => {
+    // Check if user has read permission
+    if (!checkPermission("canRead")) {
+      message.error("할 일 관리 조회 권한이 없습니다.");
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await getDoctorTaskList();
@@ -223,6 +237,12 @@ const TodoManagementPage = () => {
   }, []);
 
   const onDragEnd = async (result) => {
+    // Check if user has write permission
+    if (!checkPermission("canUpdate")) {
+      message.error("할 일 상태 변경 권한이 없습니다.");
+      return;
+    }
+
     const { destination, source, draggableId } = result;
 
     if (!destination) return;
@@ -448,6 +468,14 @@ const TodoManagementPage = () => {
   };
 
   const showAddTodoModal = () => {
+    if (!checkPermission("canCreate")) {
+      Modal.error({
+        title: "권한 없음",
+        content: "할 일 등록 권한이 없습니다.",
+      });
+      return;
+    }
+    
     form.resetFields();
     setSelectedTodoType("todo");
     setIsAddTodoModalVisible(true);
@@ -547,64 +575,56 @@ const TodoManagementPage = () => {
   };
 
   return (
-    <div style={{ padding: "0 0 24px 0", width: "100%" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-        }}
-      >
-        <Title level={3} style={{ margin: 0 }}>
-          할 일 관리
-        </Title>
-      </div>
-      <Alert
-        message="완료된 할일은 1개월 이내의 항목만 표시됩니다"
-        type="info"
-        showIcon
-        style={{ marginBottom: "16px" }}
+    <NotionContainer>
+      <NotionHeader 
+        title="할 일 관리" 
+        description="팀의 할 일을 관리하고 진행 상황을 추적합니다."
       />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "16px",
-        }}
-      >
-        <Select
-          style={{ width: 200 }}
-          placeholder="선생님 필터"
-          allowClear
-          onChange={setSelectedDoctor}
-          value={selectedDoctor}
-        >
-          {renderDoctorOptions()}
-        </Select>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => showModal()}
-        >
-          할일 등록
-        </Button>
-      </div>
-      {loading ? (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <Spin />
+      
+      <Alert variant="default" className="mb-6">
+        <InfoIcon className="h-4 w-4" />
+        <AlertDescription>
+          완료된 할일은 1개월 이내의 항목만 표시됩니다
+        </AlertDescription>
+      </Alert>
+      
+      <NotionSection title="할 일 보드">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="w-full md:w-64">
+            <Select
+              className="w-full"
+              placeholder="선생님 필터"
+              allowClear
+              onChange={setSelectedDoctor}
+              value={selectedDoctor}
+            >
+              {renderDoctorOptions()}
+            </Select>
+          </div>
+          <Button
+            onClick={() => showModal()}
+            className="w-full md:w-auto"
+          >
+            <PlusIcon className="mr-2 h-4 w-4" /> 할일 등록
+          </Button>
         </div>
-      ) : (
-        <TodoView
-          tasks={filteredTodoTasks}
-          columns={columns}
-          onDragEnd={onDragEnd}
-          showEditModal={showModal}
-          showDeleteConfirm={showDeleteConfirm}
-          isMobile={isMobile}
-          isDraggable={checkPermission("canUpdate")}
-        />
-      )}
+        
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <TodoView
+            tasks={filteredTodoTasks}
+            columns={columns}
+            onDragEnd={onDragEnd}
+            showEditModal={showModal}
+            showDeleteConfirm={showDeleteConfirm}
+            isMobile={isMobile}
+            isDraggable={checkPermission("canUpdate")}
+          />
+        )}
+      </NotionSection>
 
       <Modal
         title={isEdit ? "할 일 수정" : "할일 추가"}
@@ -849,8 +869,8 @@ const TodoManagementPage = () => {
           </>
         )}
       </Modal>
-    </div>
+    </NotionContainer>
   );
 };
 
-export default TodoManagementPage;
+export default TodoPage;

@@ -14,6 +14,7 @@ import {
   X,
   PanelLeftClose,
   PanelLeftOpen,
+  CheckSquare,
 } from "lucide-react";
 import { useDoctorStore } from "../stores/doctorStore";
 import { Modal } from "antd";
@@ -82,6 +83,13 @@ const BaseLayout = ({ children }) => {
     },
     {
       key: "5",
+      icon: <CheckSquare size={16} />,
+      label: "할일 관리",
+      onClick: () => handleMenuClick("MENU006", "/todo"),
+      menuCode: "MENU006",
+    },
+    {
+      key: "6",
       icon: <Bell size={16} />,
       label: "공지사항",
       onClick: () => handleMenuClick("MENU004", "/notice"),
@@ -99,6 +107,7 @@ const BaseLayout = ({ children }) => {
         "MENU002",
         "MENU003",
         "MENU004",
+        "MENU006",
       ];
       return allMenuItems.filter((item) =>
         allowedMenuCodes.includes(item.menuCode)

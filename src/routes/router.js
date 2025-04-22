@@ -9,6 +9,7 @@ import CoursesPage from "../pages/CoursesPage";
 import ReservationsPage from "../pages/ReservationsPage";
 import NoticesPage from "../pages/NoticesPage";
 import CustomerDetailPage from "../pages/CustomerDetailPage";
+import TodoPage from "../pages/todo/TodoPage";
 
 import { getAccessToken } from "../utils/token";
 
@@ -35,6 +36,7 @@ const Router = () => {
     { path: "/customer", Component: CustomersPage },
     { path: "/course", Component: CoursesPage },
     { path: "/reservation", Component: ReservationsPage },
+    { path: "/todo", Component: TodoPage },
     { path: "/notice", Component: NoticesPage },
   ];
 
