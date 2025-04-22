@@ -285,6 +285,12 @@ const ReservationsPage = () => {
     setPage(1); // 검색 시 1페이지로 이동
   };
 
+  // 필터 변경 핸들러
+  const handleStatusFilterChange = (value) => {
+    setStatusFilter(value);
+    setPage(1); // 상태 필터 변경 시 1페이지로 이동
+  };
+
   // 특정 상태의 예약 개수 계산
   const getStatusCount = (status) => {
     return reservations.filter(r => r.status === status).length;
@@ -455,37 +461,36 @@ const ReservationsPage = () => {
       
       <NotionPage>
         <div className="flex justify-between items-center mb-6">
-          <div className="relative w-72">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="고객 이름 검색..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="pl-8"
-            />
+          <div className="flex gap-4 items-center">
+            <div className="relative w-72">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="고객 이름 검색..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="pl-8"
+              />
+            </div>
+            
+            <div className="w-40">
+              <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="상태 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">전체</SelectItem>
+                  <SelectItem value={RESERVATION_STATUS.CONFIRMED}>확정됨</SelectItem>
+                  <SelectItem value={RESERVATION_STATUS.PENDING}>대기중</SelectItem>
+                  <SelectItem value={RESERVATION_STATUS.CANCELED}>취소됨</SelectItem>
+                  <SelectItem value={RESERVATION_STATUS.COMPLETED}>완료됨</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => setStatusFilter("all")} 
-              className={statusFilter === "all" ? "bg-accent" : ""}>
-              전체
-            </Button>
-            <Button variant="ghost" onClick={() => setStatusFilter(RESERVATION_STATUS.CONFIRMED)}
-              className={statusFilter === RESERVATION_STATUS.CONFIRMED ? "bg-accent" : ""}>
-              확정됨
-            </Button>
-            <Button variant="ghost" onClick={() => setStatusFilter(RESERVATION_STATUS.PENDING)}
-              className={statusFilter === RESERVATION_STATUS.PENDING ? "bg-accent" : ""}>
-              대기중
-            </Button>
-            <Button variant="ghost" onClick={() => setStatusFilter(RESERVATION_STATUS.CANCELED)}
-              className={statusFilter === RESERVATION_STATUS.CANCELED ? "bg-accent" : ""}>
-              취소됨
-            </Button>
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              예약 추가
-            </Button>
-          </div>
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            예약 추가
+          </Button>
         </div>
 
         <NotionSection title="예약 현황">
