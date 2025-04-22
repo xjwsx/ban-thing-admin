@@ -40,7 +40,7 @@ const TodoView = ({
             key={columnId}
             className="h-full"
           >
-            <Card className="h-full">
+            <Card className="h-full flex flex-col">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                   <CardTitle className="text-xl">{columns[columnId]?.title}</CardTitle>
@@ -50,7 +50,7 @@ const TodoView = ({
                 </div>
               </CardHeader>
               
-              <CardContent className="bg-[#F4F5F7] p-3 rounded-b-lg">
+              <CardContent className="bg-[#F4F5F7] p-3 rounded-b-lg flex-1 flex flex-col">
                 {columns[columnId]?.isDraggable && isDraggable ? (
                   <StrictModeDroppable droppableId={columnId}>
                     {(provided, snapshot) => (
@@ -58,7 +58,7 @@ const TodoView = ({
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         className={cn(
-                          "min-h-[300px] transition-colors duration-200 rounded",
+                          "min-h-[500px] flex-1 transition-colors duration-200 rounded",
                           columnTasks.length === 0 && "p-2",
                           snapshot.isDraggingOver && "bg-accent/20 border-2 border-dashed border-border",
                           !snapshot.isDraggingOver && "border-2 border-dashed border-transparent"

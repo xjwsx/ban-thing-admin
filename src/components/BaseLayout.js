@@ -85,15 +85,15 @@ const BaseLayout = ({ children }) => {
       key: "5",
       icon: <CheckSquare size={16} />,
       label: "할일 관리",
-      onClick: () => handleMenuClick("MENU006", "/todo"),
-      menuCode: "MENU006",
+      onClick: () => handleMenuClick("MENU004", "/todo"),
+      menuCode: "MENU004",
     },
     {
       key: "6",
       icon: <Bell size={16} />,
       label: "공지사항",
-      onClick: () => handleMenuClick("MENU004", "/notice"),
-      menuCode: "MENU004",
+      onClick: () => handleMenuClick("MENU005", "/notice"),
+      menuCode: "MENU005",
     },
   ];
 
@@ -107,7 +107,7 @@ const BaseLayout = ({ children }) => {
         "MENU002",
         "MENU003",
         "MENU004",
-        "MENU006",
+        "MENU005",
       ];
       return allMenuItems.filter((item) =>
         allowedMenuCodes.includes(item.menuCode)

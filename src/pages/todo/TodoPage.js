@@ -588,7 +588,7 @@ const TodoPage = () => {
         </AlertDescription>
       </Alert>
       
-      <NotionSection title="할 일 보드">
+      <NotionSection title="할 일 보드" className="flex-1 flex flex-col min-h-[calc(100vh-280px)]">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="w-full md:w-64">
             <Select
@@ -610,19 +610,21 @@ const TodoPage = () => {
         </div>
         
         {loading ? (
-          <div className="flex justify-center items-center py-12">
+          <div className="flex justify-center items-center py-12 flex-1">
             <Spin size="large" />
           </div>
         ) : (
-          <TodoView
-            tasks={filteredTodoTasks}
-            columns={columns}
-            onDragEnd={onDragEnd}
-            showEditModal={showModal}
-            showDeleteConfirm={showDeleteConfirm}
-            isMobile={isMobile}
-            isDraggable={checkPermission("canUpdate")}
-          />
+          <div className="flex-1 flex flex-col">
+            <TodoView
+              tasks={filteredTodoTasks}
+              columns={columns}
+              onDragEnd={onDragEnd}
+              showEditModal={showModal}
+              showDeleteConfirm={showDeleteConfirm}
+              isMobile={isMobile}
+              isDraggable={checkPermission("canUpdate")}
+            />
+          </div>
         )}
       </NotionSection>
 

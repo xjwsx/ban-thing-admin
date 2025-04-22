@@ -5,7 +5,7 @@ export function NotionContainer({ className, children, ...props }) {
   return (
     <div
       className={cn(
-        "w-full max-w-6xl mx-auto px-4 py-6 bg-background",
+        "w-full max-w-6xl mx-auto px-4 py-6 bg-background flex flex-col min-h-[calc(100vh-64px)]",
         className
       )}
       {...props}
