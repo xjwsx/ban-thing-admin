@@ -145,7 +145,7 @@ const TodoPage = () => {
     },
   };
 
-  const { checkPermission } = usePermission("todo");
+  const { checkPermission } = usePermission("MENU004");
 
   const [commentLoading, setCommentLoading] = useState(false);
   const [comments, setComments] = useState([]);
@@ -154,12 +154,6 @@ const TodoPage = () => {
   const { doctorInfo, fetchDoctorInfo } = useDoctorStore();
 
   const fetchDoctorTasks = async () => {
-    // Check if user has read permission
-    if (!checkPermission("canRead")) {
-      message.error("할 일 관리 조회 권한이 없습니다.");
-      return;
-    }
-
     try {
       setLoading(true);
       const response = await getDoctorTaskList();
@@ -237,7 +231,6 @@ const TodoPage = () => {
   }, []);
 
   const onDragEnd = async (result) => {
-    // Check if user has write permission
     if (!checkPermission("canUpdate")) {
       message.error("할 일 상태 변경 권한이 없습니다.");
       return;
