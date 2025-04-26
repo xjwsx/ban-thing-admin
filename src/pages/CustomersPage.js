@@ -106,7 +106,7 @@ const CustomersPage = () => {
     name: "",
     koreanName: "",
     memberCode: "",
-    status: "방문중",
+    status: "active",
     courseId: "",
     phoneNumber: "",
     birthDate: "",
@@ -188,7 +188,7 @@ const CustomersPage = () => {
       name: "",
       koreanName: "",
       memberCode: "",
-      status: "방문중",
+      status: "active",
       courseId: "",
       phoneNumber: "",
       birthDate: "",
@@ -212,7 +212,7 @@ const CustomersPage = () => {
       name: customer.name || "",
       koreanName: customer.koreanName || "",
       memberCode: customer.memberCode || "",
-      status: customer.status || "방문중",
+      status: customer.status || "active",
       courseId: customer.courseId || "",
       phoneNumber: customer.phoneNumber || "",
       birthDate: customer.birthDate || "",
@@ -232,8 +232,45 @@ const CustomersPage = () => {
   // 고객 저장 (추가 또는 수정)
   const handleSaveCustomer = async () => {
     try {
+      // 필수 필드 검증
+      if (!formData.name || !formData.status) {
+        setAlertState({
+          open: true,
+          title: "입력 오류",
+          message: "이름(일문)과 상태는 필수 입력 항목입니다.",
+          actionLabel: "확인",
+          isDestructive: false,
+          onAction: () => setAlertState(prev => ({ ...prev, open: false })),
+        });
+        return;
+      }
+
+      // 데이터 형식 준비
+      const requestData = {
+        name: formData.name,
+        koreanName: formData.koreanName || null,
+        memberCode: formData.memberCode ? parseInt(formData.memberCode) : null,
+        status: formData.status,
+        classroom: formData.classroom || null,
+        phoneNumber: formData.phoneNumber || null,
+        birthDate: formData.birthDate || null,
+        registrationDate: formData.registrationDate || null,
+        deadline: formData.deadline || null,
+        experienceDate: formData.experienceDate || null,
+        experienceContent: formData.experienceContent || null,
+        hopeDate: formData.hopeDate || null,
+        memo: formData.memo || null,
+        group: formData.group || null,
+        courseId: formData.courseId ? parseInt(formData.courseId) : null,
+        doctors: formData.doctors?.length ? formData.doctors.map(id => parseInt(id)) : []
+      };
+
+      console.log("고객 저장 요청 데이터:", requestData);
+
       if (editingCustomer) {
-        await updateCustomer(editingCustomer.id, formData);
+        const response = await updateCustomer(editingCustomer.id, requestData);
+        console.log("고객 업데이트 응답:", response);
+        
         setAlertState({
           open: true,
           title: "성공",
@@ -247,7 +284,9 @@ const CustomersPage = () => {
           },
         });
       } else {
-        await createCustomer(formData);
+        const response = await createCustomer(requestData);
+        console.log("고객 생성 응답:", response);
+        
         setAlertState({
           open: true,
           title: "성공",
@@ -263,11 +302,20 @@ const CustomersPage = () => {
       }
     } catch (error) {
       console.error("Error saving customer:", error);
+
+      // 응답 오류 상세 정보 로깅
+      if (error.response) {
+        console.error("오류 응답 상세:", {
+          status: error.response.status,
+          data: error.response.data
+        });
+      }
+
       setAlertState({
         open: true,
         title: "오류",
-        message: "고객 정보 저장에 실패했습니다.",
-        actionLabel: "확인",
+        message: "고객 정보 저장에 실패했습니다: " + (error.response?.data?.message || error.message),
+        actionLabel: "확인", 
         isDestructive: false,
         onAction: () => setAlertState(prev => ({ ...prev, open: false })),
       });
@@ -411,7 +459,7 @@ const CustomersPage = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">
-                  {customers.filter(c => c.status === "방문중").length}
+                  {customers.filter(c => c.status === "active").length}
                 </p>
               </CardContent>
             </Card>
@@ -453,13 +501,18 @@ const CustomersPage = () => {
                     <TableCell>{formatPhoneNumber(customer.phoneNumber) || '-'}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        customer.status === "방문중" 
+                        customer.status === "active" 
                           ? "bg-green-100 text-green-800" 
-                          : customer.status === "탈퇴"
+                          : customer.status === "inactive"
                           ? "bg-red-100 text-red-800"
                           : "bg-orange-100 text-orange-800"
                       }`}>
-                        {customer.status || '미정'}
+                        {customer.status === "active" ? "방문중" :
+                         customer.status === "inactive" ? "탈퇴" :
+                         customer.status === "pending" ? "그룹대기" :
+                         customer.status === "dormant" ? "휴면" :
+                         customer.status === "collected" ? "회수권" : 
+                         "미정"}
                       </span>
                     </TableCell>
                     <TableCell>{customer.classroom || '-'}</TableCell>
@@ -569,11 +622,11 @@ const CustomersPage = () => {
                   <SelectValue placeholder="상태 선택" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="방문중">방문중</SelectItem>
-                  <SelectItem value="탈퇴">탈퇴</SelectItem>
-                  <SelectItem value="그룹대기">그룹대기</SelectItem>
-                  <SelectItem value="휴면">휴면</SelectItem>
-                  <SelectItem value="회수권">회수권</SelectItem>
+                  <SelectItem value="active">방문중</SelectItem>
+                  <SelectItem value="inactive">탈퇴</SelectItem>
+                  <SelectItem value="pending">그룹대기</SelectItem>
+                  <SelectItem value="dormant">휴면</SelectItem>
+                  <SelectItem value="collected">회수권</SelectItem>
                 </SelectContent>
               </Select>
             </div>
