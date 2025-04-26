@@ -86,6 +86,22 @@ const PermissionsPage = () => {
   
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
+  // 과목별 색상 매핑
+  const subjectColors = {
+    'Mathematics': 'bg-blue-100 text-blue-800',
+    'Dermatology': 'bg-purple-100 text-purple-800',
+    'Internal Medicine': 'bg-green-100 text-green-800',
+    'Neurosurgery': 'bg-orange-100 text-orange-800',
+    'Rehabilitation Medicine': 'bg-yellow-100 text-yellow-800',
+    'Orthopedics': 'bg-indigo-100 text-indigo-800',
+    // 기본 색상 (다른 과목이 있는 경우 사용됨)
+  };
+
+  // 과목에 따른 색상 클래스를 가져오는 함수
+  const getSubjectColorClass = (subject) => {
+    return subjectColors[subject] || 'bg-gray-100 text-gray-800';
+  };
+
   // 권한 설정을 위한 권한 정의
   const PERMISSIONS = [
     { key: "canRead", name: "읽기" },
@@ -123,18 +139,6 @@ const PermissionsPage = () => {
     } catch (err) {
       console.error("의사 목록을 불러오는데 실패했습니다:", err);
       setError("의사 목록을 불러오는데 실패했습니다. 다시 시도해주세요.");
-      // 개발 중에는 임시 데이터 사용
-      const tempDoctors = [
-        { id: 1, name: '김태현', email: 'taehyun@zarada.com', subject: '정형외과', role: 'doctor' },
-        { id: 2, name: '이수진', email: 'sujin@zarada.com', subject: '피부과', role: 'doctor' },
-        { id: 3, name: '박준호', email: 'junho@zarada.com', subject: '내과', role: 'doctor' },
-        { id: 4, name: '정미영', email: 'miyoung@zarada.com', subject: '신경외과', role: 'doctor' },
-        { id: 5, name: '최우진', email: 'woojin@zarada.com', subject: '재활의학과', role: 'admin' }
-      ];
-      setDoctors(tempDoctors);
-      if (!selectedDoctor && tempDoctors.length > 0) {
-        setSelectedDoctor(tempDoctors[0].id.toString());
-      }
     } finally {
       setLoading(false);
     }
@@ -171,17 +175,6 @@ const PermissionsPage = () => {
     } catch (err) {
       console.error("권한 정보를 불러오는데 실패했습니다:", err);
       setError("권한 정보를 불러오는데 실패했습니다. 다시 시도해주세요.");
-      // 개발 중에는 임시 권한 데이터 생성
-      const tempPermissions = menus.map((menu) => ({
-        id: menu.id,
-        menuId: menu.id,
-        menuCode: menu.code,
-        canRead: true,
-        canCreate: menu.id % 3 === 0,
-        canUpdate: menu.id % 2 === 0,
-        canDelete: menu.id === menus.length,
-      }));
-      setPermissions(tempPermissions);
     } finally {
       setLoadingPermissions(false);
     }
@@ -321,27 +314,6 @@ const PermissionsPage = () => {
     } catch (err) {
       console.error("의사 추가에 실패했습니다:", err);
       setError("의사 추가에 실패했습니다. 다시 시도해주세요.");
-      
-      // 개발 중에는 임시로 의사 추가 처리
-      const newDoctorId = doctors.length > 0 ? Math.max(...doctors.map(d => d.id)) + 1 : 1;
-      const newDoctorData = {
-        id: newDoctorId,
-        ...newDoctor
-      };
-      
-      setDoctors(prev => [...prev, newDoctorData]);
-      setSelectedDoctor(newDoctorId.toString());
-      
-      setNewDoctor({ 
-        name: "", 
-        email: "", 
-        subject: "",
-        role: "doctor",
-        password: "defaultPassword123" 
-      });
-      
-      setAddDoctorDialogOpen(false);
-    } finally {
       setLoading(false);
     }
   };
@@ -391,7 +363,11 @@ const PermissionsPage = () => {
                   <SelectItem key={doctor.id} value={doctor.id.toString()}>
                     <span className="flex items-center">
                       {doctor.name}
-                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                      <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                        doctor.subject 
+                          ? getSubjectColorClass(doctor.subject) 
+                          : (doctor.role === 'admin' ? subjectColors['관리자'] : 'bg-primary/10 text-primary')
+                      }`}>
                         {doctor.subject || (doctor.role === 'admin' ? '관리자' : '의사')}
                       </span>
                       <span className="ml-2 text-xs text-muted-foreground">
@@ -433,7 +409,9 @@ const PermissionsPage = () => {
 
         <NotionSection title={
           selectedDoctor 
-            ? `${getDoctorById(parseInt(selectedDoctor))?.name || '의사'} 권한 관리` 
+            ? <span className="flex items-center">
+                {getDoctorById(parseInt(selectedDoctor))?.name || '의사'} 권한 관리
+              </span>
             : '권한 관리'
         }>
           {loadingPermissions ? (
