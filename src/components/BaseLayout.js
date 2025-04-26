@@ -15,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   CheckSquare,
+  Shield,
 } from "lucide-react";
 import { useDoctorStore } from "../stores/doctorStore";
 import { Modal } from "antd";
@@ -94,6 +95,13 @@ const BaseLayout = ({ children }) => {
       label: "공지사항",
       onClick: () => handleMenuClick("MENU005", "/notice"),
       menuCode: "MENU005",
+    },
+    {
+      key: "7",
+      icon: <Shield size={16} />,
+      label: "권한 관리",
+      onClick: () => handleMenuClick("MENU006", "/permissions"),
+      menuCode: "MENU006",
     },
   ];
 

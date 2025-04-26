@@ -10,6 +10,7 @@ import ReservationsPage from "../pages/ReservationsPage";
 import NoticesPage from "../pages/NoticesPage";
 import CustomerDetailPage from "../pages/CustomerDetailPage";
 import TodoPage from "../pages/todo/TodoPage";
+import PermissionsPage from "../pages/PermissionsPage";
 
 import { getAccessToken } from "../utils/token";
 
@@ -38,6 +39,7 @@ const Router = () => {
     { path: "/reservation", Component: ReservationsPage },
     { path: "/todo", Component: TodoPage },
     { path: "/notice", Component: NoticesPage },
+    { path: "/permissions", Component: PermissionsPage },
   ];
 
   return (
