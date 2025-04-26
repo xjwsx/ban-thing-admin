@@ -80,8 +80,15 @@ const MultiSelect = ({ options, value, onChange, placeholder }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState(value || []);
   
+  // value 속성이 변경될 때마다 내부 상태 업데이트
   useEffect(() => {
-    setSelectedItems(value || []);
+    // 값이 없는 경우 빈 배열로 설정
+    const newValue = value || [];
+    // 모든 값을 문자열로 변환하여 저장
+    const stringValues = newValue.map(v => String(v));
+    
+    console.log("MultiSelect 값 업데이트:", { original: value, stringValues });
+    setSelectedItems(stringValues);
   }, [value]);
   
   const handleSelect = (itemId) => {
@@ -109,9 +116,10 @@ const MultiSelect = ({ options, value, onChange, placeholder }) => {
   
   // 선택된 항목들의 라벨 가져오기
   const getSelectedLabels = () => {
-    return selectedItems.map(id => 
-      options.find(option => option.value === id)?.label || ''
-    );
+    return selectedItems.map(id => {
+      const option = options.find(opt => String(opt.value) === String(id));
+      return option ? option.label : '';
+    });
   };
   
   return (
@@ -144,12 +152,12 @@ const MultiSelect = ({ options, value, onChange, placeholder }) => {
               <div
                 key={option.value}
                 className={`flex items-center px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm ${
-                  selectedItems.includes(option.value) ? 'bg-accent text-accent-foreground' : ''
+                  selectedItems.includes(String(option.value)) ? 'bg-accent text-accent-foreground' : ''
                 }`}
-                onClick={() => handleSelect(option.value)}
+                onClick={() => handleSelect(String(option.value))}
               >
                 <span>{option.label}</span>
-                {selectedItems.includes(option.value) && (
+                {selectedItems.includes(String(option.value)) && (
                   <svg className="ml-auto h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
@@ -292,6 +300,8 @@ const TodoPage = () => {
       setLoading(true);
       const response = await getDoctorTaskList();
 
+      console.log("할일 API 응답:", response.data);
+
       const transformedTasks = {
         todo: [],
         inProgress: [],
@@ -301,17 +311,36 @@ const TodoPage = () => {
       response.data.forEach((task) => {
         const status = task.status.toLowerCase();
         if (status === "todo" || status === "inprogress" || status === "done") {
-          // Handle both single assignedTo and multiple assignees
-          const assignedTo = task.assignedTo || {};
-          const assignedToNames = Array.isArray(task.assignedTo) 
-            ? task.assignedTo.map(doctor => doctor.name).join(', ')
-            : assignedTo.name || '';
+          // assignedTo와 assignedToId 처리
+          const assignedTo = task.assignedTo || null;
+          let assignedToName = "";
+          let assignedToId = null;
+          let assignedToIds = [];
           
-          // Handle both single assignedToId and multiple assignedToIds
-          const assignedToId = task.assignedToId;
-          const assignedToIds = Array.isArray(task.assignedToIds) 
-            ? task.assignedToIds 
-            : (assignedToId ? [assignedToId] : []);
+          // assignedTo가 배열인 경우 (다중 담당자)
+          if (Array.isArray(assignedTo)) {
+            assignedToName = assignedTo.map(doctor => doctor.name).join(', ');
+            assignedToIds = assignedTo.map(doctor => doctor.id);
+            assignedToId = assignedToIds[0] || null;
+          } 
+          // assignedTo가 객체인 경우 (단일 담당자)
+          else if (assignedTo && typeof assignedTo === 'object') {
+            assignedToName = assignedTo.name || '';
+            assignedToId = assignedTo.id;
+            assignedToIds = [assignedToId];
+          } 
+          // API에서 assignedToId만 제공하는 경우
+          else if (task.assignedToId) {
+            assignedToId = task.assignedToId;
+            assignedToIds = Array.isArray(task.assignedToId) ? task.assignedToId : [task.assignedToId];
+          }
+          
+          console.log(`할일 ID ${task.id}의 담당자:`, { 
+            assignedTo, 
+            assignedToId, 
+            assignedToIds,
+            assignedToName 
+          });
 
           transformedTasks[
             status === "inprogress" ? "inProgress" : status
@@ -323,18 +352,20 @@ const TodoPage = () => {
             startDate: task.startDate,
             endDate: task.endDate,
             doctor: task.assignedTo,
-            registeredBy: task.registeredBy.name,
-            assignedTo: assignedToNames,
+            registeredBy: task.registeredBy?.name || "",
+            assignedTo: assignedToName,
             registeredById: task.registeredById,
             assignedToId: assignedToId,
             assignedToIds: assignedToIds,
             createdAt: task.createdAt,
             updatedAt: task.updatedAt,
             commentCount: task.commentCount || 0,
+            status: status === "inprogress" ? "inProgress" : status,
           });
         }
       });
 
+      console.log("변환된 할일 데이터:", transformedTasks);
       useStore.setState({ tasks: transformedTasks });
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
@@ -460,40 +491,55 @@ const TodoPage = () => {
     }
   };
 
-  const showModal = (task = null, status = null) => {
-    setIsEdit(!!task);
-    setSelectedTask(task);
-
-    // 폼 상태 초기화
+  const showModal = (task) => {
     if (task) {
-      // 편집 모드
+      console.log('편집 중인 타스크:', task);
+      
+      // 담당자 ID 배열 처리
+      let assignedIds = [];
+      
+      // assignedToIds가 있고 배열인 경우
+      if (task.assignedToIds && Array.isArray(task.assignedToIds)) {
+        assignedIds = task.assignedToIds.filter(id => id !== null).map(id => String(id));
+      } 
+      // 단일 assignedToId가 있는 경우
+      else if (task.assignedToId) {
+        assignedIds = [String(task.assignedToId)];
+      }
+      
+      console.log('담당자 IDs:', assignedIds);
+      
+      // Dialog로 전환하고 formState 업데이트
+      setSelectedTask(task);
+      setIsEdit(true);
       setFormState({
-        title: task.title || "",
-        content: task.description || "",
+        title: task.title,
+        content: task.content || task.description,
         startDate: task.startDate ? dayjs(task.startDate) : null,
         endDate: task.endDate ? dayjs(task.endDate) : null,
-        status: task.status === "inprogress" ? "inProgress" : task.status,
-        registeredById: task.registeredById || "",
-        assignedToId: task.assignedToIds || (task.assignedToId ? [task.assignedToId] : [])
+        status: task.status || "todo",
+        registeredById: String(task.registeredById) || "",
+        assignedToId: assignedIds
       });
-
-      // 댓글 가져오기
+      
+      // 댓글 불러오기
       fetchComments(task.id);
-      commentForm.resetFields();
     } else {
-      // 추가 모드
+      // 새 할일 추가 모드
+      setSelectedTask(null);
+      setIsEdit(false);
       setFormState({
         title: "",
         content: "",
         startDate: null,
         endDate: null,
         status: "todo",
-        registeredById: "",
+        registeredById: doctorInfo?.id ? String(doctorInfo.id) : "",
         assignedToId: []
       });
-      
-      setComments([]);
     }
+    
+    // 다이얼로그 열기
     setDialogOpen(true);
   };
 
@@ -501,43 +547,44 @@ const TodoPage = () => {
     try {
       // 필수 필드 검증
       if (!formState.title || !formState.content || !formState.status || 
-          !formState.registeredById || formState.assignedToId.length === 0) {
+          !formState.registeredById) {
         message.error("필수 항목을 모두 입력해주세요");
         return;
       }
       
       setLoading(true);
       
+      // API 요청 데이터 준비
+      const apiStatus = formState.status === "inProgress" ? "inprogress" : formState.status;
+      const payload = {
+        title: formState.title,
+        description: formState.content,
+        status: apiStatus,
+        startDate: formState.startDate ? formState.startDate.format("YYYY-MM-DD") : null,
+        endDate: formState.endDate ? formState.endDate.format("YYYY-MM-DD") : null,
+        registeredById: formState.registeredById,
+      };
+      
+      // assignedToId가 있는 경우에만 포함
+      if (formState.assignedToId && formState.assignedToId.length > 0) {
+        // 단일 담당자인 경우 assignedToId, 다중 담당자인 경우 assignedToIds로 전송
+        if (formState.assignedToId.length === 1) {
+          payload.assignedToId = Number(formState.assignedToId[0]) || formState.assignedToId[0];
+        } else {
+          payload.assignedToIds = formState.assignedToId.map(id => Number(id) || id);
+        }
+      }
+      
+      console.log("할일 저장 데이터:", payload);
+      
       // 기존 할일 수정
       if (isEdit && selectedTask) {
-        const apiStatus = formState.status === "inProgress" ? "inprogress" : formState.status;
-        
-        await updateDoctorTask(selectedTask.id, {
-          title: formState.title,
-          description: formState.content,
-          status: apiStatus,
-          startDate: formState.startDate ? formState.startDate.format("YYYY-MM-DD") : null,
-          endDate: formState.endDate ? formState.endDate.format("YYYY-MM-DD") : null,
-          registeredById: formState.registeredById,
-          assignedToIds: formState.assignedToId
-        });
-        
+        await updateDoctorTask(selectedTask.id, payload);
         message.success("할일이 수정되었습니다");
       } 
       // 새 할일 추가
       else {
-        const apiStatus = formState.status === "inProgress" ? "inprogress" : formState.status;
-        
-        await createDoctorTask({
-          title: formState.title,
-          description: formState.content,
-          status: apiStatus,
-          startDate: formState.startDate ? formState.startDate.format("YYYY-MM-DD") : null,
-          endDate: formState.endDate ? formState.endDate.format("YYYY-MM-DD") : null,
-          registeredById: formState.registeredById,
-          assignedToIds: formState.assignedToId
-        });
-        
+        await createDoctorTask(payload);
         message.success("할일이 추가되었습니다");
       }
       
@@ -700,7 +747,7 @@ const TodoPage = () => {
     <NotionContainer>
       <NotionHeader 
         title="할 일 관리" 
-        description="팀의 할 일을 관리하고 진행 상황을 추적합니다."
+        description="할 일을 관리하고 진행 상황을 추적합니다."
       />
       
       <Alert variant="default" className="mb-6">
@@ -721,7 +768,7 @@ const TodoPage = () => {
                 <SelectValue placeholder="선생님 필터" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={null}>전체 선생님</SelectItem>
+                <SelectItem value={null}>전체</SelectItem>
                 {doctors.map(doctor => (
                   <SelectItem key={doctor.id} value={doctor.id}>{doctor.name}</SelectItem>
                 ))}
@@ -790,8 +837,9 @@ const TodoPage = () => {
             <div className="grid gap-2">
               <Label htmlFor="status">상태 *</Label>
               <Select
-                value={formState.status}
+                value={formState.status || "todo"}
                 onValueChange={(value) => setFormState({...formState, status: value})}
+                defaultValue="todo"
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="상태 선택" className="text-muted-foreground" />
@@ -808,7 +856,7 @@ const TodoPage = () => {
               <div className="grid gap-2">
                 <Label htmlFor="registeredById">등록한 사람 *</Label>
                 <Select
-                  value={formState.registeredById}
+                  value={String(formState.registeredById) || ""}
                   onValueChange={(value) => setFormState({...formState, registeredById: value})}
                 >
                   <SelectTrigger className="w-full">
@@ -816,7 +864,7 @@ const TodoPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {doctors.map(doctor => (
-                      <SelectItem key={doctor.id} value={doctor.id}>{doctor.name}</SelectItem>
+                      <SelectItem key={doctor.id} value={String(doctor.id)}>{doctor.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -826,10 +874,10 @@ const TodoPage = () => {
                 <Label htmlFor="assignedToId">담당자 *</Label>
                 <MultiSelect
                   options={doctors.map(doctor => ({
-                    value: doctor.id,
+                    value: String(doctor.id),
                     label: doctor.name
                   }))}
-                  value={formState.assignedToId}
+                  value={formState.assignedToId ? formState.assignedToId.map(id => String(id)) : []}
                   onChange={(value) => setFormState({...formState, assignedToId: value})}
                   placeholder="담당자 선택"
                 />
