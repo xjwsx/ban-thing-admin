@@ -217,13 +217,25 @@ const PermissionsPage = () => {
     const permission = permissions.find(p => p.id === permissionId);
     if (!permission) return;
     
-    const updatedPermission = { ...permission, [field]: !permission[field] };
+    // API 요청에 필요한 정보로 업데이트 객체 구성
+    const updatedPermission = { 
+      id: permission.id,
+      menuCode: permission.menuCode,
+      canRead: field === 'canRead' ? !permission.canRead : permission.canRead,
+      canCreate: field === 'canCreate' ? !permission.canCreate : permission.canCreate,
+      canUpdate: field === 'canUpdate' ? !permission.canUpdate : permission.canUpdate,
+      canDelete: field === 'canDelete' ? !permission.canDelete : permission.canDelete
+    };
     
     try {
       setLoadingPermissions(true);
-      await updateDoctorPermission(permissionId, updatedPermission);
+      console.log(`권한 업데이트 요청:`, updatedPermission);
       
-      // 성공 후 상태 업데이트
+      // API 호출
+      const response = await updateDoctorPermission(permissionId, updatedPermission);
+      console.log("권한 업데이트 응답:", response);
+      
+      // UI 상태 업데이트
       setPermissions(prev =>
         prev.map(p => p.id === permissionId ? updatedPermission : p)
       );
@@ -240,7 +252,7 @@ const PermissionsPage = () => {
       console.error("권한 업데이트에 실패했습니다:", err);
       setError("권한 업데이트에 실패했습니다. 다시 시도해주세요.");
       
-      // 개발 중에는 UI만 업데이트
+      // 개발 중에는 UI만 업데이트 (오류가 발생해도 UX 유지)
       setPermissions(prev =>
         prev.map(p => p.id === permissionId ? updatedPermission : p)
       );
