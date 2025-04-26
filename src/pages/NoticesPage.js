@@ -456,7 +456,7 @@ const NoticesPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex md:flex-col justify-end p-4 md:border-l">
+                    <div className="flex md:flex-col justify-center items-center p-4 md:border-l">
                       <Button 
                         variant="ghost" 
                         size="sm" 
