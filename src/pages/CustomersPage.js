@@ -366,7 +366,7 @@ const CustomersPage = () => {
       />
       
       <NotionPage>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center">
           <div className="relative w-80">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
