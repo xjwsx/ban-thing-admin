@@ -61,7 +61,6 @@ const NoticesPage = () => {
 
   // 모달 관련 상태
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState(null);
@@ -202,35 +201,30 @@ const NoticesPage = () => {
     setCreateDialogOpen(true);
   };
 
-  const openViewDialog = async (notice) => {
+  const openEditDialog = async (notice) => {
     try {
       // 조회수 증가 API 호출
       await incrementNoticeViewCount(notice.id);
       
       // 선택된 공지사항 설정
       setSelectedNotice(notice);
-      setViewDialogOpen(true);
+      setFormData({
+        title: notice.title,
+        content: notice.content,
+        authorId: notice.author?.id || 1,
+        isImportant: notice.isImportant,
+        target: notice.target,
+        startDate: notice.startDate ? dayjs(notice.startDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
+        endDate: notice.endDate ? dayjs(notice.endDate).format("YYYY-MM-DD") : dayjs().add(30, 'day').format("YYYY-MM-DD"),
+        isActive: notice.isActive,
+      });
+      setEditDialogOpen(true);
       
       // 목록 새로고침 (조회수 업데이트)
       fetchNotices();
     } catch (error) {
       console.error("공지사항 조회 중 오류가 발생했습니다:", error);
     }
-  };
-
-  const openEditDialog = (notice) => {
-    setSelectedNotice(notice);
-    setFormData({
-      title: notice.title,
-      content: notice.content,
-      authorId: notice.author?.id || 1,
-      isImportant: notice.isImportant,
-      target: notice.target,
-      startDate: notice.startDate ? dayjs(notice.startDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"),
-      endDate: notice.endDate ? dayjs(notice.endDate).format("YYYY-MM-DD") : dayjs().add(30, 'day').format("YYYY-MM-DD"),
-      isActive: notice.isActive,
-    });
-    setEditDialogOpen(true);
   };
 
   const openDeleteDialog = (notice) => {
@@ -383,7 +377,7 @@ const NoticesPage = () => {
                 .filter(notice => targetFilter === "all" ? true : notice.target === targetFilter)
                 .slice(0, 3)
                 .map(notice => (
-                  <Card key={notice.id} className="overflow-hidden">
+                  <Card key={notice.id} className="overflow-hidden cursor-pointer hover:border-primary/50 transition-colors" onClick={() => openEditDialog(notice)}>
                     <CardHeader className="pb-3">
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-lg line-clamp-1">{notice.title}</CardTitle>
@@ -430,7 +424,7 @@ const NoticesPage = () => {
               ).map((notice) => (
                 <Card key={notice.id} className="overflow-hidden hover:border-primary/50 transition-colors">
                   <div className="flex flex-col md:flex-row">
-                    <div className="flex-1 p-6 cursor-pointer" onClick={() => openViewDialog(notice)}>
+                    <div className="flex-1 p-6 cursor-pointer" onClick={() => openEditDialog(notice)}>
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-lg font-semibold line-clamp-1">{notice.title}</h3>
                         {notice.isImportant && (
@@ -455,32 +449,6 @@ const NoticesPage = () => {
                           </span>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex md:flex-col justify-center items-center p-4 md:border-l">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0 mb-1"
-                        onClick={() => openViewDialog(notice)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0 mb-1"
-                        onClick={() => openEditDialog(notice)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        onClick={() => openDeleteDialog(notice)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </Card>
@@ -633,55 +601,6 @@ const NoticesPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* 공지사항 보기 다이얼로그 */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          {selectedNotice && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  {selectedNotice.isImportant && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      중요
-                    </span>
-                  )}
-                  <DialogTitle>{selectedNotice.title}</DialogTitle>
-                </div>
-                <DialogDescription>
-                  <div className="flex justify-between mt-2 text-sm">
-                    <span>작성자: {selectedNotice.author?.name || '관리자'}</span>
-                    <span>조회수: {selectedNotice.viewCount}</span>
-                  </div>
-                  <div className="flex justify-between mt-1 text-sm">
-                    <span>대상: {getTargetLabel(selectedNotice.target)}</span>
-                    <span>
-                      게시 기간: {dayjs(selectedNotice.startDate).format('YYYY-MM-DD')} ~ 
-                      {dayjs(selectedNotice.endDate).format('YYYY-MM-DD')}
-                    </span>
-                  </div>
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="py-4 border-t border-b">
-                <div className="whitespace-pre-line">{selectedNotice.content}</div>
-              </div>
-              
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
-                  닫기
-                </Button>
-                <Button onClick={() => {
-                  setViewDialogOpen(false);
-                  openEditDialog(selectedNotice);
-                }}>
-                  수정
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
       {/* 공지사항 수정 다이얼로그 */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
@@ -780,16 +699,43 @@ const NoticesPage = () => {
                 </span>
               </div>
             </div>
+            
+            {selectedNotice && (
+              <div className="mt-2 pt-2 border-t border-border">
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>작성자: {selectedNotice.author?.name || '관리자'}</span>
+                  <span>조회수: {selectedNotice.viewCount}</span>
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                  <span>대상: {getTargetLabel(selectedNotice.target)}</span>
+                  <span>
+                    게시 기간: {dayjs(selectedNotice.startDate).format('YYYY-MM-DD')} ~ 
+                    {dayjs(selectedNotice.endDate).format('YYYY-MM-DD')}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-              취소
-            </Button>
-            <Button onClick={handleUpdateNotice} disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              저장
-            </Button>
+          <DialogFooter className="flex justify-between items-center">
+            <div className="flex gap-2">
+              <Button 
+                variant="destructive" 
+                onClick={() => {
+                  setEditDialogOpen(false);
+                  openDeleteDialog(selectedNotice);
+                }}
+              >
+                삭제
+              </Button>
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                취소
+              </Button>
+              <Button onClick={handleUpdateNotice} disabled={loading}>
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                저장
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
