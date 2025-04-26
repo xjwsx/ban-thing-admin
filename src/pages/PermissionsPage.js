@@ -80,7 +80,7 @@ const PermissionsPage = () => {
     email: "",
     subject: "",
     role: "doctor",
-    password: "defaultPassword123", // 기본 비밀번호
+    password: "",
   });
   const [error, setError] = useState(null);
   
@@ -338,7 +338,7 @@ const PermissionsPage = () => {
       <NotionPage>
         {error && <ErrorMessage message={error} />}
       
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center">
           <div className="w-80">
             <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
               <SelectTrigger>
