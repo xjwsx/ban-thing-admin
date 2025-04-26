@@ -94,21 +94,12 @@ const PermissionsPage = () => {
     'Neurosurgery': 'bg-orange-100 text-orange-800',
     'Rehabilitation Medicine': 'bg-yellow-100 text-yellow-800',
     'Orthopedics': 'bg-indigo-100 text-indigo-800',
-    // 기본 색상 (다른 과목이 있는 경우 사용됨)
   };
 
   // 과목에 따른 색상 클래스를 가져오는 함수
   const getSubjectColorClass = (subject) => {
     return subjectColors[subject] || 'bg-gray-100 text-gray-800';
   };
-
-  // 권한 설정을 위한 권한 정의
-  const PERMISSIONS = [
-    { key: "canRead", name: "읽기" },
-    { key: "canCreate", name: "생성" },
-    { key: "canUpdate", name: "수정" },
-    { key: "canDelete", name: "삭제" },
-  ];
   
   // 의사 목록 가져오기
   const fetchDoctors = async () => {
@@ -193,11 +184,6 @@ const PermissionsPage = () => {
   // 의사 정보 가져오기
   const getDoctorById = (doctorId) => {
     return doctors.find((doctor) => doctor?.id?.toString() === doctorId?.toString()) || {};
-  };
-  
-  // 메뉴 정보 가져오기
-  const getMenuByCode = (menuCode) => {
-    return menus.find(menu => menu.code === menuCode) || {};
   };
   
   // 특정 메뉴에 대한 의사의 권한 가져오기
@@ -366,7 +352,7 @@ const PermissionsPage = () => {
                       <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
                         doctor.subject 
                           ? getSubjectColorClass(doctor.subject) 
-                          : (doctor.role === 'admin' ? subjectColors['관리자'] : 'bg-primary/10 text-primary')
+                          : (doctor.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-primary/10 text-primary')
                       }`}>
                         {doctor.subject || (doctor.role === 'admin' ? '관리자' : '의사')}
                       </span>
@@ -539,7 +525,7 @@ const PermissionsPage = () => {
                 className="col-span-3"
                 value={newDoctor.subject}
                 onChange={(e) => setNewDoctor({...newDoctor, subject: e.target.value})}
-                placeholder="정형외과"
+                placeholder="Mathematics"
               />
             </div>
             
