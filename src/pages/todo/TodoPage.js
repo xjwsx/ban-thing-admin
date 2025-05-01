@@ -580,7 +580,10 @@ const TodoPage = () => {
           // assignedTo 필드에 의사 객체 정보도 추가
           const assignedDoctor = doctors.find(doctor => String(doctor.id) === String(formState.assignedToId[0]));
           if (assignedDoctor) {
-            payload.assignedTo = assignedDoctor;
+            payload.assignedTo = {
+              ...assignedDoctor,
+              resourceName: assignedDoctor.name
+            };
           }
         } 
         // 다중 담당자인 경우
@@ -589,7 +592,10 @@ const TodoPage = () => {
           
           // assignedTo 필드에 의사 객체 배열도 추가
           if (assignedDoctors.length > 0) {
-            payload.assignedTo = assignedDoctors;
+            payload.assignedTo = assignedDoctors.map(doctor => ({
+              ...doctor,
+              resourceName: doctor.name
+            }));
           }
         }
       }
@@ -697,7 +703,10 @@ const TodoPage = () => {
           // assignedTo 필드에 의사 객체 정보도 추가
           const assignedDoctor = doctors.find(doctor => String(doctor.id) === String(values.assignedToId[0]));
           if (assignedDoctor) {
-            requestData.assignedTo = assignedDoctor;
+            requestData.assignedTo = {
+              ...assignedDoctor,
+              resourceName: assignedDoctor.name
+            };
           }
         } 
         // 다중 담당자인 경우
@@ -706,7 +715,10 @@ const TodoPage = () => {
           
           // assignedTo 필드에 의사 객체 배열도 추가
           if (assignedDoctors.length > 0) {
-            requestData.assignedTo = assignedDoctors;
+            requestData.assignedTo = assignedDoctors.map(doctor => ({
+              ...doctor,
+              resourceName: doctor.name
+            }));
           }
         }
       }
