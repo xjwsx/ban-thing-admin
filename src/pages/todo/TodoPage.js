@@ -567,11 +567,30 @@ const TodoPage = () => {
       
       // assignedToId가 있는 경우에만 포함
       if (formState.assignedToId && formState.assignedToId.length > 0) {
-        // 단일 담당자인 경우 assignedToId, 다중 담당자인 경우 assignedToIds로 전송
+        // 담당자 ID 목록에서 해당하는 의사 객체 찾기
+        const assignedDoctors = doctors.filter(doctor => 
+          formState.assignedToId.includes(String(doctor.id))
+        );
+        
+        // 단일 담당자인 경우 
         if (formState.assignedToId.length === 1) {
-          payload.assignedToId = Number(formState.assignedToId[0]) || formState.assignedToId[0];
-        } else {
+          const doctorId = Number(formState.assignedToId[0]) || formState.assignedToId[0];
+          payload.assignedToId = doctorId;
+          
+          // assignedTo 필드에 의사 객체 정보도 추가
+          const assignedDoctor = doctors.find(doctor => String(doctor.id) === String(formState.assignedToId[0]));
+          if (assignedDoctor) {
+            payload.assignedTo = assignedDoctor;
+          }
+        } 
+        // 다중 담당자인 경우
+        else {
           payload.assignedToIds = formState.assignedToId.map(id => Number(id) || id);
+          
+          // assignedTo 필드에 의사 객체 배열도 추가
+          if (assignedDoctors.length > 0) {
+            payload.assignedTo = assignedDoctors;
+          }
         }
       }
       
@@ -661,8 +680,36 @@ const TodoPage = () => {
           : null,
         endDate: values.endDate ? values.endDate.format("YYYY-MM-DD") : null,
         registeredById: values.registeredById,
-        assignedToIds: values.assignedToId, // Using the array of IDs directly
       };
+
+      // 담당자 정보 처리
+      if (values.assignedToId && values.assignedToId.length > 0) {
+        // 담당자 ID 목록에서 해당하는 의사 객체 찾기
+        const assignedDoctors = doctors.filter(doctor => 
+          values.assignedToId.includes(String(doctor.id))
+        );
+        
+        // 단일 담당자인 경우
+        if (values.assignedToId.length === 1) {
+          const doctorId = Number(values.assignedToId[0]) || values.assignedToId[0];
+          requestData.assignedToId = doctorId;
+          
+          // assignedTo 필드에 의사 객체 정보도 추가
+          const assignedDoctor = doctors.find(doctor => String(doctor.id) === String(values.assignedToId[0]));
+          if (assignedDoctor) {
+            requestData.assignedTo = assignedDoctor;
+          }
+        } 
+        // 다중 담당자인 경우
+        else {
+          requestData.assignedToIds = values.assignedToId.map(id => Number(id) || id);
+          
+          // assignedTo 필드에 의사 객체 배열도 추가
+          if (assignedDoctors.length > 0) {
+            requestData.assignedTo = assignedDoctors;
+          }
+        }
+      }
 
       await createDoctorTask(requestData);
 
