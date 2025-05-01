@@ -3,8 +3,7 @@ import {
   NotionContainer, 
   NotionHeader, 
   NotionPage, 
-  NotionSection, 
-  NotionDivider 
+  NotionSection
 } from "../components/NotionLayout";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -21,8 +20,7 @@ import {
   CardHeader, 
   CardTitle, 
   CardDescription, 
-  CardContent, 
-  CardFooter 
+  CardContent
 } from "../components/ui/card";
 import {
   Dialog,
@@ -35,7 +33,6 @@ import {
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
