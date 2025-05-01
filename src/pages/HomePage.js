@@ -4,7 +4,9 @@ import { useMediaQuery } from "react-responsive";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./HomePage.css";
-import { getDoctorSchedule, getDoctorTaskList, updateDoctorTask, createDoctorTask } from "../api/crm";
+import "../styles/calendar-custom.css";
+import { getDoctorTaskList, updateDoctorTask, createDoctorTask } from "../api/crm";
+import api from "../api";
 import useDoctorStore from "../stores/doctorStore";
 import "dayjs/locale/ko";
 import {
@@ -31,7 +33,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -43,8 +44,27 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { Textarea } from "../components/ui/textarea";
+import { useNavigate } from "react-router-dom";
 
+// 한국어 설정
+dayjs.locale('ko');
 const localizer = dayjsLocalizer(dayjs);
+
+// 캘린더 메시지 한글화
+const messages = {
+  allDay: '종일',
+  previous: '이전',
+  next: '다음',
+  today: '오늘',
+  month: '월간',
+  week: '주간',
+  day: '일간',
+  agenda: '일정',
+  date: '날짜',
+  time: '시간',
+  event: '일정',
+  noEventsInRange: '이 기간에 일정이 없습니다.'
+};
 
 const HomePage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -67,6 +87,8 @@ const HomePage = () => {
     endDate: dayjs().add(7, "day").format("YYYY-MM-DD"),
   });
   const [addingTask, setAddingTask] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDoctorTasks = async () => {
@@ -155,65 +177,119 @@ const HomePage = () => {
     if (!doctorInfo) return;
 
     const formattedDate = date.format("YYYY-MM-DD");
+    const monthStart = date.startOf('month').format("YYYY-MM-DD");
+    const monthEnd = date.endOf('month').format("YYYY-MM-DD");
 
     try {
-      const response = await getDoctorSchedule(
-        doctorInfo.name,
-        formattedDate,
-        formattedDate
-      );
-      setDoctorSchedules(response.data);
-
-      // Transform schedules into events for Calendar
-      const calendarEvents = [];
-      Object.entries(response.data.weeklySchedules).forEach(
-        ([date, schedules]) => {
-          schedules.forEach((schedule) => {
-            calendarEvents.push({
-              id: schedule.id,
-              title: `${schedule.contactFirstName}${
-                schedule.contactLastName ? ` ${schedule.contactLastName}` : ""
-              }`,
-              start: dayjs(schedule.startDate).subtract(9, "hours").toDate(),
-              end: dayjs(schedule.endDate).subtract(9, "hours").toDate(),
-              allDay: false,
-              tooltip: {
-                name: `${schedule.contactFirstName}${
-                  schedule.contactLastName ? ` ${schedule.contactLastName}` : ""
-                }`,
-                email: schedule.contactEmail,
-                location: schedule.locationName,
-              },
-            });
-          });
+      // 전체 예약 가져오기 (필터링 없이)
+      console.log("예약 조회 파라미터:", {
+        page: 1,
+        limit: 10
+      });
+      
+      const response = await api.get("/reservations", {
+        params: {
+          page: 1,
+          limit: 10,
         }
+      });
+      
+      console.log("예약 응답:", response);
+      
+      // 변환된 데이터 구조 저장
+      const transformedData = {
+        weeklySchedules: {}
+      };
+      
+      // 달력 이벤트 배열 초기화
+      const calendarEvents = [];
+      
+      // API 응답 구조에 따라 적절히 데이터 추출
+      const allReservations = Array.isArray(response.data)
+        ? response.data                        // 응답이 바로 배열인 경우
+        : response.data?.data                  // response.data.data 형식
+          ? response.data.data
+          : response.data?.items               // response.data.items 형식
+            ? response.data.items
+            : [];                              // 기본값 빈 배열
+      
+      // 현재 로그인한 의사의 예약만 필터링
+      const reservations = allReservations.filter(reservation => 
+        reservation.doctorId === doctorInfo.id
       );
-      setEvents(calendarEvents);
-
-      // Extract unique customers from schedules
-      const customers = new Map();
-      Object.entries(response.data.weeklySchedules).forEach(
-        ([date, schedules]) => {
-          schedules.forEach((schedule) => {
-            const customerId = schedule.contactId;
-            if (!customers.has(customerId)) {
-              customers.set(customerId, {
-                name: `${schedule.contactFirstName}${
-                  schedule.contactLastName ? ` ${schedule.contactLastName}` : ""
-                }`,
-                avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=1`,
-                subject: schedule.title,
-                level: schedule.locationName,
-              });
+      
+      console.log("로그인한 의사의 예약 데이터:", reservations);
+      
+      if (reservations && reservations.length > 0) {
+        // 각 예약을 달력 이벤트로 변환
+        reservations.forEach(reservation => {
+          // 예약 날짜와 시간 조합
+          const startDateTime = `${reservation.reservationDate.split('T')[0]}T${reservation.startTime}`;
+          const endDateTime = `${reservation.reservationDate.split('T')[0]}T${reservation.endTime}`;
+          
+          // 달력 이벤트 생성
+          calendarEvents.push({
+            id: reservation.id,
+            title: reservation.customer?.name || reservation.customer?.koreanName || '고객',
+            start: dayjs(startDateTime).toDate(),
+            end: dayjs(endDateTime).toDate(),
+            allDay: false,
+            status: reservation.status,
+            resource: {
+              name: reservation.customer?.name || reservation.customer?.koreanName || '고객',
+              email: reservation.customer?.email || '',
+              location: reservation.visitRoute || '',
+              sessionTreatment: reservation.sessionTreatment || '',
+              doctor: reservation.doctor
             }
           });
-        }
-      );
+          
+          // 날짜별 스케줄 구조화
+          const dateKey = reservation.reservationDate.split('T')[0];
+          if (!transformedData.weeklySchedules[dateKey]) {
+            transformedData.weeklySchedules[dateKey] = [];
+          }
+          
+          transformedData.weeklySchedules[dateKey].push({
+            id: reservation.id,
+            title: reservation.sessionTreatment || '',
+            contactId: reservation.customerId,
+            contactFirstName: reservation.customer?.name || reservation.customer?.koreanName || '',
+            contactLastName: '',
+            contactEmail: reservation.customer?.email || '',
+            startDate: startDateTime,
+            endDate: endDateTime,
+            locationName: reservation.visitRoute || ''
+          });
+        });
+      }
+      
+      // 기존 상태 업데이트
+      setDoctorSchedules(transformedData);
+      setEvents(calendarEvents);
+
+      // 고유한 고객 추출
+      const customers = new Map();
+      if (reservations && reservations.length > 0) {
+        reservations.forEach(reservation => {
+          const customer = reservation.customer;
+          if (customer && !customers.has(customer.id)) {
+            customers.set(customer.id, {
+              name: customer.name || customer.koreanName || '',
+              avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${customer.id}`,
+              subject: reservation.sessionTreatment || '',
+              level: reservation.visitType || '',
+            });
+          }
+        });
+      }
 
       setCurrentCustomers(Array.from(customers.values()));
     } catch (error) {
       console.error("Failed to fetch schedules:", error);
       setDoctorSchedules([]);
+      setEvents([]);
+      setCurrentCustomers([]);
     }
   };
 
@@ -222,6 +298,36 @@ const HomePage = () => {
       fetchDoctorSchedules(selectedDate);
     }
   }, [doctorInfo, selectedDate]);
+
+  // 캘린더 이벤트 스타일 지정
+  const eventStyleGetter = (event) => {
+    let backgroundColor = 'rgba(16, 185, 129, 0.9)'; // 기본 초록색(예약 확정)
+    let borderColor = 'rgb(5, 150, 105)';
+    let textColor = '#fff';
+    
+    return {
+      style: {
+        backgroundColor,
+        color: textColor,
+        borderRadius: '4px',
+        border: `1px solid ${borderColor}`,
+        borderLeft: `3px solid ${borderColor}`,
+        display: 'block',
+        padding: '2px 5px',
+        fontSize: '12px',
+        fontWeight: '500',
+        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.15s ease',
+        cursor: 'pointer'
+      },
+      className: `reservation-status-confirmed`
+    };
+  };
+
+  // 일정 클릭 핸들러 (추후 확장 가능)
+  const handleEventClick = (event) => {
+    alert(`고객: ${event.title}\n장소: ${event.resource.location || '-'}\n시술: ${event.resource.sessionTreatment || '-'}`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -269,31 +375,33 @@ const HomePage = () => {
             {/* Recent Appointments Card */}
             <Card className="shadow-sm">
               <CardHeader>
-                <CardTitle>최근 예약</CardTitle>
+                <CardTitle>예약</CardTitle>
                 <CardDescription>오늘의 예약 현황</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[1, 2, 3].map((_, i) => (
-                    <div key={i} className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarImage
-                          src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${i}`}
-                        />
-                        <AvatarFallback>고객</AvatarFallback>
-                      </Avatar>
+                  {events
+                    .filter(event => dayjs(event.start).isSame(dayjs(), 'day'))
+                    .slice(0, 3)
+                    .map((event, i) => (
+                    <div key={event.id} className="flex items-center space-x-2">
                       <div>
-                        <p className="text-sm font-medium">홍길동</p>
+                        <p className="text-sm font-medium">{event.title}</p>
                         <p className="text-xs text-muted-foreground">
-                          14:00 - 15:00
+                          {dayjs(event.start).format('HH:mm')} - {dayjs(event.end).format('HH:mm')}
                         </p>
                       </div>
                     </div>
                   ))}
+                  {events.filter(event => dayjs(event.start).isSame(dayjs(), 'day')).length === 0 && (
+                    <div className="text-center py-4 text-gray-500">
+                      오늘 예약이 없습니다
+                    </div>
+                  )}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="link" className="px-0">
+                <Button variant="link" className="px-0" onClick={() => navigate("/reservation")}>
                   모든 예약 보기
                 </Button>
               </CardFooter>
@@ -336,14 +444,7 @@ const HomePage = () => {
                   </div>
                 )}
               </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button 
-                  variant="link" 
-                  className="px-0" 
-                  onClick={() => setIsAddTaskModalOpen(true)}
-                >
-                  할 일 추가
-                </Button>
+              <CardFooter>
                 <Button 
                   variant="link" 
                   className="px-0" 
@@ -358,121 +459,148 @@ const HomePage = () => {
 
         <NotionDivider />
 
-        {/* Calendar */}
-        <NotionSection title="예약 일정">
-          <div className="h-[500px] md:h-[600px]">
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: "100%" }}
-              defaultView={isMobile ? "day" : "week"}
-              tooltipAccessor={(event) =>
-                `${event.tooltip.name}\n${event.tooltip.email}\n${event.tooltip.location}`
-              }
-              date={calendarDate}
-              onNavigate={(date) => {
-                setCalendarDate(date);
-                setSelectedDate(dayjs(date));
-              }}
-            />
+        {/* 개선된 캘린더 */}
+        <NotionSection title="내 예약 일정">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="h-[500px] md:h-[600px]">
+                <Calendar
+                  localizer={localizer}
+                  events={events}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: "100%" }}
+                  className="notion-calendar"
+                  defaultView={isMobile ? "day" : "week"}
+                  views={['month', 'week', 'day', 'agenda']}
+                  date={calendarDate}
+                  onNavigate={(date) => {
+                    setCalendarDate(date);
+                    setSelectedDate(dayjs(date));
+                  }}
+                  eventPropGetter={eventStyleGetter}
+                  onSelectEvent={handleEventClick}
+                  formats={{
+                    timeGutterFormat: (date, culture, localizer) => localizer.format(date, 'HH:mm', culture),
+                    dayFormat: 'ddd DD',
+                    monthHeaderFormat: 'YYYY년 MM월',
+                    dayHeaderFormat: 'M월 D일 ddd',
+                    dayRangeHeaderFormat: ({ start, end }, culture, localizer) =>
+                      `${localizer.format(start, 'M월 D일', culture)} - ${localizer.format(end, 'M월 D일', culture)}`
+                  }}
+                  messages={messages}
+                  culture="ko"
+                  tooltipAccessor={(event) => 
+                    `고객: ${event.title}\n장소: ${event.resource.location || '-'}\n시술: ${event.resource.sessionTreatment || '-'}`
+                  }
+                  popup
+                  selectable
+                />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="mt-4 p-3 bg-muted/30 rounded flex justify-center">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
+              <span className="text-sm">내 예약 일정</span>
+            </div>
           </div>
         </NotionSection>
-
-        {/* 할 일 추가 모달 */}
-        <Dialog open={isAddTaskModalOpen} onOpenChange={setIsAddTaskModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>할 일 추가</DialogTitle>
-              <DialogDescription>
-                새로운 할 일을 추가합니다. 필요한 정보를 입력하세요.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">
-                  제목
-                </Label>
-                <Input
-                  id="title"
-                  name="title"
-                  value={newTask.title}
-                  onChange={handleNewTaskChange}
-                  className="col-span-3"
-                  placeholder="할 일 제목을 입력하세요"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  설명
-                </Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={newTask.description}
-                  onChange={handleNewTaskChange}
-                  className="col-span-3"
-                  placeholder="할 일에 대한 설명을 입력하세요"
-                  rows={3}
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="status" className="text-right">
-                  상태
-                </Label>
-                <Select
-                  value={newTask.status}
-                  onValueChange={handleStatusChange}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="상태 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todo">할 일</SelectItem>
-                    <SelectItem value="inprogress">진행중</SelectItem>
-                    <SelectItem value="done">완료</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="startDate" className="text-right">
-                  시작일
-                </Label>
-                <Input
-                  id="startDate"
-                  name="startDate"
-                  type="date"
-                  value={newTask.startDate}
-                  onChange={handleNewTaskChange}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="endDate" className="text-right">
-                  종료일
-                </Label>
-                <Input
-                  id="endDate"
-                  name="endDate"
-                  type="date"
-                  value={newTask.endDate}
-                  onChange={handleNewTaskChange}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsAddTaskModalOpen(false)}>
-                취소
-              </Button>
-              <Button type="button" onClick={handleAddTask} disabled={addingTask}>
-                {addingTask ? "추가 중..." : "추가"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
+
+      {/* 할 일 추가 모달 */}
+      <Dialog open={isAddTaskModalOpen} onOpenChange={setIsAddTaskModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>할 일 추가</DialogTitle>
+            <DialogDescription>
+              새로운 할 일을 추가합니다. 필요한 정보를 입력하세요.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="title" className="text-right">
+                제목
+              </Label>
+              <Input
+                id="title"
+                name="title"
+                value={newTask.title}
+                onChange={handleNewTaskChange}
+                className="col-span-3"
+                placeholder="할 일 제목을 입력하세요"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                설명
+              </Label>
+              <Textarea
+                id="description"
+                name="description"
+                value={newTask.description}
+                onChange={handleNewTaskChange}
+                className="col-span-3"
+                placeholder="할 일에 대한 설명을 입력하세요"
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="status" className="text-right">
+                상태
+              </Label>
+              <Select
+                value={newTask.status}
+                onValueChange={handleStatusChange}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="상태 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todo">할 일</SelectItem>
+                  <SelectItem value="inprogress">진행중</SelectItem>
+                  <SelectItem value="done">완료</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="startDate" className="text-right">
+                시작일
+              </Label>
+              <Input
+                id="startDate"
+                name="startDate"
+                type="date"
+                value={newTask.startDate}
+                onChange={handleNewTaskChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="endDate" className="text-right">
+                종료일
+              </Label>
+              <Input
+                id="endDate"
+                name="endDate"
+                type="date"
+                value={newTask.endDate}
+                onChange={handleNewTaskChange}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsAddTaskModalOpen(false)}>
+              취소
+            </Button>
+            <Button type="button" onClick={handleAddTask} disabled={addingTask}>
+              {addingTask ? "추가 중..." : "추가"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
