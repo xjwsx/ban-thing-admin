@@ -17,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { Badge } from "../components/ui/badge";
@@ -68,8 +67,6 @@ const messages = {
 
 const HomePage = () => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [doctorSchedules, setDoctorSchedules] = useState([]);
-  const [currentCustomers, setCurrentCustomers] = useState([]);
   const [doctorTasks, setDoctorTasks] = useState([]);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const doctorInfo = useDoctorStore((state) => state.doctorInfo);
@@ -97,7 +94,6 @@ const HomePage = () => {
       try {
         setLoadingTasks(true);
         const response = await getDoctorTaskList(doctorInfo.id);
-        console.log("Doctor tasks:", response.data);
         setDoctorTasks(response.data);
         setLoadingTasks(false);
       } catch (error) {
@@ -176,17 +172,7 @@ const HomePage = () => {
   const fetchDoctorSchedules = async (date) => {
     if (!doctorInfo) return;
 
-    const formattedDate = date.format("YYYY-MM-DD");
-    const monthStart = date.startOf('month').format("YYYY-MM-DD");
-    const monthEnd = date.endOf('month').format("YYYY-MM-DD");
-
     try {
-      // 전체 예약 가져오기 (필터링 없이)
-      console.log("예약 조회 파라미터:", {
-        page: 1,
-        limit: 10
-      });
-      
       const response = await api.get("/reservations", {
         params: {
           page: 1,
@@ -194,31 +180,22 @@ const HomePage = () => {
         }
       });
       
-      console.log("예약 응답:", response);
-      
-      // 변환된 데이터 구조 저장
-      const transformedData = {
-        weeklySchedules: {}
-      };
-      
       // 달력 이벤트 배열 초기화
       const calendarEvents = [];
       
       // API 응답 구조에 따라 적절히 데이터 추출
       const allReservations = Array.isArray(response.data)
-        ? response.data                        // 응답이 바로 배열인 경우
-        : response.data?.data                  // response.data.data 형식
+        ? response.data
+        : response.data?.data
           ? response.data.data
-          : response.data?.items               // response.data.items 형식
+          : response.data?.items
             ? response.data.items
-            : [];                              // 기본값 빈 배열
+            : [];
       
       // 현재 로그인한 의사의 예약만 필터링
       const reservations = allReservations.filter(reservation => 
         reservation.doctorId === doctorInfo.id
       );
-      
-      console.log("로그인한 의사의 예약 데이터:", reservations);
       
       if (reservations && reservations.length > 0) {
         // 각 예약을 달력 이벤트로 변환
@@ -243,53 +220,13 @@ const HomePage = () => {
               doctor: reservation.doctor
             }
           });
-          
-          // 날짜별 스케줄 구조화
-          const dateKey = reservation.reservationDate.split('T')[0];
-          if (!transformedData.weeklySchedules[dateKey]) {
-            transformedData.weeklySchedules[dateKey] = [];
-          }
-          
-          transformedData.weeklySchedules[dateKey].push({
-            id: reservation.id,
-            title: reservation.sessionTreatment || '',
-            contactId: reservation.customerId,
-            contactFirstName: reservation.customer?.name || reservation.customer?.koreanName || '',
-            contactLastName: '',
-            contactEmail: reservation.customer?.email || '',
-            startDate: startDateTime,
-            endDate: endDateTime,
-            locationName: reservation.visitRoute || ''
-          });
         });
       }
       
-      // 기존 상태 업데이트
-      setDoctorSchedules(transformedData);
       setEvents(calendarEvents);
-
-      // 고유한 고객 추출
-      const customers = new Map();
-      if (reservations && reservations.length > 0) {
-        reservations.forEach(reservation => {
-          const customer = reservation.customer;
-          if (customer && !customers.has(customer.id)) {
-            customers.set(customer.id, {
-              name: customer.name || customer.koreanName || '',
-              avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${customer.id}`,
-              subject: reservation.sessionTreatment || '',
-              level: reservation.visitType || '',
-            });
-          }
-        });
-      }
-
-      setCurrentCustomers(Array.from(customers.values()));
     } catch (error) {
       console.error("Failed to fetch schedules:", error);
-      setDoctorSchedules([]);
       setEvents([]);
-      setCurrentCustomers([]);
     }
   };
 
@@ -324,9 +261,24 @@ const HomePage = () => {
     };
   };
 
-  // 일정 클릭 핸들러 (추후 확장 가능)
+  // 일정 클릭 핸들러
   const handleEventClick = (event) => {
     alert(`고객: ${event.title}\n장소: ${event.resource.location || '-'}\n시술: ${event.resource.sessionTreatment || '-'}`);
+  };
+
+  // 오늘 예약 건수 계산
+  const getTodayReservationsCount = () => {
+    return events.filter(event => dayjs(event.start).isSame(dayjs(), 'day')).length;
+  };
+
+  // 완료된 예약 건수 계산
+  const getCompletedReservationsCount = () => {
+    return events.filter(event => event.status === 'completed').length;
+  };
+
+  // 대기 중인 예약 건수 계산
+  const getPendingReservationsCount = () => {
+    return events.filter(event => event.status === 'pending').length;
   };
 
   return (
@@ -350,7 +302,7 @@ const HomePage = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">전체 예약</span>
                     <Badge variant="secondary" className="text-lg">
-                      24
+                      {events.length}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -359,13 +311,13 @@ const HomePage = () => {
                       variant="success"
                       className="text-lg bg-green-100 text-green-800"
                     >
-                      18
+                      {getCompletedReservationsCount()}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">대기 중</span>
                     <Badge variant="outline" className="text-lg">
-                      6
+                      {getPendingReservationsCount()}
                     </Badge>
                   </div>
                 </div>
@@ -448,7 +400,7 @@ const HomePage = () => {
                 <Button 
                   variant="link" 
                   className="px-0" 
-                  onClick={() => window.location.href = '/todo'}
+                  onClick={() => navigate("/todo")}
                 >
                   전체 보기
                 </Button>
