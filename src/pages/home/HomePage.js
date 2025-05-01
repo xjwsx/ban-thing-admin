@@ -4,10 +4,10 @@ import { useMediaQuery } from "react-responsive";
 import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./HomePage.css";
-import "../styles/calendar-custom.css";
-import { getDoctorTaskList, updateDoctorTask, createDoctorTask } from "../api/crm";
-import api from "../api";
-import useDoctorStore from "../stores/doctorStore";
+import "../../styles/calendar-custom.css";
+import { getDoctorTaskList, updateDoctorTask, createDoctorTask } from "../../api/crm";
+import api from "../../api";
+import useDoctorStore from "../../stores/doctorStore";
 import "dayjs/locale/ko";
 import {
   Card,
@@ -16,15 +16,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Checkbox } from "../components/ui/checkbox";
-import { Badge } from "../components/ui/badge";
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Badge } from "../../components/ui/badge";
 import { 
   NotionHeader, 
   NotionSection, 
   NotionDivider 
-} from "../components/NotionLayout";
+} from "../../components/NotionLayout";
 import {
   Dialog,
   DialogContent,
@@ -32,17 +32,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
+} from "../../components/ui/dialog";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
 import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { Textarea } from "../components/ui/textarea";
+} from "../../components/ui/select";
+import { Textarea } from "../../components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 
 // 한국어 설정

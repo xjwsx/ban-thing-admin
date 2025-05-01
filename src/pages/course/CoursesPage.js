@@ -4,9 +4,9 @@ import {
   NotionHeader, 
   NotionPage, 
   NotionSection, 
-} from "../components/NotionLayout";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+} from "../../components/NotionLayout";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { 
   Table, 
   TableHeader, 
@@ -14,13 +14,13 @@ import {
   TableHead, 
   TableRow, 
   TableCell 
-} from "../components/ui/table";
+} from "../../components/ui/table";
 import { 
   Card, 
   CardHeader, 
   CardTitle, 
   CardContent, 
-} from "../components/ui/card";
+} from "../../components/ui/card";
 import { 
   Dialog, 
   DialogContent, 
@@ -28,7 +28,7 @@ import {
   DialogFooter, 
   DialogHeader, 
   DialogTitle 
-} from "../components/ui/dialog";
+} from "../../components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,17 +38,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../components/ui/alert-dialog";
-import { Textarea } from "../components/ui/textarea";
-import { Label } from "../components/ui/label";
-import { Switch } from "../components/ui/switch";
+} from "../../components/ui/alert-dialog";
+import { Textarea } from "../../components/ui/textarea";
+import { Label } from "../../components/ui/label";
+import { Switch } from "../../components/ui/switch";
 import { Search, Plus, ArrowUpDown, Loader2 } from "lucide-react";
 import {
   getCourseList,
   createCourse,
   updateCourse,
   deleteCourse,
-} from "../api/crm";
+} from "../../api/crm";
 
 // 페이지 사이즈 상수 추가
 const PAGE_SIZE = 10;

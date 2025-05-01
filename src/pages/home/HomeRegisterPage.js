@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useTodoStore from "../stores/todoStore";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
-import { DatePicker } from "../components/ui/date-picker";
-import { Label } from "../components/ui/label";
-import { NotionHeader, NotionSection } from "../components/NotionLayout";
+import useTodoStore from "../../stores/todoStore";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { DatePicker } from "../../components/ui/date-picker";
+import { Label } from "../../components/ui/label";
+import { NotionHeader, NotionSection } from "../../components/NotionLayout";
 
 const HomeRegisterPage = () => {
   const navigate = useNavigate();
