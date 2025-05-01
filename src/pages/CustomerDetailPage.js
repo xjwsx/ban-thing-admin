@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getCustomerById, updateCustomer } from "../api/customer";
+import { getCustomerDetail, updateCustomer } from "../api/crm";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -79,7 +79,7 @@ const CustomerDetailPage = () => {
     const fetchCustomerData = async () => {
       try {
         setLoading(true);
-        const data = await getCustomerById(id);
+        const data = await getCustomerDetail(id);
         setCustomer(data);
       } catch (err) {
         setError("고객 정보를 불러오는데 실패했습니다.");
