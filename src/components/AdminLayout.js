@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Users,
-  FileText,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  Siren,
+  ArchiveX,
 } from "lucide-react";
 import { useAdminStore } from "../stores/adminStore";
 import { Modal } from "antd";
@@ -33,14 +34,14 @@ const AdminLayout = ({ children }) => {
     },
     {
       key: "3",
-      icon: <FileText size={16} />,
+      icon: <Siren size={16} />,
       label: "신고 내역",
       onClick: () => navigate("/admin/reports"),
       path: "/admin/reports",
     },
     {
       key: "4",
-      icon: <FileText size={16} />,
+      icon: <ArchiveX size={16} />,
       label: "탈퇴 내역",
       onClick: () => navigate("/admin/withdrawals"),
       path: "/admin/withdrawals",
