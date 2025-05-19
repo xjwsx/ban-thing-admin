@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchIcon, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -38,6 +38,105 @@ const ReportsPage = () => {
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState(null);
   
+  // 신고 사유 데이터 정의
+  const reasonsMap = {
+    "advert": {
+      label: "광고성 콘텐츠",
+      subReasons: [
+        { value: "advert_1", label: "상점 및 타사이트 홍보" },
+        { value: "advert_2", label: "블래만 내용" },
+        { value: "advert_3", label: "직성적 신고" }
+      ]
+    },
+    "product_info": {
+      label: "상품 정보 부정확",
+      subReasons: [
+        { value: "product_info_1", label: "상품 정보 부정확" }
+      ]
+    },
+    "prohibited_item": {
+      label: "거래 금지 품목",
+      subReasons: [
+        { value: "prohibited_item_1", label: "거래 금지 품목" }
+      ]
+    },
+    "unsafe_trade": {
+      label: "안전한 거래 거부",
+      subReasons: [
+        { value: "unsafe_trade_1", label: "안전한 거래 거부" }
+      ]
+    },
+    "fraud": {
+      label: "사기 의심",
+      subReasons: [
+        { value: "fraud_1", label: "사기 의심" }
+      ]
+    },
+    "copyright": {
+      label: "전문 판매업자 의심",
+      subReasons: [
+        { value: "copyright_1", label: "전문 판매업자 의심" }
+      ]
+    },
+    "illegal": {
+      label: "불법한 내용",
+      subReasons: [
+        { value: "illegal_1", label: "불법한 내용" }
+      ]
+    },
+    "offensive": {
+      label: "직성적 신고",
+      subReasons: [
+        { value: "offensive_1", label: "직성적 신고" }
+      ]
+    },
+    "banned_account": {
+      label: "반려동물(식용 제외)",
+      subReasons: [
+        { value: "banned_1", label: "가봉(쥐조류/이빨동물)" },
+        { value: "banned_2", label: "파충류(뱀/거북/도마뱀 등)" },
+        { value: "banned_3", label: "개인정보 거래(SNS계정, 인증번호 등)" },
+        { value: "banned_4", label: "계정제공/아이템/대리육성" },
+        { value: "banned_5", label: "담배" },
+        { value: "banned_6", label: "화장품 샘플(견본품, 증정품)" },
+        { value: "banned_7", label: "음란물 / 성인용품" },
+        { value: "banned_8", label: "의약품/의료 기기" },
+        { value: "banned_9", label: "주류" }
+      ]
+    },
+    "animal": {
+      label: "동일/유사한 제품을 단기간에 판매",
+      subReasons: [
+        { value: "animal_1", label: "동일 제품을 다양한 사이즈나 색상 판매" },
+        { value: "animal_2", label: "거래 완료 후, 추가 금액 요청" }
+      ]
+    },
+    "trade_violation": {
+      label: "원금 거래 및 약투대납 유도",
+      subReasons: [
+        { value: "trade_violation_1", label: "배송완료 전 거래완료 요청" },
+        { value: "trade_violation_2", label: "거래 완료 후, 추가 금액 요청" }
+      ]
+    },
+    "bad_user": {
+      label: "비매너 사용자",
+      subReasons: [
+        { value: "bad_user_1", label: "거래 중 문의 발생" },
+        { value: "bad_user_2", label: "사기 의심" },
+        { value: "bad_user_3", label: "특정 버튼 클릭유도 사용" },
+        { value: "bad_user_4", label: "연락 목적외 활용하지 않는 대화 시도" },
+        { value: "bad_user_5", label: "부적절한 성적 행위" },
+        { value: "bad_user_6", label: "기타 부적절한 행위" }
+      ]
+    }
+  };
+
+  // 상위 사유 변경 시 하위 사유 초기화
+  const handleMainReasonChange = (value) => {
+    setMainReason(value);
+    setSubReason(null);
+  };
+
   // 모의 데이터 생성
   const mockData = [
     {
@@ -203,7 +302,7 @@ const ReportsPage = () => {
           </Popover>
 
           {/* 상위 신고 사유 */}
-          <Select value={mainReason} onValueChange={setMainReason}>
+          <Select value={mainReason} onValueChange={handleMainReasonChange}>
             <SelectTrigger className="border border-gray-300">
               {mainReason ? (
                 <SelectValue />
@@ -212,14 +311,14 @@ const ReportsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="reason1">부적절한 컨텐츠</SelectItem>
-              <SelectItem value="reason2">사기/사칭</SelectItem>
-              <SelectItem value="reason3">욕설/비하</SelectItem>
+              {Object.entries(reasonsMap).map(([key, value]) => (
+                <SelectItem key={key} value={key}>{value.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
           {/* 하위 신고 사유 */}
-          <Select value={subReason} onValueChange={setSubReason}>
+          <Select value={subReason} onValueChange={setSubReason} disabled={!mainReason}>
             <SelectTrigger className="border border-gray-300">
               {subReason ? (
                 <SelectValue />
@@ -228,20 +327,22 @@ const ReportsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="sub1">유해한 컨텐츠</SelectItem>
-              <SelectItem value="sub2">허위 정보</SelectItem>
-              <SelectItem value="sub3">개인정보 노출</SelectItem>
+              {mainReason && reasonsMap[mainReason].subReasons.map((subReason) => (
+                <SelectItem key={subReason.value} value={subReason.value}>
+                  {subReason.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="flex items-center gap-[10px]">
           {/* 검색 키워드 */}
           <div className="relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="검색할 키워드를 입력하세요."
-              className="pl-8 w-full"
+              className="pl-8 w-[204px] h-[40px]"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
@@ -249,7 +350,7 @@ const ReportsPage = () => {
 
           {/* 상태 */}
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="border border-gray-300">
+            <SelectTrigger className="border border-gray-300 w-[126px] h-[40px]">
               {status ? (
                 <SelectValue />
               ) : (
@@ -264,14 +365,12 @@ const ReportsPage = () => {
           </Select>
 
           {/* 검색 버튼 */}
-          <div className="col-span-2 flex justify-end">
-            <Button
-              className="bg-black hover:bg-gray-800 w-[165px]"
-              onClick={handleSearch}
-            >
-              검색
-            </Button>
-          </div>
+          <Button
+            className="bg-black hover:bg-gray-800 w-[165px] h-[40px] ml-auto"
+            onClick={handleSearch}
+          >
+            검색
+          </Button>
         </div>
       </div>
 

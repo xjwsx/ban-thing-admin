@@ -139,7 +139,7 @@ const WithdrawalsPage = () => {
           <div className="relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="검색할 키워드를 입력하세요."
+              placeholder="Search..."
               className="pl-8 w-[204px] h-[40px]"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -156,10 +156,12 @@ const WithdrawalsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="reason1">서비스 불만족</SelectItem>
-              <SelectItem value="reason2">개인 정보 보호</SelectItem>
-              <SelectItem value="reason3">다른 서비스 이용</SelectItem>
-              <SelectItem value="reason4">기타</SelectItem>
+              <SelectItem value="reason1">찾는 물품이 없어요</SelectItem>
+              <SelectItem value="reason2">물품이 안 팔려요</SelectItem>
+              <SelectItem value="reason3">비매너 사용자를 만났어요</SelectItem>
+              <SelectItem value="reason4">상품을 찾기 불편해요</SelectItem>
+              <SelectItem value="reason5">개인정보를 삭제하고 싶어요</SelectItem>
+              <SelectItem value="reason6">기타</SelectItem>
             </SelectContent>
           </Select>
 
