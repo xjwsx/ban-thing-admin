@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAdminStore } from "../stores/adminStore";
 import { Modal } from "antd";
+import IconSvg from "../assets/icon.svg";
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -102,21 +103,24 @@ const AdminLayout = ({ children }) => {
       {/* Sidebar */}
       <div
         className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
-          isExpanded ? "w-60" : "w-14"
+          isExpanded ? "w-[255px]" : "w-14"
         }`}
       >
-        <div className="px-3 py-4 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-6">
+        <div className="px-4 py-4 flex flex-col h-full">
+          <div className="flex items-center justify-between h-[52px] mb-4">
             <div
-              className={`font-medium text-lg text-gray-800 cursor-pointer transition-opacity duration-300 ease-in-out overflow-hidden ${
+              className={`font-medium text-gray-800 cursor-pointer transition-opacity duration-300 ease-in-out overflow-hidden ${
                 isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
               }`}
               onClick={() => navigate("/admin")}
             >
-              <div className="flex items-center">
-                <span className="font-bold">BANTHING</span>
+              <div className="flex items-center gap-3">
+                <img src={IconSvg} alt="BANTHING Icon" className="w-[32px] h-[32px]" />
+                <div className="flex flex-col">
+                  <span className="font-bold text-[14px] leading-tight">BANTHING</span>
+                  <span className="text-[12px]">V1.0.0</span>
+                </div>
               </div>
-              <div className="text-xs">V1.0.0</div>
             </div>
             <button
               onClick={() => setIsExpanded(!isExpanded)}

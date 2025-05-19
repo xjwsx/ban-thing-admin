@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import { useAdminStore } from "../../stores/adminStore";
-import { SearchIcon, ChevronDown, Check, CalendarIcon } from "lucide-react";
+import { SearchIcon, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-
-// Shadcn UI 컴포넌트들
 import {
   Table,
   TableHeader,
@@ -31,7 +28,6 @@ import { Calendar } from "../../components/ui/calendar";
 import { Badge } from "../../components/ui/badge";
 
 const ReportsPage = () => {
-  const { reports, isLoading } = useAdminStore();
   const [selectedRows, setSelectedRows] = useState([]);
 
   // 필터 상태 관리
@@ -291,7 +287,7 @@ const ReportsPage = () => {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
-              <TableHead className="w-[50px]"></TableHead>
+              <TableHead className="w-[50px] text-center"></TableHead>
               <TableHead className="w-[70px]">NO.</TableHead>
               <TableHead>신고 ID</TableHead>
               <TableHead>날짜</TableHead>
@@ -304,11 +300,13 @@ const ReportsPage = () => {
           <TableBody>
             {mockData.map((row) => (
               <TableRow key={row.id}>
-                <TableCell className="p-2">
-                  <Checkbox
-                    checked={selectedRows.includes(row.id)}
-                    onCheckedChange={() => handleRowSelect(row.id)}
-                  />
+                <TableCell className="p-2 text-center">
+                  <div className="flex justify-center items-center">
+                    <Checkbox
+                      checked={selectedRows.includes(row.id)}
+                      onCheckedChange={() => handleRowSelect(row.id)}
+                    />
+                  </div>
                 </TableCell>
                 <TableCell className="font-medium">{row.no}</TableCell>
                 <TableCell>{row.reportId}</TableCell>
