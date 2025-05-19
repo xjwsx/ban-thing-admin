@@ -22,7 +22,7 @@ const LoginPage = () => {
 
     try {
       await login(username, password);
-      navigate("/home");
+      navigate("/admin");
     } catch (error) {
       console.error("Login error:", error);
       setError(
@@ -35,49 +35,49 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold">zarada</h2>
-          <p className="mt-2 text-muted-foreground">관리자 로그인</p>
+    <div className="flex items-center justify-center h-screen bg-background">
+      <div className="w-96 bg-white border rounded-lg shadow-sm p-8">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold">BANTHING</h2>
+          <p className="mt-2 text-gray-500">관리자 로그인</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-4">
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+              <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               <Input
                 name="username"
                 type="text"
-                placeholder="이메일"
+                placeholder="아이디"
                 required
-                className="pl-10"
-                defaultValue="admin@zarada.com"
+                className="pl-10 h-10 w-full"
+                defaultValue="admin"
               />
             </div>
 
             <div className="relative">
-              <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+              <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               <Input
                 name="password"
                 type="password"
                 placeholder="비밀번호"
                 required
-                className="pl-10"
+                className="pl-10 h-10 w-full"
                 defaultValue="admin123"
               />
             </div>
           </div>
 
           {error && (
-            <div className="text-sm text-destructive text-center">{error}</div>
+            <div className="text-sm text-red-500 text-center">{error}</div>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full h-10" disabled={loading}>
             {loading ? "로그인 중..." : "로그인"}
           </Button>
 
-          <div className="text-sm text-center text-muted-foreground">
+          <div className="text-sm text-center text-gray-500 mt-4">
             테스트 계정: admin / admin123
           </div>
         </form>

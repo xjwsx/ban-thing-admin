@@ -1,16 +1,13 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
-import BaseLayout from "../components/BaseLayout";
-import HomePage from "../pages/home/HomePage";
-import HomeRegisterPage from "../pages/home/HomeRegisterPage";
-import CustomersPage from "../pages/CustomersPage";
-import CoursesPage from "../pages/course/CoursesPage";
-import ReservationsPage from "../pages/ReservationsPage";
-import NoticesPage from "../pages/NoticesPage";
-import CustomerDetailPage from "../pages/CustomerDetailPage";
-import TodoPage from "../pages/todo/TodoPage";
-import PermissionsPage from "../pages/PermissionsPage";
+import AdminLayout from "../components/AdminLayout";
+
+// Admin Pages
+import AdminPage from "../pages/admin/AdminPage";
+import AccountsPage from "../pages/admin/AccountsPage";
+import ReportsPage from "../pages/admin/ReportsPage";
+import WithdrawalsPage from "../pages/admin/WithdrawalsPage";
 
 import { getAccessToken } from "../utils/token";
 
@@ -19,38 +16,33 @@ const isAuthenticated = () => {
   return !!token; // 토큰이 존재하면 true, 그렇지 않으면 false를 반환합니다.
 };
 
-const PrivateRoute = ({ Component }) => {
+const PrivateRoute = ({ Component, Layout = AdminLayout }) => {
   return isAuthenticated() ? (
-    <BaseLayout>
+    <Layout>
       <Component />
-    </BaseLayout>
+    </Layout>
   ) : (
     <Navigate to="/" />
   );
 };
 
 const Router = () => {
-  const privateRoutes = [
-    { path: "/home", Component: HomePage },
-    { path: "/home/register", Component: HomeRegisterPage },
-    { path: "/customer/:id", Component: CustomerDetailPage },
-    { path: "/customer", Component: CustomersPage },
-    { path: "/course", Component: CoursesPage },
-    { path: "/reservation", Component: ReservationsPage },
-    { path: "/todo", Component: TodoPage },
-    { path: "/notice", Component: NoticesPage },
-    { path: "/permissions", Component: PermissionsPage },
+  const adminRoutes = [
+    { path: "/admin", Component: AdminPage },
+    { path: "/admin/accounts", Component: AccountsPage },
+    { path: "/admin/reports", Component: ReportsPage },
+    { path: "/admin/withdrawals", Component: WithdrawalsPage },
   ];
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        {privateRoutes.map(({ path, Component }) => (
+        {adminRoutes.map(({ path, Component }) => (
           <Route
             key={path}
             path={path}
-            element={<PrivateRoute Component={Component} />}
+            element={<PrivateRoute Component={Component} Layout={AdminLayout} />}
           />
         ))}
       </Routes>
