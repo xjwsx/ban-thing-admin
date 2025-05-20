@@ -15,32 +15,26 @@ import IconSvg from "../assets/icon.svg";
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { fetchAdminInfo, adminInfo, logout } = useAdminStore();
+  const { fetchAdminInfo, logout } = useAdminStore();
   const [isExpanded, setIsExpanded] = useState(true);
 
   const menuItems = [
     {
       key: "1",
-      label: "admin",
-      onClick: () => navigate("/admin"),
-      path: "/admin",
-    },
-    {
-      key: "2",
       icon: <Users size={16} />,
       label: "계정관리",
       onClick: () => navigate("/admin/accounts"),
       path: "/admin/accounts",
     },
     {
-      key: "3",
+      key: "2",
       icon: <Siren size={16} />,
       label: "신고 내역",
       onClick: () => navigate("/admin/reports"),
       path: "/admin/reports",
     },
     {
-      key: "4",
+      key: "3",
       icon: <ArchiveX size={16} />,
       label: "탈퇴 내역",
       onClick: () => navigate("/admin/withdrawals"),
@@ -50,7 +44,7 @@ const AdminLayout = ({ children }) => {
 
   const getActivePath = () => {
     const { pathname } = location;
-    return menuItems.find(item => pathname.startsWith(item.path))?.path || "/admin";
+    return menuItems.find(item => pathname.startsWith(item.path))?.path || "/admin/accounts";
   };
 
   const activePath = getActivePath();
@@ -86,8 +80,6 @@ const AdminLayout = ({ children }) => {
     const { pathname } = location;
     const result = [];
     
-    result.push({ label: "admin", path: "/admin" });
-    
     if (pathname.includes("/accounts")) {
       result.push({ label: "계정관리", path: "/admin/accounts" });
     } else if (pathname.includes("/reports")) {
@@ -113,7 +105,7 @@ const AdminLayout = ({ children }) => {
               className={`font-medium text-gray-800 cursor-pointer transition-opacity duration-300 ease-in-out overflow-hidden ${
                 isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
               }`}
-              onClick={() => navigate("/admin")}
+              onClick={() => navigate("/admin/accounts")}
             >
               <div className="flex items-center gap-3">
                 <img src={IconSvg} alt="BANTHING Icon" className="w-[32px] h-[32px]" />
@@ -137,6 +129,9 @@ const AdminLayout = ({ children }) => {
           </div>
 
           <nav className="mt-4 space-y-1 flex-1">
+            <div className={`px-2 py-1.5 text-xs font-semibold text-gray-500 transition-opacity duration-300 ${isExpanded ? "opacity-100" : "opacity-0"}`}>
+              admin
+            </div>
             {menuItems.map((item) => (
               <div
                 key={item.key}

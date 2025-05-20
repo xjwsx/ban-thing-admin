@@ -25,7 +25,6 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { Calendar } from "../../components/ui/calendar";
-import { Badge } from "../../components/ui/badge";
 
 const ReportsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -147,7 +146,7 @@ const ReportsPage = () => {
       title: '고양이 옷',
       mainReason: '신고 사유 입니다.',
       subReason: '신고 사유 입니다.',
-      status: '접수대기'
+      status: '처리중'
     },
     {
       id: '2',
@@ -157,7 +156,7 @@ const ReportsPage = () => {
       title: '나눔나눔',
       mainReason: '신고 사유 입니다.',
       subReason: '신고 사유 입니다.',
-      status: '처리완료'
+      status: '무효처리'
     },
     {
       id: '3',
@@ -177,7 +176,7 @@ const ReportsPage = () => {
       title: '제목입니다.',
       mainReason: '신고 사유 입니다.',
       subReason: '신고 사유 입니다.',
-      status: '처리완료'
+      status: '미처리'
     },
     {
       id: '5',
@@ -235,14 +234,16 @@ const ReportsPage = () => {
 
   function getStatusBadge(status) {
     switch (status) {
-      case '접수대기':
-        return <Badge className="bg-blue-500">접수대기</Badge>;
-      case '처리완료':
-        return <Badge className="bg-green-500">처리완료</Badge>;
       case '처리중':
-        return <Badge className="bg-orange-500">처리중</Badge>;
+        return <div className="bg-[#6A8BFF] text-white font-medium px-5 py-1 rounded-md inline-block text-center">처리중</div>;
+      case '무효처리':
+        return <div className="bg-white border border-gray-200 text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">무효처리</div>;
+      case '처리완료':
+        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">처리완료</div>;
+      case '미처리':
+        return <div className="bg-[#FFF5F5] text-[#FF8989] font-medium px-5 py-1 rounded-md inline-block text-center">미처리</div>;
       default:
-        return <Badge className="bg-gray-500">{status}</Badge>;
+        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">{status}</div>;
     }
   }
 
@@ -358,9 +359,10 @@ const ReportsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="pending">접수대기</SelectItem>
+              <SelectItem value="pending">미처리</SelectItem>
               <SelectItem value="processing">처리중</SelectItem>
               <SelectItem value="completed">처리완료</SelectItem>
+              <SelectItem value="invalid">무효처리</SelectItem>
             </SelectContent>
           </Select>
 

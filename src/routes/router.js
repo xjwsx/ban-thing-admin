@@ -4,7 +4,6 @@ import LoginPage from "../pages/LoginPage";
 import AdminLayout from "../components/AdminLayout";
 
 // Admin Pages
-import AdminPage from "../pages/admin/AdminPage";
 import AccountsPage from "../pages/admin/AccountsPage";
 import ReportsPage from "../pages/admin/ReportsPage";
 import WithdrawalsPage from "../pages/admin/WithdrawalsPage";
@@ -28,7 +27,6 @@ const PrivateRoute = ({ Component, Layout = AdminLayout }) => {
 
 const Router = () => {
   const adminRoutes = [
-    { path: "/admin", Component: AdminPage },
     { path: "/admin/accounts", Component: AccountsPage },
     { path: "/admin/reports", Component: ReportsPage },
     { path: "/admin/withdrawals", Component: WithdrawalsPage },
@@ -38,6 +36,7 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/admin" element={<Navigate to="/admin/accounts" replace />} />
         {adminRoutes.map(({ path, Component }) => (
           <Route
             key={path}
