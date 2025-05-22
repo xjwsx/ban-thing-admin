@@ -5,8 +5,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
-  Siren,
-  ArchiveX,
+  Flag,
 } from "lucide-react";
 import { useAdminStore } from "../stores/adminStore";
 import { Modal } from "antd";
@@ -28,14 +27,14 @@ const AdminLayout = ({ children }) => {
     },
     {
       key: "2",
-      icon: <Siren size={16} />,
+      icon: <Flag size={16} />,
       label: "신고 내역",
       onClick: () => navigate("/admin/reports"),
       path: "/admin/reports",
     },
     {
       key: "3",
-      icon: <ArchiveX size={16} />,
+      icon: <LogOut size={16} />,
       label: "탈퇴 내역",
       onClick: () => navigate("/admin/withdrawals"),
       path: "/admin/withdrawals",
