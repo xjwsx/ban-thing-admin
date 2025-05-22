@@ -181,7 +181,9 @@ const AdminLayout = ({ children }) => {
                   className={`${index === breadcrumbs.length - 1 ? 'font-medium' : 'text-gray-500 hover:text-gray-800 cursor-pointer'}`}
                   onClick={() => index !== breadcrumbs.length - 1 && navigate(item.path)}
                 >
-                  {item.label}
+                  <span className="mr-1.5 text-gray-500">admin</span>
+                  <span className="mx-1.5">&gt;</span>
+                  <span className="ml-1.5">{item.label}</span>
                 </span>
                 {index < breadcrumbs.length - 1 && <span className="mx-2 text-gray-400">{">"}</span>}
               </React.Fragment>
