@@ -212,15 +212,15 @@ const ReportsPage = () => {
   function getStatusBadge(status) {
     switch (status) {
       case '처리완료':
-        return <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">처리완료</span>;
+        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">처리완료</div>;
       case '미처리':
-        return <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">미처리</span>;
+        return <div className="bg-[#FFF5F5] text-[#FF8989] font-medium px-5 py-1 rounded-md inline-block text-center">미처리</div>;
       case '처리중':
-        return <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">처리중</span>;
+        return <div className="bg-[#6A8BFF] text-white font-medium px-5 py-1 rounded-md inline-block text-center">처리중</div>;
       case '무효처리':
-        return <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">무효처리</span>;
+        return <div className="bg-white border border-gray-200 text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">무효처리</div>;
       default:
-        return <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs">{status}</span>;
+        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">{status}</div>;
     }
   }
 
