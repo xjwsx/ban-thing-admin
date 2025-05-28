@@ -371,15 +371,15 @@ const ReportsPage = () => {
         <div className="rounded-md border flex-1 overflow-auto">
           <Table className="w-full">
             <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[50px] text-center"></TableHead>
-                <TableHead className="w-[120px]">신고 ID</TableHead>
-                <TableHead className="w-[150px]">제목</TableHead>
-                <TableHead className="w-[150px]">상위 신고 사유</TableHead>
-                <TableHead className="w-[120px]">날짜</TableHead>
-                <TableHead className="w-[120px]">신고자 ID</TableHead>
-                <TableHead className="w-[120px]">피신고자 ID</TableHead>
-                <TableHead className="w-[120px]">상태</TableHead>
+              <TableRow className="bg-gray-50 h-[44px]">
+                <TableHead className="w-[50px] text-center p-2"></TableHead>
+                <TableHead className="w-[120px] p-2">신고 ID</TableHead>
+                <TableHead className="w-[150px] p-2">제목</TableHead>
+                <TableHead className="w-[150px] p-2">상위 신고 사유</TableHead>
+                <TableHead className="w-[120px] p-2">날짜</TableHead>
+                <TableHead className="w-[120px] p-2">신고자 ID</TableHead>
+                <TableHead className="w-[120px] p-2">피신고자 ID</TableHead>
+                <TableHead className="w-[120px] p-2">상태</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -393,19 +393,19 @@ const ReportsPage = () => {
                       />
                     </div>
                   </TableCell>
-                  <TableCell>{row.reportId}</TableCell>
-                  <TableCell>{row.title}</TableCell>
-                  <TableCell>{row.mainReason}</TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.reporterId}</TableCell>
-                  <TableCell>{row.reportedId}</TableCell>
-                  <TableCell>{getStatusBadge(row.status)}</TableCell>
+                  <TableCell className="p-2">{row.reportId}</TableCell>
+                  <TableCell className="p-2">{row.title}</TableCell>
+                  <TableCell className="p-2">{row.mainReason}</TableCell>
+                  <TableCell className="p-2">{row.date}</TableCell>
+                  <TableCell className="p-2">{row.reporterId}</TableCell>
+                  <TableCell className="p-2">{row.reportedId}</TableCell>
+                  <TableCell className="p-2">{getStatusBadge(row.status)}</TableCell>
                 </TableRow>
               ))}
               {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
               {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
                 <TableRow key={`empty-${index}`} className="h-[44px]">
-                  <TableCell colSpan={8} className="h-[44px]">&nbsp;</TableCell>
+                  <TableCell colSpan={8} className="h-[44px] p-2">&nbsp;</TableCell>
                 </TableRow>
               ))}
             </TableBody>
