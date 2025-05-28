@@ -212,15 +212,15 @@ const ReportsPage = () => {
   function getStatusBadge(status) {
     switch (status) {
       case '처리완료':
-        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">처리완료</div>;
+        return <div className="bg-[#F3F3F3] text-gray-400 font-medium px-3 py-1 rounded-md inline-block text-center">처리완료</div>;
       case '미처리':
-        return <div className="bg-[#FFF5F5] text-[#FF8989] font-medium px-5 py-1 rounded-md inline-block text-center">미처리</div>;
+        return <div className="bg-[#FFF5F5] text-[#FF8989] font-medium px-3 py-1 rounded-md inline-block text-center">미처리</div>;
       case '처리중':
-        return <div className="bg-[#6A8BFF] text-white font-medium px-5 py-1 rounded-md inline-block text-center">처리중</div>;
+        return <div className="bg-[#6A8BFF] text-white font-medium px-3 py-1 rounded-md inline-block text-center">처리중</div>;
       case '무효처리':
-        return <div className="bg-white border border-gray-200 text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">무효처리</div>;
+        return <div className="bg-white border-2 border-gray-200 text-gray-500 font-medium px-3 py-1 rounded-md inline-block text-center">무효처리</div>;
       default:
-        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-5 py-1 rounded-md inline-block text-center">{status}</div>;
+        return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-3 py-1 rounded-md inline-block text-center">{status}</div>;
     }
   }
 
@@ -369,22 +369,22 @@ const ReportsPage = () => {
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* 테이블 */}
         <div className="rounded-md border flex-1 overflow-auto">
-          <Table>
+          <Table className="w-full">
             <TableHeader>
               <TableRow className="bg-gray-50">
                 <TableHead className="w-[50px] text-center"></TableHead>
-                <TableHead>신고 ID</TableHead>
-                <TableHead>제목</TableHead>
-                <TableHead>상위 신고 사유</TableHead>
-                <TableHead>날짜</TableHead>
-                <TableHead>신고자 ID</TableHead>
-                <TableHead>피신고자 ID</TableHead>
-                <TableHead>상태</TableHead>
+                <TableHead className="w-[120px]">신고 ID</TableHead>
+                <TableHead className="w-[150px]">제목</TableHead>
+                <TableHead className="w-[150px]">상위 신고 사유</TableHead>
+                <TableHead className="w-[120px]">날짜</TableHead>
+                <TableHead className="w-[120px]">신고자 ID</TableHead>
+                <TableHead className="w-[120px]">피신고자 ID</TableHead>
+                <TableHead className="w-[120px]">상태</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentItems.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="h-[44px]">
                   <TableCell className="p-2 text-center">
                     <div className="flex justify-center items-center">
                       <Checkbox
@@ -404,7 +404,7 @@ const ReportsPage = () => {
               ))}
               {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
               {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
-                <TableRow key={`empty-${index}`}>
+                <TableRow key={`empty-${index}`} className="h-[44px]">
                   <TableCell colSpan={8} className="h-[44px]">&nbsp;</TableCell>
                 </TableRow>
               ))}
