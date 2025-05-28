@@ -25,6 +25,15 @@ import {
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { Calendar } from "../../components/ui/calendar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../../components/ui/pagination";
 
 const AccountsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -36,59 +45,29 @@ const AccountsPage = () => {
   const [accountStatus, setAccountStatus] = useState(null);
   const [reportHistory, setReportHistory] = useState(null);
   
-  // 모의 데이터 생성
-  const mockData = [
-    {
-      id: '1',
-      no: 1,
-      memberId: 'A417',
-      joinDate: '00.00.00',
-      nickname: '코코',
-      status: '정상',
-      reportHistory: '1건',
-      restricted: '정상'
-    },
-    {
-      id: '2',
-      no: 2,
-      memberId: 'A117',
-      joinDate: '00.00.00',
-      nickname: '코코',
-      status: '정상',
-      reportHistory: '1건',
-      restricted: '정상'
-    },
-    {
-      id: '3',
-      no: 3,
-      memberId: 'A250',
-      joinDate: '00.00.00',
-      nickname: '코코',
-      status: '정상',
-      reportHistory: '1건',
-      restricted: '정상'
-    },
-    {
-      id: '4',
-      no: 4,
-      memberId: 'A301',
-      joinDate: '00.00.00',
-      nickname: '코코',
-      status: '정상',
-      reportHistory: '1건',
-      restricted: '정상'
-    },
-    {
-      id: '5',
-      no: 5,
-      memberId: 'A120',
-      joinDate: '00.00.00',
-      nickname: '코코',
-      status: '정상',
-      reportHistory: '1건',
-      restricted: '정상'
-    },
-  ];
+  // 페이지네이션 상태 관리
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  
+  // 모의 데이터 생성 (더 많은 데이터 생성)
+  const mockData = Array.from({ length: 35 }, (_, i) => ({
+    id: (i + 1).toString(),
+    no: i + 1,
+    memberId: `A${100 + i}`,
+    joinDate: '00.00.00',
+    nickname: '코코',
+    status: i % 4 === 0 ? '휴면' : i % 3 === 0 ? '차단됨' : '정상',
+    reportHistory: `${(i % 3) + 1}건`,
+    restricted: i % 5 === 0 ? '제한됨' : '정상'
+  }));
+
+  // 현재 페이지에 표시할 데이터 계산
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = mockData.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // 전체 페이지 수 계산
+  const totalPages = Math.ceil(mockData.length / itemsPerPage);
 
   const handleRowSelect = (id) => {
     setSelectedRows((prev) => {
@@ -100,6 +79,10 @@ const AccountsPage = () => {
     });
   };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   const handleSearch = () => {
     // 검색 로직 구현
     console.log('필터 조건으로 검색:', {
@@ -109,10 +92,22 @@ const AccountsPage = () => {
       accountStatus,
       reportHistory
     });
+    // 검색 후 첫 페이지로 이동
+    setCurrentPage(1);
+  };
+
+  // 페이지네이션을 위한 그룹화 로직
+  const getPaginationGroup = () => {
+    const groupSize = 5; // 한 그룹에 표시할 페이지 수
+    const currentGroup = Math.floor((currentPage - 1) / groupSize);
+    const start = currentGroup * groupSize + 1;
+    const end = Math.min(start + groupSize - 1, totalPages);
+    
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex flex-col h-full">
       {/* 필터 섹션 */}
       <div className="space-y-4">
         <div className="grid grid-cols-4 gap-4">
@@ -121,7 +116,7 @@ const AccountsPage = () => {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full justify-between text-left font-normal"
+                className="w-full justify-between text-left font-normal bg-white"
               >
                 {startDate ? (
                   format(startDate, "yyyy-MM-dd")
@@ -146,7 +141,7 @@ const AccountsPage = () => {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full justify-between text-left font-normal"
+                className="w-full justify-between text-left font-normal bg-white"
               >
                 {endDate ? (
                   format(endDate, "yyyy-MM-dd")
@@ -168,7 +163,7 @@ const AccountsPage = () => {
           
           {/* 계정 상태 */}
           <Select value={accountStatus} onValueChange={setAccountStatus}>
-            <SelectTrigger className="border border-gray-300">
+            <SelectTrigger className="border border-gray-300 bg-white">
               {accountStatus ? (
                 <SelectValue />
               ) : (
@@ -185,7 +180,7 @@ const AccountsPage = () => {
           
           {/* 신고 이력 */}
           <Select value={reportHistory} onValueChange={setReportHistory}>
-            <SelectTrigger className="border border-gray-300">
+            <SelectTrigger className="border border-gray-300 bg-white">
               {reportHistory ? (
                 <SelectValue />
               ) : (
@@ -203,11 +198,11 @@ const AccountsPage = () => {
 
         <div className="flex items-center gap-[10px]">
           {/* 검색 키워드 */}
-          <div className="relative w-1/4">
+          <div className="relative" style={{ width: "calc(25% - 12px)" }}>
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="키워드를 입력하세요"
-              className="pl-8 h-[40px] w-full"
+              className="pl-8 h-[40px] w-full bg-white"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
@@ -230,43 +225,112 @@ const AccountsPage = () => {
         <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">활성화</Button>
       </div>
 
-      {/* 테이블 */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50">
-              <TableHead className="w-[50px] text-center"></TableHead>
-              <TableHead className="w-[70px]">NO.</TableHead>
-              <TableHead>회원 ID</TableHead>
-              <TableHead>가입일</TableHead>
-              <TableHead>닉네임</TableHead>
-              <TableHead>계정 상태</TableHead>
-              <TableHead>신고이력</TableHead>
-              <TableHead>재가입 제한 여부</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {mockData.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="p-2 text-center">
-                  <div className="flex justify-center items-center">
-                    <Checkbox
-                      checked={selectedRows.includes(row.id)}
-                      onCheckedChange={() => handleRowSelect(row.id)}
-                    />
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">{row.no}</TableCell>
-                <TableCell>{row.memberId}</TableCell>
-                <TableCell>{row.joinDate}</TableCell>
-                <TableCell>{row.nickname}</TableCell>
-                <TableCell>{row.status}</TableCell>
-                <TableCell>{row.reportHistory}</TableCell>
-                <TableCell>{row.restricted}</TableCell>
+      {/* 테이블 컨테이너 - 테이블 영역 높이 고정 */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        {/* 테이블 */}
+        <div className="rounded-md border flex-1 overflow-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead className="w-[50px] text-center"></TableHead>
+                <TableHead>회원 ID</TableHead>
+                <TableHead>가입일</TableHead>
+                <TableHead>닉네임</TableHead>
+                <TableHead>계정 상태</TableHead>
+                <TableHead>신고이력</TableHead>
+                <TableHead>재가입 제한 여부</TableHead>
               </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentItems.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="p-2 text-center">
+                    <div className="flex justify-center items-center">
+                      <Checkbox
+                        checked={selectedRows.includes(row.id)}
+                        onCheckedChange={() => handleRowSelect(row.id)}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell>{row.memberId}</TableCell>
+                  <TableCell>{row.joinDate}</TableCell>
+                  <TableCell>{row.nickname}</TableCell>
+                  <TableCell>{row.status}</TableCell>
+                  <TableCell>{row.reportHistory}</TableCell>
+                  <TableCell>{row.restricted}</TableCell>
+                </TableRow>
+              ))}
+              {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
+              {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
+                <TableRow key={`empty-${index}`}>
+                  <TableCell colSpan={7} className="h-[44px]">&nbsp;</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+      
+      {/* 페이지네이션 - 화면 최하단에 고정 */}
+      <div className="fixed bottom-2 left-0 right-0 w-full flex justify-center">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => {
+                  if (currentPage > 1) {
+                    const groupSize = 5;
+                    const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                    if (currentPage % groupSize === 1) {
+                      // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
+                      handlePageChange(currentPage - 1);
+                    } else {
+                      // 그룹 내에서 이전 페이지로
+                      handlePageChange(currentPage - 1);
+                    }
+                  }
+                }} 
+                href="#"
+                aria-disabled={currentPage === 1}
+                className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+              />
+            </PaginationItem>
+            
+            {getPaginationGroup().map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink 
+                  href="#" 
+                  onClick={() => handlePageChange(page)}
+                  isActive={currentPage === page}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
             ))}
-          </TableBody>
-        </Table>
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => {
+                  if (currentPage < totalPages) {
+                    const groupSize = 5;
+                    const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                    const lastPageInGroup = (currentGroup + 1) * groupSize;
+                    if (currentPage === lastPageInGroup || currentPage === totalPages) {
+                      // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
+                      handlePageChange(currentPage + 1);
+                    } else {
+                      // 그룹 내에서 다음 페이지로
+                      handlePageChange(currentPage + 1);
+                    }
+                  }
+                }}
+                href="#"
+                aria-disabled={currentPage === totalPages}
+                className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

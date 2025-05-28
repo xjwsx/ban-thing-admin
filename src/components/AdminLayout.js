@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  Users,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
   Flag,
+  Settings2,
 } from "lucide-react";
 import { useAdminStore } from "../stores/adminStore";
 import { Modal } from "antd";
@@ -20,7 +20,7 @@ const AdminLayout = ({ children }) => {
   const menuItems = [
     {
       key: "1",
-      icon: <Users size={16} />,
+      icon: <Settings2 size={16} />,
       label: "계정관리",
       onClick: () => navigate("/admin/accounts"),
       path: "/admin/accounts",
@@ -91,7 +91,7 @@ const AdminLayout = ({ children }) => {
   })();
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <div
         className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
@@ -151,7 +151,7 @@ const AdminLayout = ({ children }) => {
             ))}
           </nav>
 
-          {/* 로그아웃 버튼을 아래에 고정 */}
+          {/* 로그아웃 버튼을 아래에 고정
           <div
             onClick={goToLogin}
             className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer transition-all mt-auto mb-2"
@@ -166,12 +166,12 @@ const AdminLayout = ({ children }) => {
             >
               로그아웃
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto notion-style-scrollbar">
+      <div className="flex-1 flex flex-col">
         {/* Breadcrumb */}
         <div className="bg-white border-b p-4 px-6">
           <div className="flex items-center text-sm">
@@ -190,8 +190,8 @@ const AdminLayout = ({ children }) => {
             ))}
           </div>
         </div>
-        <main className="h-full w-full">
-          <div className="bg-white  p-6 h-full">
+        <main className="flex-1 overflow-auto bg-white">
+          <div className="p-6">
             {children}
           </div>
         </main>
