@@ -225,7 +225,7 @@ const ReportsPage = () => {
   }
 
   return (
-    <div className="space-y-6 flex flex-col h-full">
+    <div className="space-y-6 flex flex-col h-full relative">
       {/* 필터 섹션 */}
       <div className="space-y-4">
         <div className="grid grid-cols-4 gap-4">
@@ -365,10 +365,9 @@ const ReportsPage = () => {
         <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">무효 처리</Button>
       </div>
 
-      {/* 테이블 컨테이너 - 테이블 영역 높이 고정 */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        {/* 테이블 */}
-        <div className="rounded-md border flex-1 overflow-auto">
+      <div className="flex flex-col h-full justify-between">
+        {/* 테이블 컨테이너 - 테이블 영역만 포함 */}
+        <div className="overflow-auto rounded-md border h-auto">
           <Table className="w-full">
             <TableHeader>
               <TableRow className="bg-gray-50 h-[44px]">
@@ -385,7 +384,7 @@ const ReportsPage = () => {
             <TableBody>
               {currentItems.map((row) => (
                 <TableRow key={row.id} className="h-[44px]">
-                  <TableCell className="p-2 text-center">
+                  <TableCell className="p-1 text-center">
                     <div className="flex justify-center items-center">
                       <Checkbox
                         checked={selectedRows.includes(row.id)}
@@ -393,13 +392,13 @@ const ReportsPage = () => {
                       />
                     </div>
                   </TableCell>
-                  <TableCell className="p-2">{row.reportId}</TableCell>
-                  <TableCell className="p-2">{row.title}</TableCell>
-                  <TableCell className="p-2">{row.mainReason}</TableCell>
-                  <TableCell className="p-2">{row.date}</TableCell>
-                  <TableCell className="p-2">{row.reporterId}</TableCell>
-                  <TableCell className="p-2">{row.reportedId}</TableCell>
-                  <TableCell className="p-2">{getStatusBadge(row.status)}</TableCell>
+                  <TableCell className="p-1">{row.reportId}</TableCell>
+                  <TableCell className="p-1">{row.title}</TableCell>
+                  <TableCell className="p-1">{row.mainReason}</TableCell>
+                  <TableCell className="p-1">{row.date}</TableCell>
+                  <TableCell className="p-1">{row.reporterId}</TableCell>
+                  <TableCell className="p-1">{row.reportedId}</TableCell>
+                  <TableCell className="p-1">{getStatusBadge(row.status)}</TableCell>
                 </TableRow>
               ))}
               {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
@@ -411,68 +410,68 @@ const ReportsPage = () => {
             </TableBody>
           </Table>
         </div>
-      </div>
-      
-      {/* 페이지네이션 - 화면 최하단에 고정 */}
-      <div className="fixed bottom-2 left-0 right-0 w-full flex justify-center">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                onClick={() => {
-                  if (currentPage > 1) {
-                    const groupSize = 5;
-                    const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                    if (currentPage % groupSize === 1) {
-                      // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
-                      handlePageChange(currentPage - 1);
-                    } else {
-                      // 그룹 내에서 이전 페이지로
-                      handlePageChange(currentPage - 1);
+        
+        {/* 페이지네이션 - main content 하단 중앙에 배치 */}
+        <div className="w-full flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      const groupSize = 5;
+                      const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                      if (currentPage % groupSize === 1) {
+                        // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
+                        handlePageChange(currentPage - 1);
+                      } else {
+                        // 그룹 내에서 이전 페이지로
+                        handlePageChange(currentPage - 1);
+                      }
                     }
-                  }
-                }} 
-                href="#"
-                aria-disabled={currentPage === 1}
-                className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
-              />
-            </PaginationItem>
-            
-            {getPaginationGroup().map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink 
-                  href="#" 
-                  onClick={() => handlePageChange(page)}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
+                  }} 
+                  href="#"
+                  aria-disabled={currentPage === 1}
+                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+                />
               </PaginationItem>
-            ))}
-            
-            <PaginationItem>
-              <PaginationNext 
-                onClick={() => {
-                  if (currentPage < totalPages) {
-                    const groupSize = 5;
-                    const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                    const lastPageInGroup = (currentGroup + 1) * groupSize;
-                    if (currentPage === lastPageInGroup || currentPage === totalPages) {
-                      // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
-                      handlePageChange(currentPage + 1);
-                    } else {
-                      // 그룹 내에서 다음 페이지로
-                      handlePageChange(currentPage + 1);
+              
+              {getPaginationGroup().map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink 
+                    href="#" 
+                    onClick={() => handlePageChange(page)}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => {
+                    if (currentPage < totalPages) {
+                      const groupSize = 5;
+                      const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                      const lastPageInGroup = (currentGroup + 1) * groupSize;
+                      if (currentPage === lastPageInGroup || currentPage === totalPages) {
+                        // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
+                        handlePageChange(currentPage + 1);
+                      } else {
+                        // 그룹 내에서 다음 페이지로
+                        handlePageChange(currentPage + 1);
+                      }
                     }
-                  }
-                }}
-                href="#"
-                aria-disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+                  }}
+                  href="#"
+                  aria-disabled={currentPage === totalPages}
+                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );

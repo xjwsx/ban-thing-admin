@@ -107,7 +107,7 @@ const AccountsPage = () => {
   };
 
   return (
-    <div className="space-y-6 flex flex-col h-full">
+    <div className="space-y-6 flex flex-col h-full relative">
       {/* 필터 섹션 */}
       <div className="space-y-4">
         <div className="grid grid-cols-4 gap-4">
@@ -224,55 +224,52 @@ const AccountsPage = () => {
         <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">계정 정지</Button>
         <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">활성화</Button>
       </div>
-
-      {/* 테이블 컨테이너 - 테이블 영역 높이 고정 */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        {/* 테이블 */}
-        <div className="rounded-md border flex-1 overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[50px] text-center"></TableHead>
-                <TableHead>회원 ID</TableHead>
-                <TableHead>가입일</TableHead>
-                <TableHead>닉네임</TableHead>
-                <TableHead>계정 상태</TableHead>
-                <TableHead>신고이력</TableHead>
-                <TableHead>재가입 제한 여부</TableHead>
+<div className="flex flex-col h-full justify-between">
+      {/* 테이블 컨테이너 - 테이블 영역만 포함 */}
+      <div className="overflow-auto rounded-md border h-auto">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow className="bg-gray-50 h-[44px]">
+              <TableHead className="w-[50px] text-center p-2"></TableHead>
+              <TableHead className="p-2">회원 ID</TableHead>
+              <TableHead className="p-2">가입일</TableHead>
+              <TableHead className="p-2">닉네임</TableHead>
+              <TableHead className="p-2">계정 상태</TableHead>
+              <TableHead className="p-2">신고이력</TableHead>
+              <TableHead className="p-2">재가입 제한 여부</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentItems.map((row) => (
+              <TableRow key={row.id} className="h-[44px]">
+                <TableCell className="p-2 text-center">
+                  <div className="flex justify-center items-center">
+                    <Checkbox
+                      checked={selectedRows.includes(row.id)}
+                      onCheckedChange={() => handleRowSelect(row.id)}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell className="p-2">{row.memberId}</TableCell>
+                <TableCell className="p-2">{row.joinDate}</TableCell>
+                <TableCell className="p-2">{row.nickname}</TableCell>
+                <TableCell className="p-2">{row.status}</TableCell>
+                <TableCell className="p-2">{row.reportHistory}</TableCell>
+                <TableCell className="p-2">{row.restricted}</TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentItems.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="p-2 text-center">
-                    <div className="flex justify-center items-center">
-                      <Checkbox
-                        checked={selectedRows.includes(row.id)}
-                        onCheckedChange={() => handleRowSelect(row.id)}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>{row.memberId}</TableCell>
-                  <TableCell>{row.joinDate}</TableCell>
-                  <TableCell>{row.nickname}</TableCell>
-                  <TableCell>{row.status}</TableCell>
-                  <TableCell>{row.reportHistory}</TableCell>
-                  <TableCell>{row.restricted}</TableCell>
-                </TableRow>
-              ))}
-              {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
-              {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
-                <TableRow key={`empty-${index}`}>
-                  <TableCell colSpan={7} className="h-[44px]">&nbsp;</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+            ))}
+            {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
+            {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
+              <TableRow key={`empty-${index}`} className="h-[44px]">
+                <TableCell colSpan={7} className="h-[44px] p-2">&nbsp;</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
       
-      {/* 페이지네이션 - 화면 최하단에 고정 */}
-      <div className="fixed bottom-2 left-0 right-0 w-full flex justify-center">
+      {/* 페이지네이션 - main content 하단 중앙에 배치 */}
+      <div className="w-full flex justify-center">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -331,6 +328,7 @@ const AccountsPage = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+      </div>
       </div>
     </div>
   );
