@@ -372,13 +372,13 @@ const ReportsPage = () => {
             <TableHeader>
               <TableRow className="bg-gray-50 h-[44px]">
                 <TableHead className="w-[50px] text-center p-2"></TableHead>
-                <TableHead className="w-[120px] p-2">신고 ID</TableHead>
-                <TableHead className="w-[150px] p-2">제목</TableHead>
-                <TableHead className="w-[150px] p-2">상위 신고 사유</TableHead>
-                <TableHead className="w-[120px] p-2">날짜</TableHead>
-                <TableHead className="w-[120px] p-2">신고자 ID</TableHead>
-                <TableHead className="w-[120px] p-2">피신고자 ID</TableHead>
-                <TableHead className="w-[120px] p-2">상태</TableHead>
+                <TableHead className=" p-2">신고 ID</TableHead>
+                <TableHead className=" p-2">제목</TableHead>
+                <TableHead className=" p-2">상위 신고 사유</TableHead>
+                <TableHead className=" p-2">날짜</TableHead>
+                <TableHead className=" p-2">신고자 ID</TableHead>
+                <TableHead className=" p-2">피신고자 ID</TableHead>
+                <TableHead className=" p-2">상태</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
