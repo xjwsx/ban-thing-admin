@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchIcon, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -36,6 +36,7 @@ import {
 } from "../../components/ui/pagination";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
+import { getAccounts, withdrawMembers, suspendMembers, activateMembers } from "../../api/admin";
 
 const AccountsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -61,25 +62,52 @@ const AccountsPage = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
 
-  // 모의 데이터 생성 (더 많은 데이터 생성)
-  const mockData = Array.from({ length: 35 }, (_, i) => ({
-    id: (i + 1).toString(),
-    no: i + 1,
-    memberId: `A${100 + i}`,
-    joinDate: '00.00.00',
-    nickname: '코코',
-    status: i % 4 === 0 ? '휴면' : i % 3 === 0 ? '차단됨' : '정상',
-    reportHistory: `${(i % 3) + 1}건`,
-    restricted: i % 5 === 0 ? '제한됨' : '정상'
-  }));
+  // API 데이터 상태 관리
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalElements, setTotalElements] = useState(0);
+  const [error, setError] = useState(null);
 
-  // 현재 페이지에 표시할 데이터 계산
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = mockData.slice(indexOfFirstItem, indexOfLastItem);
-  
   // 전체 페이지 수 계산
-  const totalPages = Math.ceil(mockData.length / itemsPerPage);
+  const totalPages = Math.ceil(totalElements / itemsPerPage);
+
+  // API에서 받은 데이터를 현재 아이템으로 사용
+  const currentItems = accounts;
+
+  // 계정 목록 API 호출
+  const fetchAccounts = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        page: currentPage - 1, // API는 0부터 시작
+        size: itemsPerPage,
+        startDate,
+        endDate,
+        accountStatus,
+        reportHistory,
+      };
+
+      const response = await getAccounts(params);
+      
+      // API 응답 구조에 따라 조정
+      const data = response.data;
+      setAccounts(data.content || data.data || data);
+      setTotalElements(data.totalElements || data.total || 0);
+      
+    } catch (err) {
+      setError(err.message || '데이터 조회 중 오류가 발생했습니다.');
+      console.error('계정 목록 조회 실패:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 컴포넌트 마운트 시 및 의존성 변경 시 데이터 조회
+  useEffect(() => {
+    fetchAccounts();
+  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportHistory]);
 
   const handleRowSelect = (id) => {
     setSelectedRows((prev) => {
@@ -96,16 +124,9 @@ const AccountsPage = () => {
   };
 
   const handleSearch = () => {
-    // 검색 로직 구현
-    console.log('필터 조건으로 검색:', {
-      startDate,
-      endDate,
-      keyword,
-      accountStatus,
-      reportHistory
-    });
-    // 검색 후 첫 페이지로 이동
+    // 검색 시 첫 페이지로 이동 후 API 호출
     setCurrentPage(1);
+    // useEffect에 의해 fetchAccounts가 자동 호출됨
   };
 
   // 페이지네이션을 위한 그룹화 로직
@@ -155,25 +176,33 @@ const AccountsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleModalConfirm = () => {
-    // 실제 API 호출이나 상태 업데이트 로직을 여기에 추가
-    console.log(`${modalAction} action confirmed for members:`, selectedRows);
-    
-    // 여기에 실제 처리 로직 추가
-    if (modalAction === "withdrawal") {
-      // 회원 탈퇴 로직
-      setNotificationMessage("회원 탈퇴가 완료되었습니다.");
-    } else if (modalAction === "suspension") {
-      // 계정 정지 로직
-      setNotificationMessage("회원 정지가 완료되었습니다.");
-    } else if (modalAction === "activation") {
-      // 활성화 로직
-      setNotificationMessage("선택한 회원이 정상 상태로 활성화되었습니다.");
+  const handleModalConfirm = async () => {
+    try {
+      console.log(`${modalAction} action confirmed for members:`, selectedRows);
+      
+      // 실제 API 호출
+      if (modalAction === "withdrawal") {
+        await withdrawMembers(selectedRows);
+        setNotificationMessage("회원 탈퇴가 완료되었습니다.");
+      } else if (modalAction === "suspension") {
+        await suspendMembers(selectedRows);
+        setNotificationMessage("회원 정지가 완료되었습니다.");
+      } else if (modalAction === "activation") {
+        await activateMembers(selectedRows);
+        setNotificationMessage("선택한 회원이 정상 상태로 활성화되었습니다.");
+      }
+      
+      // 성공 시 데이터 새로고침
+      await fetchAccounts();
+      
+    } catch (error) {
+      setNotificationMessage(`작업 처리 중 오류가 발생했습니다: ${error.message}`);
+      console.error('회원 처리 실패:', error);
+    } finally {
+      setIsModalOpen(false);
+      setSelectedRows([]);
+      setIsNotificationOpen(true);
     }
-    
-    setIsModalOpen(false);
-    setSelectedRows([]);
-    setIsNotificationOpen(true);
   };
 
   const handleModalClose = () => {
@@ -290,8 +319,9 @@ const AccountsPage = () => {
           <Button
             className="bg-black hover:bg-gray-800 w-[165px] h-[40px] ml-auto"
             onClick={handleSearch}
+            disabled={loading}
           >
-            검색
+            {loading ? "검색 중..." : "검색"}
           </Button>
         </div>
       </div>
@@ -318,26 +348,46 @@ const AccountsPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentItems.map((row) => (
-              <TableRow key={row.id} className="h-[44px]">
-                <TableCell className="p-2 text-center">
-                  <div className="flex justify-center items-center">
-                    <Checkbox
-                      checked={selectedRows.includes(row.id)}
-                      onCheckedChange={() => handleRowSelect(row.id)}
-                    />
-                  </div>
+            {loading ? (
+              <TableRow className="h-[44px]">
+                <TableCell colSpan={7} className="h-[44px] p-2 text-center">
+                  데이터를 불러오는 중...
                 </TableCell>
-                <TableCell className="p-2">{row.memberId}</TableCell>
-                <TableCell className="p-2">{row.joinDate}</TableCell>
-                <TableCell className="p-2">{row.nickname}</TableCell>
-                <TableCell className="p-2">{row.status}</TableCell>
-                <TableCell className="p-2">{row.reportHistory}</TableCell>
-                <TableCell className="p-2">{row.restricted}</TableCell>
               </TableRow>
-            ))}
-            {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
-            {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
+            ) : error ? (
+              <TableRow className="h-[44px]">
+                <TableCell colSpan={7} className="h-[44px] p-2 text-center text-red-500">
+                  데이터 로드 실패: {error}
+                </TableCell>
+              </TableRow>
+            ) : currentItems.length === 0 ? (
+              <TableRow className="h-[44px]">
+                <TableCell colSpan={7} className="h-[44px] p-2 text-center">
+                  데이터가 없습니다.
+                </TableCell>
+              </TableRow>
+            ) : (
+              currentItems.map((row, index) => (
+                <TableRow key={row.id || index} className="h-[44px]">
+                  <TableCell className="p-2 text-center">
+                    <div className="flex justify-center items-center">
+                      <Checkbox
+                        checked={selectedRows.includes(row.id || index.toString())}
+                        onCheckedChange={() => handleRowSelect(row.id || index.toString())}
+                      />
+                    </div>
+                  </TableCell>
+                  <TableCell className="p-2">{row.memberId || row.id}</TableCell>
+                  <TableCell className="p-2">{row.joinDate || row.createdAt}</TableCell>
+                  <TableCell className="p-2">{row.nickname || row.name}</TableCell>
+                  <TableCell className="p-2">{row.status || row.accountStatus}</TableCell>
+                  <TableCell className="p-2">{row.reportHistory || row.reportCount}</TableCell>
+                  <TableCell className="p-2">{row.restricted || row.rejoinRestricted}</TableCell>
+                </TableRow>
+              ))
+            )}
+            {/* 로딩이 아닌 경우에만 빈 행 추가 */}
+            {!loading && !error && currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
               <TableRow key={`empty-${index}`} className="h-[44px]">
                 <TableCell colSpan={7} className="h-[44px] p-2">&nbsp;</TableCell>
               </TableRow>
