@@ -34,6 +34,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../../components/ui/pagination";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import NotificationModal from "../../components/ui/NotificationModal";
 
 const AccountsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -41,14 +43,24 @@ const AccountsPage = () => {
   // 필터 상태 관리
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [keyword, setKeyword] = useState('');
-  const [accountStatus, setAccountStatus] = useState(null);
-  const [reportHistory, setReportHistory] = useState(null);
+  const [accountStatus, setAccountStatus] = useState("");
+  const [reportHistory, setReportHistory] = useState("");
+  const [keyword, setKeyword] = useState("");
   
   // 페이지네이션 상태 관리
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  
+
+  // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalDetails, setModalDetails] = useState(null);
+  const [modalAction, setModalAction] = useState(null);
+
+  // NotificationModal 상태 관리
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
   // 모의 데이터 생성 (더 많은 데이터 생성)
   const mockData = Array.from({ length: 35 }, (_, i) => ({
     id: (i + 1).toString(),
@@ -104,6 +116,72 @@ const AccountsPage = () => {
     const end = Math.min(start + groupSize - 1, totalPages);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  // 모달 핸들러 함수들
+  const handleWithdrawalClick = () => {
+    if (selectedRows.length === 0) {
+      alert("탈퇴시킬 회원을 선택해주세요.");
+      return;
+    }
+    setModalMessage("해당 회원을 탈퇴시키겠습니까?");
+    setModalDetails(null);
+    setModalAction("withdrawal");
+    setIsModalOpen(true);
+  };
+
+  const handleSuspensionClick = () => {
+    if (selectedRows.length === 0) {
+      alert("정지시킬 회원을 선택해주세요.");
+      return;
+    }
+    setModalMessage("해당 회원을 정지시키겠습니까?");
+    setModalDetails(null);
+    setModalAction("suspension");
+    setIsModalOpen(true);
+  };
+
+  const handleActivationClick = () => {
+    if (selectedRows.length === 0) {
+      alert("활성화할 회원을 선택해주세요.");
+      return;
+    }
+    setModalMessage(`정지된 회원 ${selectedRows.length}명을 활성화시키겠습니까?`);
+    setModalDetails([
+      "정상/탈퇴된 계정은 변경되지 않습니다.",
+      "선택한 계정 중 정지 상태인 회원만 활성화됩니다."
+    ]);
+    setModalAction("activation");
+    setIsModalOpen(true);
+  };
+
+  const handleModalConfirm = () => {
+    // 실제 API 호출이나 상태 업데이트 로직을 여기에 추가
+    console.log(`${modalAction} action confirmed for members:`, selectedRows);
+    
+    // 여기에 실제 처리 로직 추가
+    if (modalAction === "withdrawal") {
+      // 회원 탈퇴 로직
+      setNotificationMessage("회원 탈퇴가 완료되었습니다.");
+    } else if (modalAction === "suspension") {
+      // 계정 정지 로직
+      setNotificationMessage("회원 정지가 완료되었습니다.");
+    } else if (modalAction === "activation") {
+      // 활성화 로직
+      setNotificationMessage("선택한 회원이 정상 상태로 활성화되었습니다.");
+    }
+    
+    setIsModalOpen(false);
+    setSelectedRows([]);
+    setIsNotificationOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleNotificationClose = () => {
+    setIsNotificationOpen(false);
   };
 
   return (
@@ -220,9 +298,9 @@ const AccountsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">회원 탈퇴</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">계정 정지</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">활성화</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleWithdrawalClick}>회원 탈퇴</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleSuspensionClick}>계정 정지</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleActivationClick}>활성화</Button>
       </div>
 <div className="flex flex-col h-full justify-between">
       {/* 테이블 컨테이너 - 테이블 영역만 포함 */}
@@ -330,6 +408,22 @@ const AccountsPage = () => {
         </Pagination>
       </div>
       </div>
+
+      {/* 모달 컴포넌트 */}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        message={modalMessage}
+        details={modalDetails}
+        onConfirm={handleModalConfirm}
+        onClose={handleModalClose}
+      />
+
+      {/* 알림 모달 컴포넌트 */}
+      <NotificationModal
+        isOpen={isNotificationOpen}
+        message={notificationMessage}
+        onClose={handleNotificationClose}
+      />
     </div>
   );
 };

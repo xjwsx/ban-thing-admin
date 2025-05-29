@@ -94,7 +94,7 @@ const AdminLayout = ({ children }) => {
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <div
-        className={`bg-white border-r border-gray-200 transition-all duration-300 flex flex-col ${
+        className={`bg-[#FAFAFA] border-r border-gray-200 transition-all duration-300 flex flex-col ${
           isExpanded ? "w-[255px]" : "w-14"
         }`}
       >
@@ -135,9 +135,11 @@ const AdminLayout = ({ children }) => {
               <div
                 key={item.key}
                 onClick={item.onClick}
-                className={`flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700}`}
+                className={`flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700 ${
+                  activePath === item.path ? "bg-white" : ""
+                }`}
               >
-                {item.icon && <div className={`min-w-[16px] ${activePath === item.path ? "text-blue-600" : "text-gray-500"}`}>{item.icon}</div>}
+                {item.icon && <div className="min-w-[16px] text-gray-500">{item.icon}</div>}
                 <div
                   className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${
                     isExpanded

@@ -28,6 +28,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../../components/ui/pagination";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import NotificationModal from "../../components/ui/NotificationModal";
 
 const WithdrawalsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -41,6 +43,15 @@ const WithdrawalsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   
+  // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalAction, setModalAction] = useState(null);
+
+  // 알림 모달 상태 관리
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
   // 모의 데이터 생성 (더 많은 데이터 생성)
   const mockData = Array.from({ length: 35 }, (_, i) => ({
     id: (i + 1).toString(),
@@ -95,6 +106,41 @@ const WithdrawalsPage = () => {
     const end = Math.min(start + groupSize - 1, totalPages);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  // 모달 핸들러 함수들
+  const handleRejoinRestrictionClick = () => {
+    if (selectedRows.length === 0) {
+      alert("재가입 제한할 계정을 선택해주세요.");
+      return;
+    }
+    setModalMessage("해당 계정 재가입을 제한 하시겠습니까?");
+    setModalAction("restriction");
+    setIsModalOpen(true);
+  };
+
+  const handleModalConfirm = () => {
+    // 실제 API 호출이나 상태 업데이트 로직을 여기에 추가
+    console.log(`${modalAction} action confirmed for accounts:`, selectedRows);
+    
+    // 여기에 실제 처리 로직 추가
+    if (modalAction === "restriction") {
+      // 재가입 제한 로직
+      // 성공 후 알림 모달 표시
+      setNotificationMessage("재가입 제한 계정으로 설정되었습니다.");
+      setIsNotificationOpen(true);
+    }
+    
+    setIsModalOpen(false);
+    setSelectedRows([]);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleNotificationClose = () => {
+    setIsNotificationOpen(false);
   };
 
   return (
@@ -160,8 +206,7 @@ const WithdrawalsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">개정 복구</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">재가입 제한</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleRejoinRestrictionClick}>재가입 제한</Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">
@@ -272,6 +317,21 @@ const WithdrawalsPage = () => {
           </Pagination>
         </div>
       </div>
+
+      {/* 모달 컴포넌트 */}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        message={modalMessage}
+        onConfirm={handleModalConfirm}
+        onClose={handleModalClose}
+      />
+
+      {/* 알림 모달 컴포넌트 */}
+      <NotificationModal
+        isOpen={isNotificationOpen}
+        message={notificationMessage}
+        onClose={handleNotificationClose}
+      />
     </div>
   );
 };

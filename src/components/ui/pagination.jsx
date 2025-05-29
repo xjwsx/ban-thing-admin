@@ -41,7 +41,7 @@ const PaginationLink = ({
         variant: isActive ? "outline" : "ghost",
         size,
       }),
-      isActive && "bg-black text-white hover:bg-gray-800 hover:text-white",
+      isActive && "border-[#E4E4E7] text-black hover:border-[#E4E4E7] hover:text-black bg-transparent hover:bg-transparent",
       "h-8 w-8",
       className
     )}

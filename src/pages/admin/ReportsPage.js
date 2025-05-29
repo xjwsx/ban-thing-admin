@@ -34,6 +34,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../../components/ui/pagination";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import NotificationModal from "../../components/ui/NotificationModal";
 
 const ReportsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -50,6 +52,15 @@ const ReportsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   
+  // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalAction, setModalAction] = useState(null);
+
+  // NotificationModal 상태 관리
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+
   // 신고 사유 데이터 정의
   const reasonsMap = {
     "advert": {
@@ -224,6 +235,66 @@ const ReportsPage = () => {
     }
   }
 
+  // 모달 핸들러 함수들
+  const handleDeleteClick = () => {
+    if (selectedRows.length === 0) {
+      alert("삭제할 항목을 선택해주세요.");
+      return;
+    }
+    setModalMessage("해당 글을 삭제하시겠습니까?");
+    setModalAction("delete");
+    setIsModalOpen(true);
+  };
+
+  const handleInvalidClick = () => {
+    if (selectedRows.length === 0) {
+      alert("무효처리할 항목을 선택해주세요.");
+      return;
+    }
+    setModalMessage("해당 글을 무효처리하시겠습니까?");
+    setModalAction("invalid");
+    setIsModalOpen(true);
+  };
+
+  const handleReviewClick = () => {
+    if (selectedRows.length === 0) {
+      alert("검토할 항목을 선택해주세요.");
+      return;
+    }
+    setModalMessage("해당 글을 검토하시겠습니까?");
+    setModalAction("review");
+    setIsModalOpen(true);
+  };
+
+  const handleModalConfirm = () => {
+    // 실제 API 호출이나 상태 업데이트 로직을 여기에 추가
+    console.log(`${modalAction} action confirmed for items:`, selectedRows);
+    
+    // 여기에 실제 처리 로직 추가
+    if (modalAction === "delete") {
+      // 삭제 로직
+      setNotificationMessage("삭제가 완료되었습니다.");
+    } else if (modalAction === "invalid") {
+      // 무효처리 로직
+      setNotificationMessage("무효처리가 완료되었습니다.");
+    } else if (modalAction === "review") {
+      // 검토 로직
+      setNotificationMessage("검토가 완료되었습니다.");
+    }
+    
+    setIsModalOpen(false);
+    setSelectedRows([]);
+    setIsNotificationOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleNotificationClose = () => {
+    setIsNotificationOpen(false);
+  };
+
   return (
     <div className="space-y-6 flex flex-col h-full relative">
       {/* 필터 섹션 */}
@@ -361,8 +432,9 @@ const ReportsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">처리 완료</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]">무효 처리</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleDeleteClick}>삭제</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleInvalidClick}>무효</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleReviewClick}>검토</Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">
@@ -473,6 +545,21 @@ const ReportsPage = () => {
           </Pagination>
         </div>
       </div>
+
+      {/* 모달 컴포넌트 */}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        message={modalMessage}
+        onConfirm={handleModalConfirm}
+        onClose={handleModalClose}
+      />
+
+      {/* 알림 모달 컴포넌트 */}
+      <NotificationModal
+        isOpen={isNotificationOpen}
+        message={notificationMessage}
+        onClose={handleNotificationClose}
+      />
     </div>
   );
 };
