@@ -2,7 +2,7 @@ import axios from "axios";
 import { getAccessToken } from "../utils/token";
 
 // API 기본 URL 설정
-const baseURL = process.env.REACT_APP_API_URL || "http://localhost:8000/api";
+const baseURL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 // axios 인스턴스 생성
 const api = axios.create({
