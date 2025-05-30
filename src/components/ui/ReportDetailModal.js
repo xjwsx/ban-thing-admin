@@ -48,10 +48,10 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-[800px] max-w-[90vw] max-h-[80vh] overflow-hidden">
+      <div className="bg-white rounded-lg w-[549px] h-[634px] max-w-[90vw] overflow-hidden">
         {/* 모달 헤더 */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">신고된 글 상세보기</h2>
+        <div className="flex items-center justify-between p-6">
+          <h2 className="text-[20px] font-semibold text-gray-900">신고된 글 상세보기</h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
@@ -61,53 +61,53 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         </div>
 
         {/* 모달 내용 */}
-        <div className="p-6 space-y-6 overflow-auto max-h-[calc(80vh-80px)]">
+        <div className="pt-0 px-6 pb-6 space-y-6 overflow-auto h-[554px]">
           {/* 신고 사유 섹션 - 회색 배경 */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="space-y-4">
-              <div className="flex">
-                <div className="text-sm text-gray-600 w-20">상위 신고 사유</div>
-                <div className="text-base font-medium text-gray-900">{data.mainReason}</div>
+              <div className="flex gap-28">
+                <div className="text-sm text-gray-600 w-22">상위 신고 사유</div>
+                <div className="text-[14px] font-medium text-gray-900">{data.mainReason}</div>
               </div>
-              <div className="flex">
-                <div className="text-sm text-gray-600 w-20">하위 신고 사유</div>
-                <div className="text-base font-medium text-gray-900">{data.subReason}</div>
+              <div className="flex gap-28">
+                <div className="text-sm text-gray-600 w-22">하위 신고 사유</div>
+                <div className="text-[14px] font-medium text-gray-900">{data.subReason}</div>
               </div>
             </div>
           </div>
 
           {/* 게시글 정보 섹션 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">게시글 정보</h3>
-            <div className="border border-gray-200 rounded-lg p-4 space-y-6">
-              <div className="flex gap-6">
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">게시글 정보</h3>
+            <div className="border border-gray-200 rounded-lg p-4 space-y-6 w-[501px] h-[386px]">
+              <div className="flex gap-6 w-[461px] h-[150px]">
                 {/* 왼쪽: 게시글 상세 정보 */}
-                <div className="flex-1 space-y-4">
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">제목</div>
-                    <div className="text-base text-gray-900">{data.postInfo.title}</div>
+                <div className="flex-1 space-y-2">
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">제목</div>
+                    <div className="text-[13px] text-gray-900">{data.postInfo.title}</div>
                   </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">작성자</div>
-                    <div className="text-base text-gray-900">{data.postInfo.author}</div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">작성자</div>
+                    <div className="text-[13px] text-gray-900">{data.postInfo.author}</div>
                   </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">지역</div>
-                    <div className="text-base text-gray-900">{data.postInfo.region}</div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">지역</div>
+                    <div className="text-[13px] text-gray-900">{data.postInfo.region}</div>
                   </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">작성일</div>
-                    <div className="text-base text-gray-900">{data.postInfo.date}</div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">작성일</div>
+                    <div className="text-[13px] text-gray-900">{data.postInfo.date}</div>
                   </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">내용</div>
-                    <div className="text-base text-gray-900">{data.postInfo.content}</div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">내용</div>
+                    <div className="text-[13px] text-gray-900">{data.postInfo.content}</div>
                   </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">태그</div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">태그</div>
                     <div className="flex gap-2">
                       {data.postInfo.tags.map((tag, index) => (
-                        <span key={index} className="text-blue-600 text-base">
+                        <span key={index} className="text-gray-900 text-[13px]">
                           {tag}
                         </span>
                       ))}
@@ -115,41 +115,44 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                   </div>
                 </div>
 
-                {/* 오른쪽: 제품 이미지 */}
-                <div className="flex-shrink-0">
-                  <img
-                    src={data.image}
-                    alt="제품 이미지"
-                    className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
-                  />
-                </div>
               </div>
 
               {/* 클린 체크리스트 섹션 */}
-              <div>
+              <div className="w-[461px] h-[164px]">
                 {/* 구분선 */}
-                <div className="border-t border-gray-200 pt-6 mb-4"></div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">클린 체크리스트</h4>
-                <div className="space-y-4">
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">오염</div>
-                    <div className="text-base text-gray-900">1~3개</div>
+                <div className="border-t border-gray-200 mt-2 mb-5"></div>
+                <h4 className="text-[13px] font-semibold text-gray-900 mb-3">클린 체크리스트</h4>
+                <div className="flex gap-6">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex gap-28">
+                      <div className="text-[13px] text-gray-600 w-20">오염</div>
+                      <div className="text-[13px] text-gray-900">1~3개</div>
+                    </div>
+                    <div className="flex gap-28">
+                      <div className="text-[13px] text-gray-600 w-20">사용횟수</div>
+                      <div className="text-[13px] text-gray-900">5회 미만</div>
+                    </div>
+                    <div className="flex gap-28">
+                      <div className="text-[13px] text-gray-600 w-20">세탁유무</div>
+                      <div className="text-[13px] text-gray-900">새상품</div>
+                    </div>
+                    <div className="flex gap-28">
+                      <div className="text-[13px] text-gray-600 w-20">구매시기</div>
+                      <div className="text-[13px] text-gray-900">24년 7월 정도</div>
+                    </div>
+                    <div className="flex gap-28">
+                      <div className="text-[13px] text-gray-600 w-20">유통기한</div>
+                      <div className="text-[13px] text-gray-900">00.00.00</div>
+                    </div>
                   </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">사용횟수</div>
-                    <div className="text-base text-gray-900">5회 미만</div>
-                  </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">세탁유무</div>
-                    <div className="text-base text-gray-900">새상품</div>
-                  </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">구매시기</div>
-                    <div className="text-base text-gray-900">24년 7월 정도</div>
-                  </div>
-                  <div className="flex">
-                    <div className="text-sm text-gray-600 w-20">유통기한</div>
-                    <div className="text-base text-gray-900">00.00.00</div>
+                  
+                  {/* 오른쪽: 제품 이미지 */}
+                  <div className="flex-shrink-0 w-[119px] h-[101px]">
+                    <img
+                      src={data.image}
+                      alt="제품 이미지"
+                      className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
+                    />
                   </div>
                 </div>
               </div>
