@@ -30,6 +30,7 @@ import {
 } from "../../components/ui/pagination";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
+import ReportHistoryModal from "../../components/ui/ReportHistoryModal";
 
 const WithdrawalsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -51,6 +52,10 @@ const WithdrawalsPage = () => {
   // 알림 모달 상태 관리
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+
+  // 신고이력 모달 상태 관리
+  const [isReportHistoryModalOpen, setIsReportHistoryModalOpen] = useState(false);
+  const [selectedMemberReportData, setSelectedMemberReportData] = useState([]);
 
   // 모의 데이터 생성 (더 많은 데이터 생성)
   const mockData = Array.from({ length: 35 }, (_, i) => ({
@@ -143,6 +148,28 @@ const WithdrawalsPage = () => {
     setIsNotificationOpen(false);
   };
 
+  // 신고이력 모달 핸들러
+  const handleRowClick = (member) => {
+    // 해당 회원의 신고이력 데이터를 설정 (실제로는 API에서 가져와야 함)
+    const mockReportData = [
+      {
+        reporterId: "A321",
+        reportedId: member.userId,
+        reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
+        joinDate: member.joinDate
+      },
+      {
+        reporterId: "A321", 
+        reportedId: member.userId,
+        reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
+        joinDate: member.joinDate
+      }
+    ];
+    
+    setSelectedMemberReportData(mockReportData);
+    setIsReportHistoryModalOpen(true);
+  };
+
   return (
     <div className="space-y-6 flex flex-col h-full relative">
       {/* 필터 섹션 */}
@@ -206,7 +233,7 @@ const WithdrawalsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleRejoinRestrictionClick}>재가입 제한</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[109px] h-[40px] rounded" onClick={handleRejoinRestrictionClick}>재가입 제한</Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">
@@ -227,8 +254,12 @@ const WithdrawalsPage = () => {
             </TableHeader>
             <TableBody>
               {currentItems.map((row) => (
-                <TableRow key={row.id} className="h-[44px]">
-                  <TableCell className="p-2 text-center">
+                <TableRow 
+                  key={row.id} 
+                  className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={() => handleRowClick(row)}
+                >
+                  <TableCell className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-center items-center">
                       <Checkbox
                         checked={selectedRows.includes(row.id)}
@@ -331,6 +362,13 @@ const WithdrawalsPage = () => {
         isOpen={isNotificationOpen}
         message={notificationMessage}
         onClose={handleNotificationClose}
+      />
+
+      {/* 신고이력 모달 컴포넌트 */}
+      <ReportHistoryModal
+        isOpen={isReportHistoryModalOpen}
+        onClose={() => setIsReportHistoryModalOpen(false)}
+        reportData={selectedMemberReportData}
       />
     </div>
   );

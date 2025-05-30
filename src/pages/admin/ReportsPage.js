@@ -36,6 +36,7 @@ import {
 } from "../../components/ui/pagination";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
+import ReportDetailModal from "../../components/ui/ReportDetailModal";
 
 const ReportsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -60,6 +61,10 @@ const ReportsPage = () => {
   // NotificationModal 상태 관리
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+
+  // 신고상세 모달 상태 관리
+  const [isReportDetailModalOpen, setIsReportDetailModalOpen] = useState(false);
+  const [selectedReportDetail, setSelectedReportDetail] = useState(null);
 
   // 신고 사유 데이터 정의
   const reasonsMap = {
@@ -295,6 +300,13 @@ const ReportsPage = () => {
     setIsNotificationOpen(false);
   };
 
+  // 신고상세 모달 핸들러
+  const handleRowClick = (report) => {
+    // 해당 신고의 상세 정보를 설정 (실제로는 API에서 가져와야 함)
+    setSelectedReportDetail(report);
+    setIsReportDetailModalOpen(true);
+  };
+
   return (
     <div className="space-y-6 flex flex-col h-full relative">
       {/* 필터 섹션 */}
@@ -455,8 +467,12 @@ const ReportsPage = () => {
             </TableHeader>
             <TableBody>
               {currentItems.map((row) => (
-                <TableRow key={row.id} className="h-[44px]">
-                  <TableCell className="p-1 text-center">
+                <TableRow 
+                  key={row.id} 
+                  className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={() => handleRowClick(row)}
+                >
+                  <TableCell className="p-1 text-center" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-center items-center">
                       <Checkbox
                         checked={selectedRows.includes(row.id)}
@@ -559,6 +575,13 @@ const ReportsPage = () => {
         isOpen={isNotificationOpen}
         message={notificationMessage}
         onClose={handleNotificationClose}
+      />
+
+      {/* 신고상세 모달 컴포넌트 */}
+      <ReportDetailModal
+        isOpen={isReportDetailModalOpen}
+        onClose={() => setIsReportDetailModalOpen(false)}
+        reportDetail={selectedReportDetail}
       />
     </div>
   );

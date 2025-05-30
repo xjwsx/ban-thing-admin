@@ -36,6 +36,7 @@ import {
 } from "../../components/ui/pagination";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
+import ReportHistoryModal from "../../components/ui/ReportHistoryModal";
 import { getAccounts, withdrawMembers, suspendMembers, activateMembers } from "../../api/admin";
 
 const AccountsPage = () => {
@@ -61,6 +62,10 @@ const AccountsPage = () => {
   // NotificationModal 상태 관리
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+
+  // 신고이력 모달 상태 관리
+  const [isReportHistoryModalOpen, setIsReportHistoryModalOpen] = useState(false);
+  const [selectedMemberReportData, setSelectedMemberReportData] = useState([]);
 
   // API 데이터 상태 관리
   const [accounts, setAccounts] = useState([]);
@@ -174,6 +179,39 @@ const AccountsPage = () => {
     ]);
     setModalAction("activation");
     setIsModalOpen(true);
+  };
+
+  // 신고이력 모달 핸들러
+  const handleRowClick = (member) => {
+    // 해당 회원의 신고이력 데이터를 설정 (실제로는 API에서 가져와야 함)
+    const mockReportData = [
+      {
+        reporterId: "A321",
+        reportedId: member.memberId || member.id,
+        reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
+        joinDate: member.joinDate || "00.00.00"
+      },
+      {
+        reporterId: "A321", 
+        reportedId: member.memberId || member.id,
+        reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
+        joinDate: member.joinDate || "00.00.00"
+      }
+    ];
+    
+    setSelectedMemberReportData(mockReportData);
+    setIsReportHistoryModalOpen(true);
+  };
+
+  const handleReportHistoryModalClose = () => {
+    setIsReportHistoryModalOpen(false);
+    setSelectedMemberReportData([]);
+  };
+
+  // 체크박스 클릭 시 이벤트 전파 방지
+  const handleCheckboxClick = (e, id) => {
+    e.stopPropagation();
+    handleRowSelect(id);
   };
 
   const handleModalConfirm = async () => {
@@ -368,8 +406,12 @@ const AccountsPage = () => {
               </TableRow>
             ) : (
               currentItems.map((row, index) => (
-                <TableRow key={row.id || index} className="h-[44px]">
-                  <TableCell className="p-2 text-center">
+                <TableRow 
+                  key={row.id || index} 
+                  className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={() => handleRowClick(row)}
+                >
+                  <TableCell className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-center items-center">
                       <Checkbox
                         checked={selectedRows.includes(row.id || index.toString())}
@@ -473,6 +515,13 @@ const AccountsPage = () => {
         isOpen={isNotificationOpen}
         message={notificationMessage}
         onClose={handleNotificationClose}
+      />
+
+      {/* 신고이력 모달 컴포넌트 */}
+      <ReportHistoryModal
+        isOpen={isReportHistoryModalOpen}
+        onClose={handleReportHistoryModalClose}
+        reportData={selectedMemberReportData}
       />
     </div>
   );
