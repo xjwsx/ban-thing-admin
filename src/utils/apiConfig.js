@@ -6,7 +6,7 @@ export const API_CONFIG = {
   // 환경별 API URL
   API_URLS: {
     development: process.env.REACT_APP_API_URL || "http://localhost:8080",
-    production: process.env.REACT_APP_API_URL || "https://your-production-api-url.com"
+    production: process.env.REACT_APP_API_URL || "https://ban-thing-admin.vercel.app"
   },
   
   // API 엔드포인트
