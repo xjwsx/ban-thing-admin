@@ -2,7 +2,14 @@ import axios from "axios";
 import { getAccessToken } from "../utils/token";
 
 // API 기본 URL 설정
-const baseURL = process.env.REACT_APP_API_URL || "http://localhost:8080";
+const getBaseURL = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.REACT_APP_API_URL || "https://your-production-api-url.com";
+  }
+  return process.env.REACT_APP_API_URL || "http://localhost:8080";
+};
+
+const baseURL = getBaseURL();
 
 // axios 인스턴스 생성
 const api = axios.create({
@@ -10,6 +17,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 10000, // 10초 타임아웃
 });
 
 // 요청 인터셉터 - 요청 전에 토큰을 헤더에 추가
