@@ -1,5 +1,5 @@
 {
-  "name": "zarada-admin",
+  "name": "banthing-admin",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -51,7 +51,7 @@
   "scripts": {
     "start": "PORT=3001 NODE_OPTIONS='--openssl-legacy-provider' react-scripts start",
     "build": "react-scripts build",
-    "build:production": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build:production": "npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "github:push": "git add . && git commit -m \"자동 커밋\" && git push origin main",
