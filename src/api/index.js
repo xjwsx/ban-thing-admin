@@ -11,6 +11,9 @@ const getBaseURL = () => {
 
 const baseURL = getBaseURL();
 
+console.log('🔗 API Base URL:', baseURL);
+console.log('🌍 Environment:', process.env.NODE_ENV);
+
 // axios 인스턴스 생성
 const api = axios.create({
   baseURL,

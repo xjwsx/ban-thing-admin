@@ -94,16 +94,27 @@ const AccountsPage = () => {
         reportHistory,
       };
 
+      console.log('📤 API 요청 파라미터:', params);
       const response = await getAccounts(params);
+      console.log('📥 API 응답:', response);
       
       // API 응답 구조에 따라 조정
       const data = response.data;
-      setAccounts(data.content || data.data || data);
+      setAccounts(data.content || data.data || data || []);
       setTotalElements(data.totalElements || data.total || 0);
       
     } catch (err) {
-      setError(err.message || '데이터 조회 중 오류가 발생했습니다.');
+      const errorMessage = err.message || '데이터 조회 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      setAccounts([]); // 에러 시 빈 배열로 설정
+      setTotalElements(0);
+      
       console.error('계정 목록 조회 실패:', err);
+      
+      // 개발환경에서만 상세 에러 정보 표시
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 개발 모드: API 연결 실패 시 Mock 데이터를 사용하려면 admin.js에서 Mock 코드를 주석 해제하세요.');
+      }
     } finally {
       setLoading(false);
     }
@@ -333,10 +344,11 @@ const AccountsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">없음</SelectItem>
-              <SelectItem value="1">1건</SelectItem>
-              <SelectItem value="2">2건</SelectItem>
-              <SelectItem value="3+">3건 이상</SelectItem>
+              <SelectItem value="">전체</SelectItem>
+              <SelectItem value="0">없음</SelectItem>
+              <SelectItem value="1">1건 이상</SelectItem>
+              <SelectItem value="2">2건 이상</SelectItem>
+              <SelectItem value="3">3건 이상</SelectItem>
             </SelectContent>
           </Select>
         </div>
