@@ -37,6 +37,7 @@ import {
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import ReportDetailModal from "../../components/ui/ReportDetailModal";
+import { getReports } from "../../api/admin";
 
 const ReportsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -48,10 +49,17 @@ const ReportsPage = () => {
   const [subReason, setSubReason] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState(null);
+  const [minReports, setMinReports] = useState('');
   
   // 페이지네이션 상태 관리
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  
+  // 데이터 상태 관리
+  const [reportsData, setReportsData] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -165,27 +173,61 @@ const ReportsPage = () => {
     setSubReason(null);
   };
 
-  // 모의 데이터 생성 (더 많은 데이터 생성)
-  const mockData = Array.from({ length: 35 }, (_, i) => ({
-    id: (i + 1).toString(),
-    no: i + 1,
-    reportId: `R${1000 + i}`,
-    date: '2025.06.11',
-    title: i % 4 === 0 ? '고양이 옷' : i % 3 === 0 ? '나눔나눔' : '제목입니다.',
-    mainReason: '신고 사유 입니다.',
-    subReason: '신고 사유 입니다.',
-    reporterId: `USER${2000 + i}`,
-    reportedId: `USER${3000 + i}`,
-    status: i % 4 === 0 ? '처리중' : i % 3 === 0 ? '무효처리' : i % 2 === 0 ? '처리완료' : '미처리'
-  }));
+  // API에서 신고 내역 데이터 가져오기
+  const fetchReports = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        page: currentPage - 1, // API는 0부터 시작
+        size: itemsPerPage,
+      };
 
-  // 현재 페이지에 표시할 데이터 계산
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = mockData.slice(indexOfFirstItem, indexOfLastItem);
-  
+      // 시작일이 있으면 추가
+      if (startDate) {
+        params.startDate = format(startDate, 'yyyy-MM-dd');
+      }
+
+      // 종료일이 있으면 추가
+      if (endDate) {
+        params.endDate = format(endDate, 'yyyy-MM-dd');
+      }
+
+      // 최소 신고 건수가 있으면 추가
+      if (minReports && minReports !== "" && minReports !== "0") {
+        params.minReports = minReports;
+      }
+
+      const response = await getReports(params);
+      
+      if (response.data && response.data.content) {
+        setReportsData(response.data.content);
+        setTotalElements(response.data.totalElements);
+      } else {
+        setReportsData([]);
+        setTotalElements(0);
+      }
+    } catch (error) {
+      console.error('신고 내역 조회 실패:', error);
+      setError(error.message || '데이터를 불러오는데 실패했습니다.');
+      setReportsData([]);
+      setTotalElements(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 컴포넌트 마운트 시 데이터 로드
+  useEffect(() => {
+    fetchReports();
+  }, [currentPage, startDate, endDate, minReports]);
+
   // 전체 페이지 수 계산
-  const totalPages = Math.ceil(mockData.length / itemsPerPage);
+  const totalPages = Math.ceil(totalElements / itemsPerPage);
+
+  // 현재 페이지에 표시할 데이터
+  const currentItems = reportsData;
 
   const handleRowSelect = (id) => {
     setSelectedRows((prev) => {
@@ -209,10 +251,12 @@ const ReportsPage = () => {
       mainReason,
       subReason,
       keyword,
-      status
+      status,
+      minReports
     });
-    // 검색 후 첫 페이지로 이동
+    // 검색 후 첫 페이지로 이동하고 데이터 다시 로드
     setCurrentPage(1);
+    fetchReports();
   };
 
   // 페이지네이션을 위한 그룹화 로직
@@ -413,6 +457,18 @@ const ReportsPage = () => {
             />
           </div>
 
+          {/* 최소 신고 건수 */}
+          <div className="w-40">
+            <Input
+              placeholder="최소 신고 건수"
+              className="h-[40px] w-full bg-white"
+              value={minReports}
+              onChange={(e) => setMinReports(e.target.value)}
+              type="number"
+              min="0"
+            />
+          </div>
+
           {/* 처리상태 */}
           <div className="w-40">
             <Select value={status} onValueChange={setStatus}>
@@ -436,130 +492,157 @@ const ReportsPage = () => {
           <Button
             className="bg-black hover:bg-gray-800 w-[165px] h-[40px] ml-auto"
             onClick={handleSearch}
+            disabled={loading}
           >
-            검색
+            {loading ? "검색 중..." : "검색"}
           </Button>
         </div>
       </div>
 
+      {/* 에러 메시지 */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleDeleteClick}>삭제</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleInvalidClick}>무효</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleReviewClick}>검토</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleDeleteClick} disabled={loading}>삭제</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleInvalidClick} disabled={loading}>무효</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleReviewClick} disabled={loading}>검토</Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">
+        {/* 로딩 상태 */}
+        {loading && (
+          <div className="flex justify-center items-center py-8">
+            <div className="text-gray-500">데이터를 불러오는 중...</div>
+          </div>
+        )}
+
         {/* 테이블 컨테이너 - 테이블 영역만 포함 */}
-        <div className="overflow-auto rounded-md border h-auto">
-          <Table className="w-full">
-            <TableHeader>
-              <TableRow className="bg-gray-50 h-[44px]">
-                <TableHead className="w-[50px] text-center p-2"></TableHead>
-                <TableHead className=" p-2">신고 ID</TableHead>
-                <TableHead className=" p-2">제목</TableHead>
-                <TableHead className=" p-2">상위 신고 사유</TableHead>
-                <TableHead className=" p-2">날짜</TableHead>
-                <TableHead className=" p-2">신고자 ID</TableHead>
-                <TableHead className=" p-2">피신고자 ID</TableHead>
-                <TableHead className=" p-2">상태</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentItems.map((row) => (
-                <TableRow 
-                  key={row.id} 
-                  className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => handleRowClick(row)}
-                >
-                  <TableCell className="p-1 text-center" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex justify-center items-center">
-                      <Checkbox
-                        checked={selectedRows.includes(row.id)}
-                        onCheckedChange={() => handleRowSelect(row.id)}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="p-1">{row.reportId}</TableCell>
-                  <TableCell className="p-1">{row.title}</TableCell>
-                  <TableCell className="p-1">{row.mainReason}</TableCell>
-                  <TableCell className="p-1">{row.date}</TableCell>
-                  <TableCell className="p-1">{row.reporterId}</TableCell>
-                  <TableCell className="p-1">{row.reportedId}</TableCell>
-                  <TableCell className="p-1">{getStatusBadge(row.status)}</TableCell>
+        {!loading && (
+          <div className="overflow-auto rounded-md border h-auto">
+            <Table className="w-full">
+              <TableHeader>
+                <TableRow className="bg-gray-50 h-[44px]">
+                  <TableHead className="w-[50px] text-center p-2"></TableHead>
+                  <TableHead className=" p-2">신고 ID</TableHead>
+                  <TableHead className=" p-2">제목</TableHead>
+                  <TableHead className=" p-2">상위 신고 사유</TableHead>
+                  <TableHead className=" p-2">날짜</TableHead>
+                  <TableHead className=" p-2">신고자 ID</TableHead>
+                  <TableHead className=" p-2">피신고자 ID</TableHead>
+                  <TableHead className=" p-2">상태</TableHead>
                 </TableRow>
-              ))}
-              {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
-              {currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
-                <TableRow key={`empty-${index}`} className="h-[44px]">
-                  <TableCell colSpan={8} className="h-[44px] p-2">&nbsp;</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((row) => (
+                    <TableRow 
+                      key={row.id} 
+                      className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
+                      onClick={() => handleRowClick(row)}
+                    >
+                      <TableCell className="p-1 text-center" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-center items-center">
+                          <Checkbox
+                            checked={selectedRows.includes(row.id)}
+                            onCheckedChange={() => handleRowSelect(row.id)}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="p-1">{row.reportId}</TableCell>
+                      <TableCell className="p-1">{row.title}</TableCell>
+                      <TableCell className="p-1">{row.mainReason}</TableCell>
+                      <TableCell className="p-1">{row.date}</TableCell>
+                      <TableCell className="p-1">{row.reporterId}</TableCell>
+                      <TableCell className="p-1">{row.reportedId}</TableCell>
+                      <TableCell className="p-1">{getStatusBadge(row.status)}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} className="h-[200px] text-center text-gray-500">
+                      {error ? "데이터를 불러올 수 없습니다." : "신고 내역이 없습니다."}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
+                {currentItems.length > 0 && currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
+                  <TableRow key={`empty-${index}`} className="h-[44px]">
+                    <TableCell colSpan={8} className="h-[44px] p-2">&nbsp;</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
         
         {/* 페이지네이션 - main content 하단 중앙에 배치 */}
-        <div className="w-full flex justify-center">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious 
-                  onClick={() => {
-                    if (currentPage > 1) {
-                      const groupSize = 5;
-                      const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                      if (currentPage % groupSize === 1) {
-                        // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
-                        handlePageChange(currentPage - 1);
-                      } else {
-                        // 그룹 내에서 이전 페이지로
-                        handlePageChange(currentPage - 1);
+        {!loading && totalElements > 0 && (
+          <div className="w-full flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        const groupSize = 5;
+                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                        if (currentPage % groupSize === 1) {
+                          // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
+                          handlePageChange(currentPage - 1);
+                        } else {
+                          // 그룹 내에서 이전 페이지로
+                          handlePageChange(currentPage - 1);
+                        }
                       }
-                    }
-                  }} 
-                  href="#"
-                  aria-disabled={currentPage === 1}
-                  className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
-                />
-              </PaginationItem>
-              
-              {getPaginationGroup().map((page) => (
-                <PaginationItem key={page}>
-                  <PaginationLink 
-                    href="#" 
-                    onClick={() => handlePageChange(page)}
-                    isActive={currentPage === page}
-                  >
-                    {page}
-                  </PaginationLink>
+                    }} 
+                    href="#"
+                    aria-disabled={currentPage === 1}
+                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+                  />
                 </PaginationItem>
-              ))}
-              
-              <PaginationItem>
-                <PaginationNext 
-                  onClick={() => {
-                    if (currentPage < totalPages) {
-                      const groupSize = 5;
-                      const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                      const lastPageInGroup = (currentGroup + 1) * groupSize;
-                      if (currentPage === lastPageInGroup || currentPage === totalPages) {
-                        // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
-                        handlePageChange(currentPage + 1);
-                      } else {
-                        // 그룹 내에서 다음 페이지로
-                        handlePageChange(currentPage + 1);
+                
+                {getPaginationGroup().map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink 
+                      href="#" 
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => {
+                      if (currentPage < totalPages) {
+                        const groupSize = 5;
+                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                        const lastPageInGroup = (currentGroup + 1) * groupSize;
+                        if (currentPage === lastPageInGroup || currentPage === totalPages) {
+                          // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
+                          handlePageChange(currentPage + 1);
+                        } else {
+                          // 그룹 내에서 다음 페이지로
+                          handlePageChange(currentPage + 1);
+                        }
                       }
-                    }
-                  }}
-                  href="#"
-                  aria-disabled={currentPage === totalPages}
-                  className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+                    }}
+                    href="#"
+                    aria-disabled={currentPage === totalPages}
+                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
 
       {/* 모달 컴포넌트 */}

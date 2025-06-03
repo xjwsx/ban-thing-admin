@@ -376,141 +376,148 @@ const AccountsPage = () => {
         </div>
       </div>
 
+      {/* 에러 메시지 */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleWithdrawalClick}>회원 탈퇴</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleSuspensionClick}>계정 정지</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleActivationClick}>활성화</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleWithdrawalClick} disabled={loading}>회원 탈퇴</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleSuspensionClick} disabled={loading}>계정 정지</Button>
+        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleActivationClick} disabled={loading}>활성화</Button>
       </div>
-<div className="flex flex-col h-full justify-between">
-      {/* 테이블 컨테이너 - 테이블 영역만 포함 */}
-      <div className="overflow-auto rounded-md border h-auto">
-        <Table className="w-full">
-          <TableHeader>
-            <TableRow className="bg-gray-50 h-[44px]">
-              <TableHead className="w-[50px] text-center p-2"></TableHead>
-              <TableHead className="p-2">회원 ID</TableHead>
-              <TableHead className="p-2">가입일</TableHead>
-              <TableHead className="p-2">닉네임</TableHead>
-              <TableHead className="p-2">계정 상태</TableHead>
-              <TableHead className="p-2">신고이력</TableHead>
-              <TableHead className="p-2">재가입 제한 여부</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow className="h-[44px]">
-                <TableCell colSpan={7} className="h-[44px] p-2 text-center">
-                  데이터를 불러오는 중...
-                </TableCell>
-              </TableRow>
-            ) : error ? (
-              <TableRow className="h-[44px]">
-                <TableCell colSpan={7} className="h-[44px] p-2 text-center text-red-500">
-                  데이터 로드 실패: {error}
-                </TableCell>
-              </TableRow>
-            ) : currentItems.length === 0 ? (
-              <TableRow className="h-[44px]">
-                <TableCell colSpan={7} className="h-[44px] p-2 text-center">
-                  데이터가 없습니다.
-                </TableCell>
-              </TableRow>
-            ) : (
-              currentItems.map((row, index) => (
-                <TableRow 
-                  key={row.id || index} 
-                  className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => handleRowClick(row)}
-                >
-                  <TableCell className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex justify-center items-center">
-                      <Checkbox
-                        checked={selectedRows.includes(row.id || index.toString())}
-                        onCheckedChange={() => handleRowSelect(row.id || index.toString())}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="p-2">{row.memberId || row.id}</TableCell>
-                  <TableCell className="p-2">{row.joinDate || row.createdAt}</TableCell>
-                  <TableCell className="p-2">{row.nickname || row.name}</TableCell>
-                  <TableCell className="p-2">{row.status || row.accountStatus}</TableCell>
-                  <TableCell className="p-2">{row.reportHistory || row.reportCount}</TableCell>
-                  <TableCell className="p-2">{row.restricted || row.rejoinRestricted}</TableCell>
+
+      <div className="flex flex-col h-full justify-between">
+        {/* 로딩 상태 */}
+        {loading && (
+          <div className="flex justify-center items-center py-8">
+            <div className="text-gray-500">데이터를 불러오는 중...</div>
+          </div>
+        )}
+
+        {/* 테이블 컨테이너 - 테이블 영역만 포함 */}
+        {!loading && (
+          <div className="overflow-auto rounded-md border h-auto">
+            <Table className="w-full">
+              <TableHeader>
+                <TableRow className="bg-gray-50 h-[44px]">
+                  <TableHead className="w-[50px] text-center p-2"></TableHead>
+                  <TableHead className="p-2">회원 ID</TableHead>
+                  <TableHead className="p-2">가입일</TableHead>
+                  <TableHead className="p-2">닉네임</TableHead>
+                  <TableHead className="p-2">계정 상태</TableHead>
+                  <TableHead className="p-2">신고이력</TableHead>
+                  <TableHead className="p-2">재가입 제한 여부</TableHead>
                 </TableRow>
-              ))
-            )}
-            {/* 로딩이 아닌 경우에만 빈 행 추가 */}
-            {!loading && !error && currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
-              <TableRow key={`empty-${index}`} className="h-[44px]">
-                <TableCell colSpan={7} className="h-[44px] p-2">&nbsp;</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      
-      {/* 페이지네이션 - main content 하단 중앙에 배치 */}
-      <div className="w-full flex justify-center">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                onClick={() => {
-                  if (currentPage > 1) {
-                    const groupSize = 5;
-                    const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                    if (currentPage % groupSize === 1) {
-                      // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
-                      handlePageChange(currentPage - 1);
-                    } else {
-                      // 그룹 내에서 이전 페이지로
-                      handlePageChange(currentPage - 1);
-                    }
-                  }
-                }} 
-                href="#"
-                aria-disabled={currentPage === 1}
-                className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
-              />
-            </PaginationItem>
-            
-            {getPaginationGroup().map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink 
-                  href="#" 
-                  onClick={() => handlePageChange(page)}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            
-            <PaginationItem>
-              <PaginationNext 
-                onClick={() => {
-                  if (currentPage < totalPages) {
-                    const groupSize = 5;
-                    const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                    const lastPageInGroup = (currentGroup + 1) * groupSize;
-                    if (currentPage === lastPageInGroup || currentPage === totalPages) {
-                      // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
-                      handlePageChange(currentPage + 1);
-                    } else {
-                      // 그룹 내에서 다음 페이지로
-                      handlePageChange(currentPage + 1);
-                    }
-                  }
-                }}
-                href="#"
-                aria-disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+              </TableHeader>
+              <TableBody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((row, index) => (
+                    <TableRow 
+                      key={row.id || index} 
+                      className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
+                      onClick={() => handleRowClick(row)}
+                    >
+                      <TableCell className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-center items-center">
+                          <Checkbox
+                            checked={selectedRows.includes(row.id || index.toString())}
+                            onCheckedChange={() => handleRowSelect(row.id || index.toString())}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell className="p-2">{row.memberId || row.id}</TableCell>
+                      <TableCell className="p-2">{row.joinDate || row.createdAt}</TableCell>
+                      <TableCell className="p-2">{row.nickname || row.name}</TableCell>
+                      <TableCell className="p-2">{row.status || row.accountStatus}</TableCell>
+                      <TableCell className="p-2">{row.reportHistory || row.reportCount}</TableCell>
+                      <TableCell className="p-2">{row.restricted || row.rejoinRestricted}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-[200px] text-center text-gray-500">
+                      {error ? "데이터를 불러올 수 없습니다." : "계정 정보가 없습니다."}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {/* 항상 빈 행을 추가하여 테이블 높이 일정하게 유지 */}
+                {currentItems.length > 0 && currentItems.length < 10 && Array.from({ length: 10 - currentItems.length }).map((_, index) => (
+                  <TableRow key={`empty-${index}`} className="h-[44px]">
+                    <TableCell colSpan={7} className="h-[44px] p-2">&nbsp;</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {/* 페이지네이션 - main content 하단 중앙에 배치 */}
+        {!loading && totalElements > 0 && (
+          <div className="w-full flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        const groupSize = 5;
+                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                        if (currentPage % groupSize === 1) {
+                          // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
+                          handlePageChange(currentPage - 1);
+                        } else {
+                          // 그룹 내에서 이전 페이지로
+                          handlePageChange(currentPage - 1);
+                        }
+                      }
+                    }} 
+                    href="#"
+                    aria-disabled={currentPage === 1}
+                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+                  />
+                </PaginationItem>
+                
+                {getPaginationGroup().map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink 
+                      href="#" 
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => {
+                      if (currentPage < totalPages) {
+                        const groupSize = 5;
+                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
+                        const lastPageInGroup = (currentGroup + 1) * groupSize;
+                        if (currentPage === lastPageInGroup || currentPage === totalPages) {
+                          // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
+                          handlePageChange(currentPage + 1);
+                        } else {
+                          // 그룹 내에서 다음 페이지로
+                          handlePageChange(currentPage + 1);
+                        }
+                      }
+                    }}
+                    href="#"
+                    aria-disabled={currentPage === totalPages}
+                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : ""} h-10 w-10`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
 
       {/* 모달 컴포넌트 */}

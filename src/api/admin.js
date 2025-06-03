@@ -93,12 +93,77 @@ export const getAccounts = async (params = {}) => {
 };
 
 // 신고 내역 가져오기
-export const getReports = () => {
-  // return api.get("/admin/reports");
-  // API 연동 코드는 주석 처리하고 mock 데이터 반환
-  return Promise.resolve({
-    data: []
-  });
+export const getReports = async (params = {}) => {
+  try {
+    const queryParams = new URLSearchParams({
+      page: (params.page || 0).toString(),
+      size: (params.size || 10).toString(),
+    });
+
+    // 시작일이 있으면 추가
+    if (params.startDate) {
+      queryParams.append('startDate', params.startDate);
+    }
+
+    // 종료일이 있으면 추가  
+    if (params.endDate) {
+      queryParams.append('endDate', params.endDate);
+    }
+
+    // 최소 신고 건수가 있으면 추가
+    if (params.minReports && params.minReports !== "" && params.minReports !== "0") {
+      queryParams.append('minReports', params.minReports);
+    }
+
+    console.log('🔍 신고 내역 API 호출:', `/admin/reports?${queryParams.toString()}`);
+    return api.get(`/admin/reports?${queryParams.toString()}`);
+
+    // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
+    /*
+    const mockReports = Array.from({ length: 30 }, (_, i) => ({
+      id: (i + 1).toString(),
+      reportId: `RPT${1000 + i}`,
+      reportDate: "2024.12.15",
+      reportedUser: `신고받은사용자${i + 1}`,
+      reportingUser: `신고한사용자${i + 1}`,
+      reportReason: i % 4 === 0 ? "스팸/광고" : i % 3 === 0 ? "욕설/비방" : i % 2 === 0 ? "부적절한 콘텐츠" : "기타",
+      reportCount: Math.floor(Math.random() * 10) + 1,
+      status: i % 5 === 0 ? "처리완료" : i % 3 === 0 ? "검토중" : "대기중",
+      description: `신고 상세 내용 ${i + 1}`
+    }));
+
+    // 페이지네이션 시뮬레이션
+    const page = params.page || 0;
+    const size = params.size || 10;
+    const startIndex = page * size;
+    const endIndex = startIndex + size;
+    const paginatedData = mockReports.slice(startIndex, endIndex);
+
+    return Promise.resolve({
+      data: {
+        content: paginatedData,
+        totalElements: mockReports.length,
+        totalPages: Math.ceil(mockReports.length / size),
+        number: page,
+        size: size
+      }
+    });
+    */
+
+  } catch (error) {
+    console.error('신고 내역 조회 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
 };
 
 // 탈퇴 내역 가져오기
