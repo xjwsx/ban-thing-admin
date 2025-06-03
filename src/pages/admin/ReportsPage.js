@@ -45,10 +45,8 @@ const ReportsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [mainReason, setMainReason] = useState(null);
-  const [subReason, setSubReason] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState(null);
-  const [minReports, setMinReports] = useState('');
   
   // 페이지네이션 상태 관리
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,103 +71,20 @@ const ReportsPage = () => {
   const [isReportDetailModalOpen, setIsReportDetailModalOpen] = useState(false);
   const [selectedReportDetail, setSelectedReportDetail] = useState(null);
 
-  // 신고 사유 데이터 정의
+  // 신고 사유 데이터 정의 (간소화)
   const reasonsMap = {
-    "advert": {
-      label: "광고성 콘텐츠",
-      subReasons: [
-        { value: "advert_1", label: "상점 및 타사이트 홍보" },
-        { value: "advert_2", label: "블래만 내용" },
-        { value: "advert_3", label: "직성적 신고" }
-      ]
-    },
-    "product_info": {
-      label: "상품 정보 부정확",
-      subReasons: [
-        { value: "product_info_1", label: "상품 정보 부정확" }
-      ]
-    },
-    "prohibited_item": {
-      label: "거래 금지 품목",
-      subReasons: [
-        { value: "prohibited_item_1", label: "거래 금지 품목" }
-      ]
-    },
-    "unsafe_trade": {
-      label: "안전한 거래 거부",
-      subReasons: [
-        { value: "unsafe_trade_1", label: "안전한 거래 거부" }
-      ]
-    },
-    "fraud": {
-      label: "사기 의심",
-      subReasons: [
-        { value: "fraud_1", label: "사기 의심" }
-      ]
-    },
-    "copyright": {
-      label: "전문 판매업자 의심",
-      subReasons: [
-        { value: "copyright_1", label: "전문 판매업자 의심" }
-      ]
-    },
-    "illegal": {
-      label: "불법한 내용",
-      subReasons: [
-        { value: "illegal_1", label: "불법한 내용" }
-      ]
-    },
-    "offensive": {
-      label: "직성적 신고",
-      subReasons: [
-        { value: "offensive_1", label: "직성적 신고" }
-      ]
-    },
-    "banned_account": {
-      label: "반려동물(식용 제외)",
-      subReasons: [
-        { value: "banned_1", label: "가봉(쥐조류/이빨동물)" },
-        { value: "banned_2", label: "파충류(뱀/거북/도마뱀 등)" },
-        { value: "banned_3", label: "개인정보 거래(SNS계정, 인증번호 등)" },
-        { value: "banned_4", label: "계정제공/아이템/대리육성" },
-        { value: "banned_5", label: "담배" },
-        { value: "banned_6", label: "화장품 샘플(견본품, 증정품)" },
-        { value: "banned_7", label: "음란물 / 성인용품" },
-        { value: "banned_8", label: "의약품/의료 기기" },
-        { value: "banned_9", label: "주류" }
-      ]
-    },
-    "animal": {
-      label: "동일/유사한 제품을 단기간에 판매",
-      subReasons: [
-        { value: "animal_1", label: "동일 제품을 다양한 사이즈나 색상 판매" },
-        { value: "animal_2", label: "거래 완료 후, 추가 금액 요청" }
-      ]
-    },
-    "trade_violation": {
-      label: "원금 거래 및 약투대납 유도",
-      subReasons: [
-        { value: "trade_violation_1", label: "배송완료 전 거래완료 요청" },
-        { value: "trade_violation_2", label: "거래 완료 후, 추가 금액 요청" }
-      ]
-    },
-    "bad_user": {
-      label: "비매너 사용자",
-      subReasons: [
-        { value: "bad_user_1", label: "거래 중 문의 발생" },
-        { value: "bad_user_2", label: "사기 의심" },
-        { value: "bad_user_3", label: "특정 버튼 클릭유도 사용" },
-        { value: "bad_user_4", label: "연락 목적외 활용하지 않는 대화 시도" },
-        { value: "bad_user_5", label: "부적절한 성적 행위" },
-        { value: "bad_user_6", label: "기타 부적절한 행위" }
-      ]
-    }
-  };
-
-  // 상위 사유 변경 시 하위 사유 초기화
-  const handleMainReasonChange = (value) => {
-    setMainReason(value);
-    setSubReason(null);
+    "advert": "광고성 콘텐츠",
+    "product_info": "상품 정보 부정확",
+    "prohibited_item": "거래 금지 품목",
+    "unsafe_trade": "안전한 거래 거부",
+    "fraud": "사기 의심",
+    "copyright": "전문 판매업자 의심",
+    "illegal": "불법한 내용",
+    "offensive": "직성적 신고",
+    "banned_account": "반려동물(식용 제외)",
+    "animal": "동일/유사한 제품을 단기간에 판매",
+    "trade_violation": "원금 거래 및 약투대납 유도",
+    "bad_user": "비매너 사용자"
   };
 
   // API에서 신고 내역 데이터 가져오기
@@ -193,11 +108,6 @@ const ReportsPage = () => {
         params.endDate = format(endDate, 'yyyy-MM-dd');
       }
 
-      // 최소 신고 건수가 있으면 추가
-      if (minReports && minReports !== "" && minReports !== "0") {
-        params.minReports = minReports;
-      }
-
       const response = await getReports(params);
       
       if (response.data && response.data.content) {
@@ -215,7 +125,7 @@ const ReportsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, minReports]);
+  }, [currentPage, itemsPerPage, startDate, endDate]);
 
   // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
@@ -248,10 +158,8 @@ const ReportsPage = () => {
       startDate,
       endDate,
       mainReason,
-      subReason,
       keyword,
-      status,
-      minReports
+      status
     });
     // 검색 후 첫 페이지로 이동하고 데이터 다시 로드
     setCurrentPage(1);
@@ -405,40 +313,35 @@ const ReportsPage = () => {
           </Popover>
           
           {/* 신고 사유 */}
-          <Select value={mainReason} onValueChange={handleMainReasonChange}>
+          <Select value={mainReason} onValueChange={setMainReason}>
             <SelectTrigger className="border border-gray-300 bg-white">
               {mainReason ? (
                 <SelectValue />
               ) : (
-                <div className="text-gray-600">상위 신고 사유</div>
+                <div className="text-gray-600">신고 사유</div>
               )}
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(reasonsMap).map(([value, data]) => (
-                <SelectItem key={value} value={value}>{data.label}</SelectItem>
+              {Object.entries(reasonsMap).map(([value, label]) => (
+                <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          
-          {/* 신고 상세 사유 */}
-          <Select 
-            value={subReason} 
-            onValueChange={setSubReason}
-            disabled={!mainReason}
-          >
+
+          {/* 처리상태 */}
+          <Select value={status} onValueChange={setStatus}>
             <SelectTrigger className="border border-gray-300 bg-white">
-              {subReason ? (
+              {status ? (
                 <SelectValue />
               ) : (
-                <div className="text-gray-600">하위 신고 사유</div>
+                <div className="text-gray-600">처리상태</div>
               )}
             </SelectTrigger>
             <SelectContent>
-              {mainReason && reasonsMap[mainReason].subReasons.map(reason => (
-                <SelectItem key={reason.value} value={reason.value}>
-                  {reason.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="처리완료">처리완료</SelectItem>
+              <SelectItem value="미처리">미처리</SelectItem>
+              <SelectItem value="처리중">처리중</SelectItem>
+              <SelectItem value="무효처리">무효처리</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -453,37 +356,6 @@ const ReportsPage = () => {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
-          </div>
-
-          {/* 최소 신고 건수 */}
-          <div className="w-40">
-            <Input
-              placeholder="최소 신고 건수"
-              className="h-[40px] w-full bg-white"
-              value={minReports}
-              onChange={(e) => setMinReports(e.target.value)}
-              type="number"
-              min="0"
-            />
-          </div>
-
-          {/* 처리상태 */}
-          <div className="w-40">
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="border border-gray-300 bg-white h-[40px]">
-                {status ? (
-                  <SelectValue />
-                ) : (
-                  <div className="text-gray-600">처리상태</div>
-                )}
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="처리완료">처리완료</SelectItem>
-                <SelectItem value="미처리">미처리</SelectItem>
-                <SelectItem value="처리중">처리중</SelectItem>
-                <SelectItem value="무효처리">무효처리</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           {/* 검색 버튼 */}
