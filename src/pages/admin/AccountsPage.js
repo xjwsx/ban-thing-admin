@@ -46,7 +46,7 @@ const AccountsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [accountStatus, setAccountStatus] = useState("");
-  const [reportHistory, setReportHistory] = useState("");
+  const [reportHistory, setReportHistory] = useState("all");
   const [keyword, setKeyword] = useState("");
   
   // 페이지네이션 상태 관리
@@ -91,7 +91,7 @@ const AccountsPage = () => {
         startDate,
         endDate,
         accountStatus,
-        reportHistory,
+        reportHistory: reportHistory === "all" ? "" : reportHistory,
       };
 
       console.log('📤 API 요청 파라미터:', params);
@@ -337,14 +337,14 @@ const AccountsPage = () => {
           {/* 신고 이력 */}
           <Select value={reportHistory} onValueChange={setReportHistory}>
             <SelectTrigger className="border border-gray-300 bg-white">
-              {reportHistory ? (
+              {reportHistory && reportHistory !== "all" ? (
                 <SelectValue />
               ) : (
                 <div className="text-gray-600">신고 이력</div>
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">전체</SelectItem>
+              <SelectItem value="all">전체</SelectItem>
               <SelectItem value="0">없음</SelectItem>
               <SelectItem value="1">1건 이상</SelectItem>
               <SelectItem value="2">2건 이상</SelectItem>
