@@ -16,11 +16,7 @@ const removeLoadingScreen = () => {
   }
 };
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+root.render(<App />);
 
 // React 앱이 렌더링된 후 로딩 화면 제거
 setTimeout(removeLoadingScreen, 100);

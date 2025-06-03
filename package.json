@@ -2,6 +2,9 @@
   "name": "banthing-admin",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@ant-design/fast-color": "^3.0.0",
     "@ant-design/icons": "^5.6.1",
@@ -49,7 +52,7 @@
     "zustand": "^4.5.2"
   },
   "scripts": {
-    "start": "PORT=3001 NODE_OPTIONS='--openssl-legacy-provider' react-scripts start",
+    "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "build:production": "npm run build",
     "test": "react-scripts test",
@@ -81,5 +84,11 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7"
+  },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
+  },
+  "overrides": {
+    "react-error-overlay": "6.0.9"
   }
 }
