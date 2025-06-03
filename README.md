@@ -181,3 +181,27 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 **🔄 푸시 테스트 - 2024.05.30 한국시간 오후** 
 이 라인이 GitHub에 보이면 푸시가 정상 작동하는 것입니다.
+
+# Ban Thing Admin Dashboard
+
+이 프로젝트는 Ban Thing 서비스의 관리자 대시보드입니다.
+
+## 📋 주요 기능
+
+- 회원 관리 (계정 상태, 탈퇴, 정지, 활성화)
+- 신고 관리 (신고 내역 조회, 처리 상태 관리)
+- 탈퇴 관리 (탈퇴 신청 처리)
+
+## 🚀 배포 상태
+
+- **최종 배포일**: $(date +%Y-%m-%d\ %H:%M:%S)
+- **자동 배포**: GitHub → Vercel 연동 설정 완료
+
+## 🛠 개발 환경
+
+- React 18.2.0
+- Node.js 환경
+- Vercel 배포
+
+---
+*배포 테스트: 자동 배포 확인용 업데이트*
