@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { SearchIcon, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 // Shadcn UI 컴포넌트들
@@ -29,7 +29,6 @@ import { Calendar } from "../../components/ui/calendar";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -69,7 +68,7 @@ const WithdrawalsPage = () => {
   const [notificationMessage, setNotificationMessage] = useState("");
 
   // API에서 탈퇴 내역 데이터 가져오기
-  const fetchWithdrawals = async () => {
+  const fetchWithdrawals = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -111,12 +110,12 @@ const WithdrawalsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, itemsPerPage, startDate, endDate, withdrawalReason]);
 
   // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
     fetchWithdrawals();
-  }, [currentPage, startDate, endDate, withdrawalReason]);
+  }, [fetchWithdrawals]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
@@ -155,8 +154,7 @@ const WithdrawalsPage = () => {
   // 페이지네이션을 위한 그룹화 로직
   const getPaginationGroup = () => {
     const groupSize = 5; // 한 그룹에 표시할 페이지 수
-    const currentGroup = Math.floor((currentPage - 1) / groupSize);
-    const start = currentGroup * groupSize + 1;
+    const start = Math.floor((currentPage - 1) / groupSize) * groupSize + 1;
     const end = Math.min(start + groupSize - 1, totalPages);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -399,7 +397,6 @@ const WithdrawalsPage = () => {
                     onClick={() => {
                       if (currentPage > 1) {
                         const groupSize = 5;
-                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
                         if (currentPage % groupSize === 1) {
                           // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
                           handlePageChange(currentPage - 1);
@@ -432,8 +429,7 @@ const WithdrawalsPage = () => {
                     onClick={() => {
                       if (currentPage < totalPages) {
                         const groupSize = 5;
-                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                        const lastPageInGroup = (currentGroup + 1) * groupSize;
+                        const lastPageInGroup = Math.ceil(currentPage / groupSize) * groupSize;
                         if (currentPage === lastPageInGroup || currentPage === totalPages) {
                           // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
                           handlePageChange(currentPage + 1);

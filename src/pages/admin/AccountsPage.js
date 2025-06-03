@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { SearchIcon, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -28,7 +28,6 @@ import { Calendar } from "../../components/ui/calendar";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -79,8 +78,8 @@ const AccountsPage = () => {
   // API에서 받은 데이터를 현재 아이템으로 사용
   const currentItems = accounts;
 
-  // 계정 목록 API 호출
-  const fetchAccounts = async () => {
+  // API에서 계정 데이터 가져오기
+  const fetchAccounts = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -88,42 +87,51 @@ const AccountsPage = () => {
       const params = {
         page: currentPage - 1, // API는 0부터 시작
         size: itemsPerPage,
-        startDate,
-        endDate,
-        accountStatus,
-        reportHistory: reportHistory === "all" ? "" : reportHistory,
       };
 
-      console.log('📤 API 요청 파라미터:', params);
-      const response = await getAccounts(params);
-      console.log('📥 API 응답:', response);
-      
-      // API 응답 구조에 따라 조정
-      const data = response.data;
-      setAccounts(data.content || data.data || data || []);
-      setTotalElements(data.totalElements || data.total || 0);
-      
-    } catch (err) {
-      const errorMessage = err.message || '데이터 조회 중 오류가 발생했습니다.';
-      setError(errorMessage);
-      setAccounts([]); // 에러 시 빈 배열로 설정
-      setTotalElements(0);
-      
-      console.error('계정 목록 조회 실패:', err);
-      
-      // 개발환경에서만 상세 에러 정보 표시
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔧 개발 모드: API 연결 실패 시 Mock 데이터를 사용하려면 admin.js에서 Mock 코드를 주석 해제하세요.');
+      // 시작일이 있으면 추가
+      if (startDate) {
+        params.startDate = startDate;
       }
+
+      // 종료일이 있으면 추가
+      if (endDate) {
+        params.endDate = endDate;
+      }
+
+      // 계정 상태가 있으면 추가
+      if (accountStatus && accountStatus !== "") {
+        params.accountStatus = accountStatus;
+      }
+
+      // 신고 이력이 있으면 추가
+      if (reportHistory && reportHistory !== "" && reportHistory !== "0") {
+        params.reportHistory = reportHistory;
+      }
+
+      const response = await getAccounts(params);
+      
+      if (response.data && response.data.content) {
+        setAccounts(response.data.content);
+        setTotalElements(response.data.totalElements);
+      } else {
+        setAccounts([]);
+        setTotalElements(0);
+      }
+    } catch (error) {
+      console.error('계정 목록 조회 실패:', error);
+      setError(error.message || '데이터를 불러오는데 실패했습니다.');
+      setAccounts([]);
+      setTotalElements(0);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportHistory]);
 
-  // 컴포넌트 마운트 시 및 의존성 변경 시 데이터 조회
+  // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
     fetchAccounts();
-  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportHistory]);
+  }, [fetchAccounts]);
 
   const handleRowSelect = (id) => {
     setSelectedRows((prev) => {
@@ -148,8 +156,7 @@ const AccountsPage = () => {
   // 페이지네이션을 위한 그룹화 로직
   const getPaginationGroup = () => {
     const groupSize = 5; // 한 그룹에 표시할 페이지 수
-    const currentGroup = Math.floor((currentPage - 1) / groupSize);
-    const start = currentGroup * groupSize + 1;
+    const start = Math.floor((currentPage - 1) / groupSize) * groupSize + 1;
     const end = Math.min(start + groupSize - 1, totalPages);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
@@ -220,6 +227,7 @@ const AccountsPage = () => {
   };
 
   // 체크박스 클릭 시 이벤트 전파 방지
+  // eslint-disable-next-line no-unused-vars
   const handleCheckboxClick = (e, id) => {
     e.stopPropagation();
     handleRowSelect(id);
@@ -465,7 +473,6 @@ const AccountsPage = () => {
                     onClick={() => {
                       if (currentPage > 1) {
                         const groupSize = 5;
-                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
                         if (currentPage % groupSize === 1) {
                           // 그룹의 첫 페이지인 경우 이전 그룹의 마지막 페이지로
                           handlePageChange(currentPage - 1);
@@ -498,8 +505,7 @@ const AccountsPage = () => {
                     onClick={() => {
                       if (currentPage < totalPages) {
                         const groupSize = 5;
-                        const currentGroup = Math.floor((currentPage - 1) / groupSize);
-                        const lastPageInGroup = (currentGroup + 1) * groupSize;
+                        const lastPageInGroup = Math.ceil(currentPage / groupSize) * groupSize;
                         if (currentPage === lastPageInGroup || currentPage === totalPages) {
                           // 그룹의 마지막 페이지인 경우 다음 그룹의 첫 페이지로
                           handlePageChange(currentPage + 1);

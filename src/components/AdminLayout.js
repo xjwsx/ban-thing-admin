@@ -8,12 +8,11 @@ import {
   Settings2,
 } from "lucide-react";
 import { useAdminStore } from "../stores/adminStore";
-import { Modal } from "antd";
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { fetchAdminInfo, logout } = useAdminStore();
+  const { fetchAdminInfo } = useAdminStore();
   const [isExpanded, setIsExpanded] = useState(true);
 
   const menuItems = [
@@ -46,19 +45,6 @@ const AdminLayout = ({ children }) => {
   };
 
   const activePath = getActivePath();
-
-  const goToLogin = () => {
-    Modal.confirm({
-      title: "로그아웃",
-      content: "정말 로그아웃 하시겠습니까?",
-      okText: "확인",
-      cancelText: "취소",
-      onOk: async () => {
-        await logout();
-        navigate("/");
-      },
-    });
-  };
 
   useEffect(() => {
     const initializeAdmin = async () => {
@@ -166,23 +152,6 @@ const AdminLayout = ({ children }) => {
               </div>
             ))}
           </nav>
-
-          {/* 로그아웃 버튼을 아래에 고정
-          <div
-            onClick={goToLogin}
-            className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer transition-all mt-auto mb-2"
-          >
-            <div className="text-gray-500 min-w-[16px]">
-              <LogOut size={16} />
-            </div>
-            <div
-              className={`transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${
-                isExpanded ? "max-w-[200px] opacity-100" : "max-w-0 opacity-0"
-              }`}
-            >
-              로그아웃
-            </div>
-          </div> */}
         </div>
       </div>
 
