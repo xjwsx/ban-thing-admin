@@ -342,13 +342,13 @@ const ReportsPage = () => {
 
         <div className="flex items-center gap-[10px]">
           {/* 처리상태 */}
-          <div className="w-40">
+          <div className="relative" style={{ width: "calc(25% - 12px)" }}>
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger className="border border-gray-300 bg-white h-[40px]">
                 {status ? (
                   <SelectValue />
                 ) : (
-                  <div className="text-gray-600">처리상태</div>
+                  <div className="text-gray-600">상태</div>
                 )}
               </SelectTrigger>
               <SelectContent>

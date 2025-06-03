@@ -44,7 +44,6 @@ const WithdrawalsPage = () => {
   // 필터 상태 관리
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [searchType, setSearchType] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [withdrawalReason, setWithdrawalReason] = useState("");
   
@@ -142,7 +141,6 @@ const WithdrawalsPage = () => {
     console.log('필터 조건으로 검색:', {
       startDate,
       endDate,
-      searchType,
       keyword,
       withdrawalReason
     });
@@ -199,7 +197,7 @@ const WithdrawalsPage = () => {
     <div className="space-y-6 flex flex-col h-full relative">
       {/* 필터 섹션 */}
       <div className="space-y-4">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           {/* 시작일 */}
           <Popover>
             <PopoverTrigger asChild>
@@ -249,23 +247,7 @@ const WithdrawalsPage = () => {
               />
             </PopoverContent>
           </Popover>
-          
-          {/* 검색 드롭다운 */}
-          <Select value={searchType} onValueChange={setSearchType}>
-            <SelectTrigger className="border border-gray-300 bg-white">
-              {searchType ? (
-                <SelectValue />
-              ) : (
-                <div className="text-gray-600">검색 유형</div>
-              )}
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="userId">사용자 ID</SelectItem>
-              <SelectItem value="email">이메일</SelectItem>
-              <SelectItem value="phoneNumber">전화번호</SelectItem>
-            </SelectContent>
-          </Select>
-
+            
           {/* 탈퇴 사유 */}
           <Select value={withdrawalReason} onValueChange={setWithdrawalReason}>
             <SelectTrigger className="border border-gray-300 bg-white">
@@ -284,11 +266,9 @@ const WithdrawalsPage = () => {
               <SelectItem value="reason6">기타</SelectItem>
             </SelectContent>
           </Select>
-        </div>
 
-        <div className="flex items-center gap-[10px]">
           {/* 검색 키워드 */}
-          <div className="relative" style={{ width: "calc(25% - 12px)" }}>
+          <div className="relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="키워드를 입력하세요"
@@ -300,7 +280,7 @@ const WithdrawalsPage = () => {
 
           {/* 검색 버튼 */}
           <Button
-            className="bg-black hover:bg-gray-800 w-[165px] h-[40px] ml-auto"
+            className="bg-black hover:bg-gray-800 w-full h-[40px]"
             onClick={handleSearch}
             disabled={loading}
           >
