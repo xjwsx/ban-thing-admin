@@ -4,22 +4,19 @@
   "description": "Banthing 관리자 대시보드 - 효율적인 관리 시스템",
   "icons": [
     {
-      "src": "banthingIcon.png",
+      "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/x-icon"
     },
     {
       "src": "banthingIcon.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
+      "sizes": "192x192"
     },
     {
-      "src": "banthingIcon.png",
+      "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",

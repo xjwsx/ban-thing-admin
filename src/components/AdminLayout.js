@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { useAdminStore } from "../stores/adminStore";
 import { Modal } from "antd";
-import IconSvg from "../assets/icon.svg";
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
@@ -107,7 +106,22 @@ const AdminLayout = ({ children }) => {
               onClick={() => navigate("/admin/accounts")}
             >
               <div className="flex items-center gap-3">
-                <img src={IconSvg} alt="BANTHING Icon" className="w-[32px] h-[32px]" />
+                <img 
+                  src={`${process.env.PUBLIC_URL}/banthingIcon.png`} 
+                  alt="BANTHING Icon" 
+                  className="w-[32px] h-[32px]"
+                  onError={(e) => {
+                    // 이미지 로드 실패 시 대체 이미지 또는 텍스트 표시
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div 
+                  className="w-[32px] h-[32px] bg-gray-300 rounded flex items-center justify-center text-xs font-bold hidden"
+                  style={{ display: 'none' }}
+                >
+                  BT
+                </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-[14px] leading-tight">BANTHING</span>
                   <span className="text-[12px]">V1.0.0</span>
