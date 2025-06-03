@@ -328,27 +328,8 @@ const ReportsPage = () => {
             </SelectContent>
           </Select>
 
-          {/* 처리상태 */}
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="border border-gray-300 bg-white">
-              {status ? (
-                <SelectValue />
-              ) : (
-                <div className="text-gray-600">처리상태</div>
-              )}
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="처리완료">처리완료</SelectItem>
-              <SelectItem value="미처리">미처리</SelectItem>
-              <SelectItem value="처리중">처리중</SelectItem>
-              <SelectItem value="무효처리">무효처리</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-center gap-[10px]">
           {/* 검색 키워드 */}
-          <div className="relative" style={{ width: "calc(25% - 12px)" }}>
+          <div className="relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="키워드를 입력하세요"
@@ -356,6 +337,27 @@ const ReportsPage = () => {
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-[10px]">
+          {/* 처리상태 */}
+          <div className="w-40">
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="border border-gray-300 bg-white h-[40px]">
+                {status ? (
+                  <SelectValue />
+                ) : (
+                  <div className="text-gray-600">처리상태</div>
+                )}
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="처리완료">처리완료</SelectItem>
+                <SelectItem value="미처리">미처리</SelectItem>
+                <SelectItem value="처리중">처리중</SelectItem>
+                <SelectItem value="무효처리">무효처리</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* 검색 버튼 */}
