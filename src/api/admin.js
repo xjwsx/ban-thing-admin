@@ -23,15 +23,13 @@ export const getAccounts = async (params = {}) => {
       size: (params.size || 10).toString(),
     });
 
-    // 시작일이 있으면 추가
-    if (params.startDate) {
-      queryParams.append('startDate', format(params.startDate, 'yyyy-MM-dd'));
-    }
+    // 백엔드에서 startDate와 endDate는 필수이므로 기본값 설정
+    const startDate = params.startDate || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]; // 올해 1월 1일
+    const endDate = params.endDate || new Date().toISOString().split('T')[0]; // 오늘
 
-    // 종료일이 있으면 추가  
-    if (params.endDate) {
-      queryParams.append('endDate', format(params.endDate, 'yyyy-MM-dd'));
-    }
+    // 필수 파라미터 추가
+    queryParams.append('startDate', startDate);
+    queryParams.append('endDate', endDate);
 
     // 계정 상태가 있으면 추가
     if (params.accountStatus) {
@@ -43,8 +41,8 @@ export const getAccounts = async (params = {}) => {
       queryParams.append('reportFilterType', params.reportRecord);
     }
 
-    console.log('🔍 API 호출:', `/account?${queryParams.toString()}`);
-    return api.get(`/account?${queryParams.toString()}`);
+    console.log('🔍 API 호출:', `/admin/account?${queryParams.toString()}`);
+    return api.get(`/admin/account?${queryParams.toString()}`);
 
     // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
     /*

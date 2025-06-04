@@ -91,12 +91,12 @@ const AccountsPage = () => {
 
       // 시작일이 있으면 추가
       if (startDate) {
-        params.startDate = startDate;
+        params.startDate = format(startDate, 'yyyy-MM-dd');
       }
 
       // 종료일이 있으면 추가
       if (endDate) {
-        params.endDate = endDate;
+        params.endDate = format(endDate, 'yyyy-MM-dd');
       }
 
       // 계정 상태가 있으면 추가
