@@ -1,5 +1,4 @@
 import api from "./index";
-import { format } from "date-fns";
 
 // 관리자 정보 가져오기
 export const getAdminMe = () => {
@@ -18,28 +17,29 @@ export const getAdminMe = () => {
 // 계정 목록 가져오기 (실제 API 연결)
 export const getAccounts = async (params = {}) => {
   try {
-    const queryParams = new URLSearchParams({
-      page: (params.page || 0).toString(),
-      size: (params.size || 10).toString(),
-    });
-
     // 백엔드에서 startDate와 endDate는 필수이므로 기본값 설정
-    const startDate = params.startDate || new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]; // 올해 1월 1일
-    const endDate = params.endDate || new Date().toISOString().split('T')[0]; // 오늘
+    const startDate = params.startDate || '2025-01-01'; // 2025년 1월 1일
+    const endDate = params.endDate || '2025-12-31'; // 2025년 12월 31일
 
-    // 필수 파라미터 추가
+    // 원하는 순서대로 쿼리 파라미터 구성
+    const queryParams = new URLSearchParams();
+    
+    // 1. 필수 파라미터 먼저
     queryParams.append('startDate', startDate);
     queryParams.append('endDate', endDate);
 
-    // 계정 상태가 있으면 추가
+    // 2. 선택적 파라미터
     if (params.accountStatus) {
       queryParams.append('status', params.accountStatus);
     }
 
-    // 신고 필터 타입이 있으면 추가 (reportRecord → reportFilterType으로 변경)
     if (params.reportRecord && params.reportRecord !== "" && params.reportRecord !== "all") {
       queryParams.append('reportFilterType', params.reportRecord);
     }
+
+    // 3. 페이지네이션 파라미터 마지막
+    queryParams.append('page', (params.page || 0).toString());
+    queryParams.append('size', (params.size || 10).toString());
 
     console.log('🔍 API 호출:', `/admin/account?${queryParams.toString()}`);
     return api.get(`/admin/account?${queryParams.toString()}`);
@@ -197,11 +197,10 @@ export const getWithdrawals = async (params = {}) => {
       withdrawalId: `WD${1000 + i}`,
       withdrawalDate: "2024.12.15",
       memberId: `USER${2000 + i}`,
-      nickname: `탈퇴회원${i + 1}`,
-      joinDate: "2024.01.15",
-      reason: i % 4 === 0 ? "서비스 불만족" : i % 3 === 0 ? "개인정보 우려" : i % 2 === 0 ? "사용 빈도 낮음" : "기타",
-      withdrawalType: i % 3 === 0 ? "자진탈퇴" : i % 2 === 0 ? "관리자처리" : "자동탈퇴",
-      finalActivity: "2024.12.10"
+      nickname: `사용자${i + 1}`,
+      status: i % 4 === 0 ? "정지" : i % 3 === 0 ? "휴면" : "정상",
+      reportRecord: i % 5 === 0 ? "3건" : i % 3 === 0 ? "1건" : "없음",
+      restricted: i % 7 === 0 ? "제한" : "없음"
     }));
 
     // 페이지네이션 시뮬레이션
@@ -319,4 +318,4 @@ export const activateMembers = async (memberIds) => {
     console.error('계정 활성화 처리 실패:', error);
     throw error;
   }
-}; 
+};
