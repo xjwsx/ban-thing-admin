@@ -335,10 +335,10 @@ const AccountsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="active">정상</SelectItem>
-              <SelectItem value="blocked">차단됨</SelectItem>
-              <SelectItem value="restricted">제한됨</SelectItem>
-              <SelectItem value="dormant">휴면</SelectItem>
+              <SelectItem value="ACTIVE">정상</SelectItem>
+              <SelectItem value="BLOCKED">차단됨</SelectItem>
+              <SelectItem value="RESTRICTED">제한됨</SelectItem>
+              <SelectItem value="DORMANT">휴면</SelectItem>
             </SelectContent>
           </Select>
           
@@ -353,11 +353,10 @@ const AccountsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체</SelectItem>
-              <SelectItem value="LESS_THAN_EQUAL_0">없음</SelectItem>
-              <SelectItem value="LESS_THAN_EQUAL_1">1건 이하</SelectItem>
-              <SelectItem value="LESS_THAN_EQUAL_2">2건 이하</SelectItem>
-              <SelectItem value="LESS_THAN_EQUAL_3">3건 이하</SelectItem>
+              <SelectItem value="NO_REPORTS">없음</SelectItem>
               <SelectItem value="LESS_THAN_EQUAL_5">5건 이하</SelectItem>
+              <SelectItem value="LESS_THAN_EQUAL_10">10건 이하</SelectItem>
+              <SelectItem value="GREATER_THAN_10">10건 초과</SelectItem>
             </SelectContent>
           </Select>
         </div>

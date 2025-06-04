@@ -17,9 +17,18 @@ export const getAdminMe = () => {
 // 계정 목록 가져오기 (실제 API 연결)
 export const getAccounts = async (params = {}) => {
   try {
+    // 디버깅을 위한 파라미터 로그
+    console.log('🔍 전달받은 파라미터:', params);
+
     // 백엔드에서 startDate와 endDate는 필수이므로 기본값 설정
     const startDate = params.startDate || '2025-01-01'; // 2025년 1월 1일
     const endDate = params.endDate || '2025-12-31'; // 2025년 12월 31일
+    
+    // status와 reportFilterType도 기본값 설정
+    const status = params.accountStatus || 'ACTIVE'; // 기본값: ACTIVE
+    const reportFilterType = params.reportRecord && params.reportRecord !== "" && params.reportRecord !== "all" 
+      ? params.reportRecord 
+      : 'NO_REPORTS'; // 기본값: NO_REPORTS
 
     // 원하는 순서대로 쿼리 파라미터 구성
     const queryParams = new URLSearchParams();
@@ -28,14 +37,9 @@ export const getAccounts = async (params = {}) => {
     queryParams.append('startDate', startDate);
     queryParams.append('endDate', endDate);
 
-    // 2. 선택적 파라미터
-    if (params.accountStatus) {
-      queryParams.append('status', params.accountStatus);
-    }
-
-    if (params.reportRecord && params.reportRecord !== "" && params.reportRecord !== "all") {
-      queryParams.append('reportFilterType', params.reportRecord);
-    }
+    // 2. 선택적 파라미터 (기본값 포함)
+    queryParams.append('status', status);
+    queryParams.append('reportFilterType', reportFilterType);
 
     // 3. 페이지네이션 파라미터 마지막
     queryParams.append('page', (params.page || 0).toString());
