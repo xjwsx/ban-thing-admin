@@ -45,7 +45,7 @@ const AccountsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [accountStatus, setAccountStatus] = useState("");
-  const [reportHistory, setReportHistory] = useState("all");
+  const [reportRecord, setReportRecord] = useState("all");
   const [keyword, setKeyword] = useState("");
   
   // 페이지네이션 상태 관리
@@ -105,8 +105,8 @@ const AccountsPage = () => {
       }
 
       // 신고 이력이 있으면 추가
-      if (reportHistory && reportHistory !== "" && reportHistory !== "0") {
-        params.reportHistory = reportHistory;
+      if (reportRecord && reportRecord !== "" && reportRecord !== "all") {
+        params.reportRecord = reportRecord;
       }
 
       const response = await getAccounts(params);
@@ -126,7 +126,7 @@ const AccountsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportHistory]);
+  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportRecord]);
 
   // 컴포넌트 마운트 시 데이터 로드
   useEffect(() => {
@@ -343,9 +343,9 @@ const AccountsPage = () => {
           </Select>
           
           {/* 신고 이력 */}
-          <Select value={reportHistory} onValueChange={setReportHistory}>
+          <Select value={reportRecord} onValueChange={setReportRecord}>
             <SelectTrigger className="border border-gray-300 bg-white">
-              {reportHistory && reportHistory !== "all" ? (
+              {reportRecord && reportRecord !== "all" ? (
                 <SelectValue />
               ) : (
                 <div className="text-gray-600">신고 이력</div>
@@ -353,10 +353,11 @@ const AccountsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체</SelectItem>
-              <SelectItem value="0">없음</SelectItem>
-              <SelectItem value="1">1건 이상</SelectItem>
-              <SelectItem value="2">2건 이상</SelectItem>
-              <SelectItem value="3">3건 이상</SelectItem>
+              <SelectItem value="LESS_THAN_EQUAL_0">없음</SelectItem>
+              <SelectItem value="LESS_THAN_EQUAL_1">1건 이하</SelectItem>
+              <SelectItem value="LESS_THAN_EQUAL_2">2건 이하</SelectItem>
+              <SelectItem value="LESS_THAN_EQUAL_3">3건 이하</SelectItem>
+              <SelectItem value="LESS_THAN_EQUAL_5">5건 이하</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -441,7 +442,7 @@ const AccountsPage = () => {
                       <TableCell className="p-2">{row.joinDate || row.createdAt}</TableCell>
                       <TableCell className="p-2">{row.nickname || row.name}</TableCell>
                       <TableCell className="p-2">{row.status || row.accountStatus}</TableCell>
-                      <TableCell className="p-2">{row.reportHistory || row.reportCount}</TableCell>
+                      <TableCell className="p-2">{row.reportRecord || row.reportCount}</TableCell>
                       <TableCell className="p-2">{row.restricted || row.rejoinRestricted}</TableCell>
                     </TableRow>
                   ))

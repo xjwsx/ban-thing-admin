@@ -35,16 +35,16 @@ export const getAccounts = async (params = {}) => {
 
     // 계정 상태가 있으면 추가
     if (params.accountStatus) {
-      queryParams.append('accountStatus', params.accountStatus);
+      queryParams.append('status', params.accountStatus);
     }
 
-    // 신고 이력이 있으면 추가 (reportRecord → minReports로 변경)
-    if (params.reportHistory && params.reportHistory !== "" && params.reportHistory !== "0") {
-      queryParams.append('minReports', params.reportHistory);
+    // 신고 필터 타입이 있으면 추가 (reportRecord → reportFilterType으로 변경)
+    if (params.reportRecord && params.reportRecord !== "" && params.reportRecord !== "all") {
+      queryParams.append('reportFilterType', params.reportRecord);
     }
 
-    console.log('🔍 API 호출:', `/admin/account?${queryParams.toString()}`);
-    return api.get(`/admin/account?${queryParams.toString()}`);
+    console.log('🔍 API 호출:', `/account?${queryParams.toString()}`);
+    return api.get(`/account?${queryParams.toString()}`);
 
     // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
     /*
@@ -54,7 +54,7 @@ export const getAccounts = async (params = {}) => {
       joinDate: "2024.01.15",
       nickname: `사용자${i + 1}`,
       status: i % 4 === 0 ? "정지" : i % 3 === 0 ? "휴면" : "정상",
-      reportHistory: i % 5 === 0 ? "3건" : i % 3 === 0 ? "1건" : "없음",
+      reportRecord: i % 5 === 0 ? "3건" : i % 3 === 0 ? "1건" : "없음",
       restricted: i % 7 === 0 ? "제한" : "없음"
     }));
 
