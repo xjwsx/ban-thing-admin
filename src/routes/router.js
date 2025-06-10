@@ -8,26 +8,28 @@ import AccountsPage from "../pages/admin/AccountsPage";
 import ReportsPage from "../pages/admin/ReportsPage";
 import WithdrawalsPage from "../pages/admin/WithdrawalsPage";
 
-import { getAccessToken } from "../utils/token";
+// import { getAccessToken } from "../utils/token"; // 개발용 비활성화
 
-const isAuthenticated = () => {
-  // 개발용: 로그인 체크 우회 (항상 true 반환)
-  return true;
-  
-  // 원래 로그인 체크 로직 (필요시 주석 해제)
-  // const token = getAccessToken();
-  // return !!token; // 토큰이 존재하면 true, 그렇지 않으면 false를 반환합니다.
-};
+// isAuthenticated 함수 비활성화 (개발용)
+// const isAuthenticated = () => {
+//   // 개발용: 로그인 체크 우회 (항상 true 반환)
+//   return true;
+//   
+//   // 원래 로그인 체크 로직 (필요시 주석 해제)
+//   // const token = getAccessToken();
+//   // return !!token; // 토큰이 존재하면 true, 그렇지 않으면 false를 반환합니다.
+// };
 
-const PrivateRoute = ({ Component, Layout = AdminLayout }) => {
-  return isAuthenticated() ? (
-    <Layout>
-      <Component />
-    </Layout>
-  ) : (
-    <Navigate to="/" />
-  );
-};
+// PrivateRoute 비활성화 (개발용)
+// const PrivateRoute = ({ Component, Layout = AdminLayout }) => {
+//   return isAuthenticated() ? (
+//     <Layout>
+//       <Component />
+//     </Layout>
+//   ) : (
+//     <Navigate to="/" />
+//   );
+// };
 
 const Router = () => {
   const adminRoutes = [
@@ -50,7 +52,11 @@ const Router = () => {
           <Route
             key={path}
             path={path}
-            element={<PrivateRoute Component={Component} Layout={AdminLayout} />}
+            element={
+              <AdminLayout>
+                <Component />
+              </AdminLayout>
+            }
           />
         ))}
       </Routes>
