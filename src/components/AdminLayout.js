@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LogOut,
@@ -7,12 +7,12 @@ import {
   Flag,
   Settings2,
 } from "lucide-react";
-import { useAdminStore } from "../stores/adminStore";
+// import { useAdminStore } from "../stores/adminStore"; // 개발용 비활성화
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { fetchAdminInfo } = useAdminStore();
+  // const { fetchAdminInfo } = useAdminStore(); // 개발용 비활성화
   const [isExpanded, setIsExpanded] = useState(true);
 
   const menuItems = [
@@ -46,18 +46,18 @@ const AdminLayout = ({ children }) => {
 
   const activePath = getActivePath();
 
-  useEffect(() => {
-    const initializeAdmin = async () => {
-      try {
-        await fetchAdminInfo();
-      } catch (error) {
-        console.error("Failed to fetch admin info:", error);
-        navigate("/");
-      }
-    };
+  // useEffect(() => {
+  //   const initializeAdmin = async () => {
+  //     try {
+  //       await fetchAdminInfo();
+  //     } catch (error) {
+  //       console.error("Failed to fetch admin info:", error);
+  //       navigate("/");
+  //     }
+  //   };
 
-    initializeAdmin();
-  }, [fetchAdminInfo, navigate]);
+  //   initializeAdmin();
+  // }, [fetchAdminInfo, navigate]);
 
   // 현재 경로에 따른 브레드크럼 생성
   const breadcrumbs = (() => {
