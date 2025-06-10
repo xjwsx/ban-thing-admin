@@ -24,6 +24,10 @@ export const API_CONFIG = {
     
     // 신고 관리
     REPORTS: "/admin/reports",
+    REPORT_DELETE: "/items/report/delete",
+    REPORT_ADMIN_DELETE: "/items/report/adminDelete",
+    REPORT_ADMIN_INVALID: "/items/report/adminInvalid",
+    REPORT_ADMIN_CHECK: "/items/report/adminCheck",
     
     // 탈퇴 관리
     WITHDRAWALS: "/admin/withdrawals"

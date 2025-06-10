@@ -323,3 +323,151 @@ export const activateMembers = async (memberIds) => {
     throw error;
   }
 };
+
+// ============================================================================
+// 신고 관리 API
+// ============================================================================
+
+// 신고 삭제
+export const deleteReports = async (reportIdList) => {
+  try {
+    // 실제 API 호출
+    const response = await api.post('/items/report/delete', { reportIdList });
+    return response;
+
+    // Mock 응답 (테스트용 - 필요시 주석 해제)
+    /*
+    console.log('Mock: 신고 삭제 처리', reportIdList);
+    return Promise.resolve({
+      data: {
+        success: true,
+        message: `${reportIdList.length}건의 신고가 삭제되었습니다.`,
+        deletedCount: reportIdList.length
+      }
+    });
+    */
+  } catch (error) {
+    console.error('신고 삭제 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
+
+// 신고 어드민 삭제
+export const adminDeleteReports = async (reportIdList) => {
+  try {
+    // 실제 API 호출
+    const response = await api.post('/items/report/adminDelete', { reportIdList });
+    return response;
+
+    // Mock 응답 (테스트용 - 필요시 주석 해제)
+    /*
+    console.log('Mock: 신고 어드민 삭제 처리', reportIdList);
+    return Promise.resolve({
+      data: {
+        success: true,
+        message: `${reportIdList.length}건의 신고가 관리자에 의해 삭제되었습니다.`,
+        deletedCount: reportIdList.length
+      }
+    });
+    */
+  } catch (error) {
+    console.error('신고 어드민 삭제 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
+
+// 신고 어드민 무효
+export const adminInvalidReports = async (reportIdList) => {
+  try {
+    // 실제 API 호출
+    const response = await api.post('/items/report/adminInvalid', { reportIdList });
+    return response;
+
+    // Mock 응답 (테스트용 - 필요시 주석 해제)
+    /*
+    console.log('Mock: 신고 어드민 무효 처리', reportIdList);
+    return Promise.resolve({
+      data: {
+        success: true,
+        message: `${reportIdList.length}건의 신고가 무효 처리되었습니다.`,
+        invalidatedCount: reportIdList.length
+      }
+    });
+    */
+  } catch (error) {
+    console.error('신고 어드민 무효 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
+
+// 신고 어드민 검토
+export const adminCheckReports = async (reportIdList) => {
+  try {
+    // 실제 API 호출
+    const response = await api.post('/items/report/adminCheck', { reportIdList });
+    return response;
+
+    // Mock 응답 (테스트용 - 필요시 주석 해제)
+    /*
+    console.log('Mock: 신고 어드민 검토 처리', reportIdList);
+    return Promise.resolve({
+      data: {
+        success: true,
+        message: `${reportIdList.length}건의 신고가 검토 상태로 변경되었습니다.`,
+        checkedCount: reportIdList.length
+      }
+    });
+    */
+  } catch (error) {
+    console.error('신고 어드민 검토 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
