@@ -430,11 +430,10 @@ const AccountsPage = () => {
                       if (!dateString) return '-';
                       try {
                         const date = new Date(dateString);
-                        return date.toLocaleDateString('ko-KR', {
-                          year: '2-digit',
-                          month: '2-digit', 
-                          day: '2-digit'
-                        }).replace(/\. /g, '.').replace('.', '');
+                        const year = date.getFullYear().toString().slice(-2); // 뒤 2자리
+                        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 2자리 패딩
+                        const day = date.getDate().toString().padStart(2, '0'); // 2자리 패딩
+                        return `${year}.${month}.${day}`;
                       } catch {
                         return dateString;
                       }
