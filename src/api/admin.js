@@ -51,13 +51,11 @@ export const getAccounts = async (params = {}) => {
     // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
     /*
     const mockAccounts = Array.from({ length: 25 }, (_, i) => ({
-      id: (i + 1).toString(),
-      memberId: `USER${1000 + i}`,
-      joinDate: "2024.01.15",
-      nickname: `사용자${i + 1}`,
-      status: i % 4 === 0 ? "정지" : i % 3 === 0 ? "휴면" : "정상",
-      reportRecord: i % 5 === 0 ? "3건" : i % 3 === 0 ? "1건" : "없음",
-      restricted: i % 7 === 0 ? "제한" : "없음"
+      userId: 167235 - i,
+      nickname: `반띵#${4278232137 - i}`,
+      status: i % 4 === 0 ? "SUSPENDED" : i % 3 === 0 ? "DORMANT" : "ACTIVE",
+      reportCount: i % 5 === 0 ? 3 : i % 3 === 0 ? 1 : 0,
+      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString()
     }));
 
     // 페이지네이션 시뮬레이션
@@ -69,11 +67,15 @@ export const getAccounts = async (params = {}) => {
 
     return Promise.resolve({
       data: {
-        content: paginatedData,
-        totalElements: mockAccounts.length,
-        totalPages: Math.ceil(mockAccounts.length / size),
-        number: page,
-        size: size
+        status: "success",
+        data: {
+          content: paginatedData,
+          totalElements: mockAccounts.length,
+          totalPages: Math.ceil(mockAccounts.length / size),
+          number: page,
+          size: size
+        },
+        message: null
       }
     });
     */

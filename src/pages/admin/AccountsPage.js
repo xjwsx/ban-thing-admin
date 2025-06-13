@@ -111,9 +111,10 @@ const AccountsPage = () => {
 
       const response = await getAccounts(params);
       
-      if (response.data && response.data.content) {
-        setAccounts(response.data.content);
-        setTotalElements(response.data.totalElements);
+      // 실제 API 응답 구조에 맞게 수정
+      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.content) {
+        setAccounts(response.data.data.content);
+        setTotalElements(response.data.data.totalElements);
       } else {
         setAccounts([]);
         setTotalElements(0);
@@ -133,12 +134,12 @@ const AccountsPage = () => {
     fetchAccounts();
   }, [fetchAccounts]);
 
-  const handleRowSelect = (id) => {
+  const handleRowSelect = (userId) => {
     setSelectedRows((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(rowId => rowId !== id);
+      if (prev.includes(userId)) {
+        return prev.filter(rowId => rowId !== userId);
       } else {
-        return [...prev, id];
+        return [...prev, userId];
       }
     });
   };
@@ -205,15 +206,15 @@ const AccountsPage = () => {
     const mockReportData = [
       {
         reporterId: "A321",
-        reportedId: member.memberId || member.id,
+        reportedId: member.userId,
         reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
-        joinDate: member.joinDate || "00.00.00"
+        joinDate: member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : "00.00.00"
       },
       {
         reporterId: "A321", 
-        reportedId: member.memberId || member.id,
+        reportedId: member.userId,
         reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
-        joinDate: member.joinDate || "00.00.00"
+        joinDate: member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : "00.00.00"
       }
     ];
     
@@ -423,28 +424,62 @@ const AccountsPage = () => {
               </TableHeader>
               <TableBody>
                 {currentItems.length > 0 ? (
-                  currentItems.map((row, index) => (
-                    <TableRow 
-                      key={row.id || index} 
-                      className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
-                      onClick={() => handleRowClick(row)}
-                    >
-                      <TableCell className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-center items-center">
-                          <Checkbox
-                            checked={selectedRows.includes(row.id || index.toString())}
-                            onCheckedChange={() => handleRowSelect(row.id || index.toString())}
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="p-2">{row.memberId || row.id}</TableCell>
-                      <TableCell className="p-2">{row.joinDate || row.createdAt}</TableCell>
-                      <TableCell className="p-2">{row.nickname || row.name}</TableCell>
-                      <TableCell className="p-2">{row.status || row.accountStatus}</TableCell>
-                      <TableCell className="p-2">{row.reportRecord || row.reportCount}</TableCell>
-                      <TableCell className="p-2">{row.restricted || row.rejoinRestricted}</TableCell>
-                    </TableRow>
-                  ))
+                  currentItems.map((row, index) => {
+                    // 날짜 포맷팅 함수
+                    const formatDate = (dateString) => {
+                      if (!dateString) return '-';
+                      try {
+                        const date = new Date(dateString);
+                        return date.toLocaleDateString('ko-KR', {
+                          year: '2-digit',
+                          month: '2-digit', 
+                          day: '2-digit'
+                        }).replace(/\. /g, '.').replace('.', '');
+                      } catch {
+                        return dateString;
+                      }
+                    };
+
+                    // 상태 한글 변환
+                    const getStatusText = (status) => {
+                      switch(status) {
+                        case 'ACTIVE': return '정상';
+                        case 'SUSPENDED': return '정지';
+                        case 'WITHDRAWN': return '탈퇴';
+                        case 'DORMANT': return '휴면';
+                        default: return status || '-';
+                      }
+                    };
+
+                    // 신고 횟수 표시
+                    const getReportText = (count) => {
+                      if (count === 0) return '없음';
+                      return `${count}건`;
+                    };
+
+                    return (
+                      <TableRow 
+                        key={row.userId || index} 
+                        className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
+                        onClick={() => handleRowClick(row)}
+                      >
+                        <TableCell className="p-2 text-center" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-center items-center">
+                            <Checkbox
+                              checked={selectedRows.includes(row.userId?.toString() || index.toString())}
+                              onCheckedChange={() => handleRowSelect(row.userId?.toString() || index.toString())}
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell className="p-2">{row.userId || '-'}</TableCell>
+                        <TableCell className="p-2">{formatDate(row.createdAt)}</TableCell>
+                        <TableCell className="p-2">{row.nickname || '-'}</TableCell>
+                        <TableCell className="p-2">{getStatusText(row.status)}</TableCell>
+                        <TableCell className="p-2">{getReportText(row.reportCount)}</TableCell>
+                        <TableCell className="p-2">-</TableCell>
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
                     <TableCell colSpan={7} className="h-[200px] text-center text-gray-500">
