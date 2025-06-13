@@ -36,7 +36,7 @@ import {
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import ReportHistoryModal from "../../components/ui/ReportHistoryModal";
-import { getAccounts, withdrawMembers, suspendMembers, activateMembers, getUserReportHistory } from "../../api/admin";
+import { getAccounts, withdrawMembers, suspendMembers, activateMembers } from "../../api/admin";
 
 const AccountsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -201,20 +201,12 @@ const AccountsPage = () => {
   };
 
   // 신고이력 모달 핸들러
-  const handleRowClick = async (member) => {
-    try {
-      // 실제 API에서 신고이력 데이터 가져오기
-      const response = await getUserReportHistory(member.userId);
-      const reportHistory = response.data.data.content || [];
-      
-      setSelectedMemberReportData(reportHistory);
-      setIsReportHistoryModalOpen(true);
-    } catch (error) {
-      console.error('신고이력 조회 실패:', error);
-      // 에러 발생 시 빈 배열로 설정
-      setSelectedMemberReportData([]);
-      setIsReportHistoryModalOpen(true);
-    }
+  const handleRowClick = (member) => {
+    // getAccounts API 응답에 포함된 신고이력 데이터 사용
+    const reportHistory = member.reportHistory || [];
+    
+    setSelectedMemberReportData(reportHistory);
+    setIsReportHistoryModalOpen(true);
   };
 
   const handleReportHistoryModalClose = () => {

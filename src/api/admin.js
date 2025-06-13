@@ -46,16 +46,22 @@ export const getAccounts = async (params = {}) => {
     queryParams.append('size', (params.size || 10).toString());
 
     console.log('🔍 API 호출:', `/admin/account?${queryParams.toString()}`);
-    return api.get(`/admin/account?${queryParams.toString()}`);
+    // return api.get(`/admin/account?${queryParams.toString()}`);
 
-    // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
+    // Mock 데이터 (신고이력 포함)
     /*
     const mockAccounts = Array.from({ length: 25 }, (_, i) => ({
       userId: 167235 - i,
       nickname: `반띵#${4278232137 - i}`,
       status: i % 4 === 0 ? "SUSPENDED" : i % 3 === 0 ? "DORMANT" : "ACTIVE",
       reportCount: i % 5 === 0 ? 3 : i % 3 === 0 ? 1 : 0,
-      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString()
+      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+      reportHistory: Array.from({ length: i % 5 === 0 ? 3 : i % 3 === 0 ? 1 : 0 }, (_, j) => ({
+        reportId: `RPT${10000 + i * 10 + j}`,
+        reportReason: j % 4 === 0 ? "스팸/광고" : j % 3 === 0 ? "욕설/비방" : j % 2 === 0 ? "부적절한 콘텐츠" : "기타",
+        reportDate: new Date(Date.now() - (i + j) * 24 * 60 * 60 * 1000).toISOString(),
+        reporterId: `USER${Math.floor(Math.random() * 1000) + 1000}`
+      }))
     }));
 
     // 페이지네이션 시뮬레이션
@@ -79,6 +85,42 @@ export const getAccounts = async (params = {}) => {
       }
     });
     */
+    
+    // Mock 데이터 활성화 (신고이력 포함)
+    const mockAccounts = Array.from({ length: 25 }, (_, i) => ({
+      userId: 167235 - i,
+      nickname: `반띵#${4278232137 - i}`,
+      status: i % 4 === 0 ? "SUSPENDED" : i % 3 === 0 ? "DORMANT" : "ACTIVE",
+      reportCount: i % 5 === 0 ? 3 : i % 3 === 0 ? 1 : 0,
+      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
+      reportHistory: Array.from({ length: i % 5 === 0 ? 3 : i % 3 === 0 ? 1 : 0 }, (_, j) => ({
+        reportId: `RPT${10000 + i * 10 + j}`,
+        reportReason: j % 4 === 0 ? "스팸/광고" : j % 3 === 0 ? "욕설/비방" : j % 2 === 0 ? "부적절한 콘텐츠" : "기타",
+        reportDate: new Date(Date.now() - (i + j) * 24 * 60 * 60 * 1000).toISOString(),
+        reporterId: `USER${Math.floor(Math.random() * 1000) + 1000}`
+      }))
+    }));
+
+    // 페이지네이션 시뮬레이션
+    const page = params.page || 0;
+    const size = params.size || 10;
+    const startIndex = page * size;
+    const endIndex = startIndex + size;
+    const paginatedData = mockAccounts.slice(startIndex, endIndex);
+
+    return Promise.resolve({
+      data: {
+        status: "success",
+        data: {
+          content: paginatedData,
+          totalElements: mockAccounts.length,
+          totalPages: Math.ceil(mockAccounts.length / size),
+          number: page,
+          size: size
+        },
+        message: null
+      }
+    });
 
   } catch (error) {
     console.error('계정 목록 조회 실패:', error);
@@ -474,32 +516,3 @@ export const adminCheckReports = async (reportIdList) => {
   }
 };
 
-// 사용자 신고이력 조회
-export const getUserReportHistory = async (userId) => {
-  try {
-    console.log('🔍 사용자 신고이력 API 호출:', `/admin/users/${userId}/reports`);
-    const response = await api.get(`/admin/users/${userId}/reports`);
-    return response;
-  } catch (error) {
-    console.error('사용자 신고이력 조회 실패:', error);
-    
-    // Mock 데이터 반환
-    const mockReportHistory = Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, i) => ({
-      reportId: `RPT${10000 + i}`,
-      reportReason: i % 4 === 0 ? "스팸/광고" : i % 3 === 0 ? "욕설/비방" : i % 2 === 0 ? "부적절한 콘텐츠" : "기타",
-      reportDate: "2024-12-15T10:30:00.000Z",
-      reporterId: `USER${Math.floor(Math.random() * 1000) + 1000}`
-    }));
-
-    return {
-      data: {
-        status: "success",
-        data: {
-          content: mockReportHistory,
-          totalElements: mockReportHistory.length,
-          totalPages: 1
-        }
-      }
-    };
-  }
-};
