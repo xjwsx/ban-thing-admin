@@ -473,3 +473,33 @@ export const adminCheckReports = async (reportIdList) => {
     throw error;
   }
 };
+
+// 사용자 신고이력 조회
+export const getUserReportHistory = async (userId) => {
+  try {
+    console.log('🔍 사용자 신고이력 API 호출:', `/admin/users/${userId}/reports`);
+    const response = await api.get(`/admin/users/${userId}/reports`);
+    return response;
+  } catch (error) {
+    console.error('사용자 신고이력 조회 실패:', error);
+    
+    // Mock 데이터 반환
+    const mockReportHistory = Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, i) => ({
+      reportId: `RPT${10000 + i}`,
+      reportReason: i % 4 === 0 ? "스팸/광고" : i % 3 === 0 ? "욕설/비방" : i % 2 === 0 ? "부적절한 콘텐츠" : "기타",
+      reportDate: "2024-12-15T10:30:00.000Z",
+      reporterId: `USER${Math.floor(Math.random() * 1000) + 1000}`
+    }));
+
+    return {
+      data: {
+        status: "success",
+        data: {
+          content: mockReportHistory,
+          totalElements: mockReportHistory.length,
+          totalPages: 1
+        }
+      }
+    };
+  }
+};

@@ -36,7 +36,7 @@ import {
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import ReportHistoryModal from "../../components/ui/ReportHistoryModal";
-import { getAccounts, withdrawMembers, suspendMembers, activateMembers } from "../../api/admin";
+import { getAccounts, withdrawMembers, suspendMembers, activateMembers, getUserReportHistory } from "../../api/admin";
 
 const AccountsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -201,25 +201,20 @@ const AccountsPage = () => {
   };
 
   // 신고이력 모달 핸들러
-  const handleRowClick = (member) => {
-    // 해당 회원의 신고이력 데이터를 설정 (실제로는 API에서 가져와야 함)
-    const mockReportData = [
-      {
-        reporterId: "A321",
-        reportedId: member.userId,
-        reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
-        joinDate: member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : "00.00.00"
-      },
-      {
-        reporterId: "A321", 
-        reportedId: member.userId,
-        reportReason: "동일 제품을 다양한 사이즈나 색상 판매",
-        joinDate: member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : "00.00.00"
-      }
-    ];
-    
-    setSelectedMemberReportData(mockReportData);
-    setIsReportHistoryModalOpen(true);
+  const handleRowClick = async (member) => {
+    try {
+      // 실제 API에서 신고이력 데이터 가져오기
+      const response = await getUserReportHistory(member.userId);
+      const reportHistory = response.data.data.content || [];
+      
+      setSelectedMemberReportData(reportHistory);
+      setIsReportHistoryModalOpen(true);
+    } catch (error) {
+      console.error('신고이력 조회 실패:', error);
+      // 에러 발생 시 빈 배열로 설정
+      setSelectedMemberReportData([]);
+      setIsReportHistoryModalOpen(true);
+    }
   };
 
   const handleReportHistoryModalClose = () => {

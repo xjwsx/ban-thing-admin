@@ -12,6 +12,20 @@ import {
 const ReportHistoryModal = ({ isOpen, onClose, reportData = [] }) => {
   if (!isOpen) return null;
 
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear().toString().slice(-2); // 연도 뒤 2자리
+      const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 월 2자리 패딩
+      const day = date.getDate().toString().padStart(2, '0'); // 일 2자리 패딩
+      return `${year}.${month}.${day}`;
+    } catch {
+      return dateString;
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg w-[700px] max-w-[90vw] max-h-[80vh] overflow-hidden">
@@ -32,38 +46,28 @@ const ReportHistoryModal = ({ isOpen, onClose, reportData = [] }) => {
             <Table className="w-full">
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="text-center font-medium text-gray-700 py-3">회원 ID</TableHead>
-                  <TableHead className="text-center font-medium text-gray-700 py-3">회원 ID</TableHead>
-                  <TableHead className="text-center font-medium text-gray-700 py-3">신고이력</TableHead>
-                  <TableHead className="text-center font-medium text-gray-700 py-3">가입일</TableHead>
+                  <TableHead className="text-center font-medium text-gray-700 py-3">신고 ID</TableHead>
+                  <TableHead className="text-center font-medium text-gray-700 py-3">신고사유</TableHead>
+                  <TableHead className="text-center font-medium text-gray-700 py-3">날짜</TableHead>
+                  <TableHead className="text-center font-medium text-gray-700 py-3">신고자 ID</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {reportData.length > 0 ? (
                   reportData.map((item, index) => (
                     <TableRow key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                      <TableCell className="text-center py-3 text-gray-900">{item.reporterId || "A321"}</TableCell>
-                      <TableCell className="text-center py-3 text-gray-900">{item.reportedId || "B123"}</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">{item.reportReason || "동일 제품을 다양한 사이즈나 색상 판매"}</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">{item.joinDate || "00.00.00"}</TableCell>
+                      <TableCell className="text-center py-3 text-gray-900">{item.reportId || "-"}</TableCell>
+                      <TableCell className="text-center py-3 text-gray-700">{item.reportReason || "-"}</TableCell>
+                      <TableCell className="text-center py-3 text-gray-700">{formatDate(item.reportDate)}</TableCell>
+                      <TableCell className="text-center py-3 text-gray-900">{item.reporterId || "-"}</TableCell>
                     </TableRow>
                   ))
                 ) : (
-                  // 기본 데이터 (데이터가 없을 때)
-                  <>
-                    <TableRow className="border-b border-gray-100 hover:bg-gray-50">
-                      <TableCell className="text-center py-3 text-gray-900">A321</TableCell>
-                      <TableCell className="text-center py-3 text-gray-900">B123</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">동일 제품을 다양한 사이즈나 색상 판매</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">00.00.00</TableCell>
-                    </TableRow>
-                    <TableRow className="border-b border-gray-100 hover:bg-gray-50">
-                      <TableCell className="text-center py-3 text-gray-900">A321</TableCell>
-                      <TableCell className="text-center py-3 text-gray-900">B123</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">동일 제품을 다양한 사이즈나 색상 판매</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">00.00.00</TableCell>
-                    </TableRow>
-                  </>
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                      신고이력이 없습니다.
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>
