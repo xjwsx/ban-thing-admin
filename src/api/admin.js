@@ -249,13 +249,10 @@ export const adminLogin = async (data) => {
     console.log('🔍 로그인 API 호출:', '/admin/login');
     console.log('📤 요청 데이터:', data);
     
-    // GET 요청으로 변경 - 쿼리 파라미터로 전송
-    const params = new URLSearchParams({
-      username: data.username,
-      password: data.password
+    // GET 요청이지만 body에 JSON 데이터 전송
+    const response = await api.get("/admin/login", {
+      data: data
     });
-    
-    const response = await api.get(`/admin/login?${params.toString()}`);
     console.log('📥 응답 데이터:', response.data);
     return response;
   } catch (error) {
