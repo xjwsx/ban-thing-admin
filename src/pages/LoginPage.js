@@ -9,29 +9,54 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    e.stopPropagation();
+    
     setLoading(true);
 
-    const formData = new FormData(e.target);
-    const username = formData.get("username");
-    const password = formData.get("password");
-
     try {
-      await login(username, password);
+      await login(formData.username, formData.password);
       navigate("/admin");
     } catch (error) {
       console.error("Login error:", error);
-      setError(
-        error.response?.data?.message ||
-          "로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요."
-      );
+      
+      // 로그인 실패 시 팝업 표시
+      let errorMessage = "아이디 또는 비밀번호를 확인하세요.";
+      
+      if (error.response?.status === 401) {
+        errorMessage = "아이디 또는 비밀번호를 확인하세요.";
+      } else if (error.response?.status === 403) {
+        errorMessage = "관리자 권한이 없습니다.";
+      } else if (error.code === 'ECONNREFUSED' || error.message?.includes('서버에 연결할 수 없습니다')) {
+        errorMessage = "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+      }
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleSubmit(e);
   };
 
   return (
@@ -51,8 +76,9 @@ const LoginPage = () => {
                 type="text"
                 placeholder="아이디"
                 required
+                value={formData.username}
+                onChange={handleInputChange}
                 className="pl-10 h-10 w-full"
-                defaultValue="admin"
               />
             </div>
 
@@ -63,23 +89,21 @@ const LoginPage = () => {
                 type="password"
                 placeholder="비밀번호"
                 required
+                value={formData.password}
+                onChange={handleInputChange}
                 className="pl-10 h-10 w-full"
-                defaultValue="admin123"
               />
             </div>
           </div>
 
-          {error && (
-            <div className="text-sm text-red-500 text-center">{error}</div>
-          )}
-
-          <Button type="submit" className="w-full h-10" disabled={loading}>
+          <Button 
+            type="button" 
+            onClick={handleButtonClick}
+            className="w-full h-10" 
+            disabled={loading}
+          >
             {loading ? "로그인 중..." : "로그인"}
           </Button>
-
-          <div className="text-sm text-center text-gray-500 mt-4">
-            테스트 계정: admin / admin123
-          </div>
         </form>
       </div>
     </div>
