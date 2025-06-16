@@ -247,7 +247,16 @@ export const getWithdrawals = async (params = {}) => {
 export const adminLogin = async (data) => {
   try {
     console.log('🔍 로그인 API 호출:', '/admin/login');
-    const response = await api.post("/admin/login", data);
+    console.log('📤 요청 데이터:', data);
+    
+    // GET 요청으로 변경 - 쿼리 파라미터로 전송
+    const params = new URLSearchParams({
+      username: data.username,
+      password: data.password
+    });
+    
+    const response = await api.get(`/admin/login?${params.toString()}`);
+    console.log('📥 응답 데이터:', response.data);
     return response;
   } catch (error) {
     console.error('로그인 실패:', error);
