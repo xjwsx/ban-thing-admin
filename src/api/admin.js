@@ -244,26 +244,47 @@ export const getWithdrawals = async (params = {}) => {
 };
 
 // 관리자 로그인
-export const adminLogin = (data) => {
-  // return api.post("/admin/login", data);
-  // API 연동 코드는 주석 처리하고 mock 데이터 반환
-  return Promise.resolve({
-    data: {
-      accessToken: "mock-access-token",
-      refreshToken: "mock-refresh-token",
+export const adminLogin = async (data) => {
+  try {
+    console.log('🔍 로그인 API 호출:', '/admin/login');
+    const response = await api.post("/admin/login", data);
+    return response;
+  } catch (error) {
+    console.error('로그인 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('아이디 또는 비밀번호가 올바르지 않습니다.');
+    } else if (error.response?.status === 403) {
+      throw new Error('관리자 권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
-  });
+    
+    throw error;
+  }
 };
 
 // 관리자 로그아웃
-export const adminLogout = (refreshToken) => {
-  // return api.post("/admin/logout", { refreshToken });
-  // API 연동 코드는 주석 처리하고 mock 데이터 반환
-  return Promise.resolve({
-    data: {
-      success: true,
+export const adminLogout = async (refreshToken) => {
+  try {
+    console.log('🔍 로그아웃 API 호출:', '/admin/logout');
+    const response = await api.post("/admin/logout", { refreshToken });
+    return response;
+  } catch (error) {
+    console.error('로그아웃 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
-  });
+    
+    throw error;
+  }
 };
 
 // 회원 탈퇴 처리
