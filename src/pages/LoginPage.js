@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Lock, User } from "lucide-react";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
   const { login } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,7 +28,6 @@ const LoginPage = () => {
 
     try {
       await login(formData.username, formData.password);
-      navigate("/admin");
     } catch (error) {
       console.error("Login error:", error);
       
