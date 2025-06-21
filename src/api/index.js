@@ -26,6 +26,11 @@ const api = axios.create({
 // 요청 인터셉터 - 요청 전에 토큰을 헤더에 추가
 api.interceptors.request.use(
   (config) => {
+    // 로그인 API는 토큰 불필요
+    if (config.url === '/admin/login') {
+      return config;
+    }
+    
     const token = getAccessToken();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
@@ -37,30 +42,14 @@ api.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터 - 만료된 토큰 처리, 오류 처리 등
+// 응답 인터셉터 - 오류 처리
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error) => {
-    // 오류 응답 처리
-    const originalRequest = error.config;
-
-    // 401 오류 (인증 실패) 및 토큰 갱신이 아직 시도되지 않은 경우
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        // 로그인 페이지로 리다이렉트
-        window.location.href = "/";
-        return Promise.reject(error);
-      } catch (refreshError) {
-        // 토큰 갱신 실패 시 로그인 페이지로 리다이렉트
-        window.location.href = "/";
-        return Promise.reject(refreshError);
-      }
-    }
-
+    // 401 오류는 각 API에서 개별적으로 처리하도록 함
+    // 자동 리다이렉트 없이 에러를 그대로 전달
     return Promise.reject(error);
   }
 );

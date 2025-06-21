@@ -260,9 +260,9 @@ export const adminLogin = async (data) => {
     console.log('🔍 로그인 API 호출:', '/admin/login');
     console.log('📤 요청 데이터:', data);
     
-    // GET 요청이지만 body에 JSON 데이터 전송
+    // GET 요청에서 query parameter로 데이터 전송
     const response = await api.get("/admin/login", {
-      data: data
+      params: data
     });
     console.log('📥 응답 데이터:', response.data);
     return response;
