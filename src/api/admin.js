@@ -184,20 +184,13 @@ export const getReports = async (params = {}) => {
 // 탈퇴 내역 가져오기
 export const getWithdrawals = async (params = {}) => {
   try {
-    const queryParams = new URLSearchParams({
-      page: (params.page || 0).toString(),
-      size: (params.size || 10).toString(),
-    });
+    const queryParams = new URLSearchParams();
 
-    // 시작일이 있으면 추가
-    if (params.startDate) {
-      queryParams.append('startDate', params.startDate);
-    }
-
-    // 종료일이 있으면 추가  
-    if (params.endDate) {
-      queryParams.append('endDate', params.endDate);
-    }
+    // 필수 파라미터 순서: startDate, endDate, page, size
+    queryParams.append('startDate', params.startDate || '2025-01-01');
+    queryParams.append('endDate', params.endDate || '2025-12-31');
+    queryParams.append('page', (params.page || 0).toString());
+    queryParams.append('size', (params.size || 10).toString());
 
     // 탈퇴 사유가 있으면 추가
     if (params.reason && params.reason !== "" && params.reason !== "all") {
