@@ -27,6 +27,15 @@ const PrivateRoute = ({ Component, Layout = AdminLayout }) => {
   );
 };
 
+// 공개 라우트 컴포넌트 (로그인 페이지용)
+const PublicRoute = ({ Component }) => {
+  return isAuthenticated() ? (
+    <Navigate to="/admin/accounts" />
+  ) : (
+    <Component />
+  );
+};
+
 const Router = () => {
   const adminRoutes = [
     { path: "/admin/accounts", Component: AccountsPage },
@@ -37,8 +46,8 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 로그인 페이지 */}
-        <Route path="/" element={<LoginPage />} />
+        {/* 로그인 페이지 - 토큰이 있으면 관리자 페이지로 리다이렉트 */}
+        <Route path="/" element={<PublicRoute Component={LoginPage} />} />
         
         <Route path="/admin" element={<Navigate to="/admin/accounts" replace />} />
         {adminRoutes.map(({ path, Component }) => (
