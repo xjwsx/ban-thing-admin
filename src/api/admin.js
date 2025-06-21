@@ -284,25 +284,7 @@ export const adminLogin = async (data) => {
   }
 };
 
-// 관리자 로그아웃
-export const adminLogout = async (refreshToken) => {
-  try {
-    console.log('🔍 로그아웃 API 호출:', '/admin/logout');
-    const response = await api.post("/admin/logout", { refreshToken });
-    return response;
-  } catch (error) {
-    console.error('로그아웃 실패:', error);
-    
-    // API 실패 시 사용자에게 친화적인 에러 메시지
-    if (error.code === 'ECONNREFUSED') {
-      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
-    } else if (error.response?.status >= 500) {
-      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    }
-    
-    throw error;
-  }
-};
+
 
 // 회원 탈퇴 처리
 export const withdrawMembers = async (memberIds) => {
