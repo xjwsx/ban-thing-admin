@@ -1,17 +1,28 @@
 import api from "./index";
 
 // 관리자 정보 가져오기
-export const getAdminMe = () => {
-  // return api.get("/admin/me");
-  // API 연동 코드는 주석 처리하고 mock 데이터 반환
-  return Promise.resolve({
-    data: {
-      id: 1,
-      username: "admin",
-      role: "admin",
-      permissions: [],
+export const getAdminMe = async () => {
+  try {
+    console.log('🔍 관리자 정보 API 호출:', '/admin/me');
+    const response = await api.get("/admin/me");
+    console.log('📥 관리자 정보 응답:', response.data);
+    return response;
+  } catch (error) {
+    console.error('관리자 정보 조회 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
-  });
+    
+    throw error;
+  }
 };
 
 // 계정 목록 가져오기 (실제 API 연결)
@@ -296,19 +307,26 @@ export const adminLogout = async (refreshToken) => {
 // 회원 탈퇴 처리
 export const withdrawMembers = async (memberIds) => {
   try {
-    // 실제 API 호출 (백엔드 준비 시 주석 해제)
-    // return api.post('/admin/account/withdraw', { memberIds });
+    console.log('🔍 회원 탈퇴 처리 API 호출:', '/admin/account/withdraw');
+    console.log('📤 요청 데이터:', { memberIds });
     
-    // Mock 응답
-    console.log('Mock: 회원 탈퇴 처리', memberIds);
-    return Promise.resolve({
-      data: {
-        success: true,
-        message: `${memberIds.length}명의 회원이 탈퇴 처리되었습니다.`
-      }
-    });
+    const response = await api.post('/admin/account/withdraw', { memberIds });
+    console.log('📥 응답 데이터:', response.data);
+    return response;
   } catch (error) {
     console.error('회원 탈퇴 처리 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
     throw error;
   }
 };
@@ -316,19 +334,26 @@ export const withdrawMembers = async (memberIds) => {
 // 계정 정지 처리
 export const suspendMembers = async (memberIds) => {
   try {
-    // 실제 API 호출 (백엔드 준비 시 주석 해제)
-    // return api.post('/admin/account/suspend', { memberIds });
+    console.log('🔍 계정 정지 처리 API 호출:', '/admin/account/suspend');
+    console.log('📤 요청 데이터:', { memberIds });
     
-    // Mock 응답
-    console.log('Mock: 계정 정지 처리', memberIds);
-    return Promise.resolve({
-      data: {
-        success: true,
-        message: `${memberIds.length}명의 회원이 정지 처리되었습니다.`
-      }
-    });
+    const response = await api.post('/admin/account/suspend', { memberIds });
+    console.log('📥 응답 데이터:', response.data);
+    return response;
   } catch (error) {
     console.error('계정 정지 처리 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
     throw error;
   }
 };
@@ -336,19 +361,26 @@ export const suspendMembers = async (memberIds) => {
 // 계정 활성화 처리
 export const activateMembers = async (memberIds) => {
   try {
-    // 실제 API 호출 (백엔드 준비 시 주석 해제)
-    // return api.post('/admin/account/activate', { memberIds });
+    console.log('🔍 계정 활성화 처리 API 호출:', '/admin/account/activate');
+    console.log('📤 요청 데이터:', { memberIds });
     
-    // Mock 응답
-    console.log('Mock: 계정 활성화 처리', memberIds);
-    return Promise.resolve({
-      data: {
-        success: true,
-        message: `${memberIds.length}명의 회원이 활성화 처리되었습니다.`
-      }
-    });
+    const response = await api.post('/admin/account/activate', { memberIds });
+    console.log('📥 응답 데이터:', response.data);
+    return response;
   } catch (error) {
     console.error('계정 활성화 처리 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적한 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
     throw error;
   }
 };
