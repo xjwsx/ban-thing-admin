@@ -8,12 +8,23 @@ import AccountsPage from "../pages/admin/AccountsPage";
 import ReportsPage from "../pages/admin/ReportsPage";
 import WithdrawalsPage from "../pages/admin/WithdrawalsPage";
 
-import { getAccessToken } from "../utils/token";
+import { getAccessToken, isTokenExpired } from "../utils/token";
 
 // 인증 상태 확인 함수
 const isAuthenticated = () => {
   const token = getAccessToken();
-  return !!token; // 토큰이 존재하면 true, 그렇지 않으면 false를 반환합니다.
+  if (!token) return false;
+  
+  // 토큰 만료 체크
+  if (isTokenExpired(token)) {
+    console.log('🔓 토큰이 만료되었습니다.');
+    // 만료된 토큰 정리
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    return false;
+  }
+  
+  return true;
 };
 
 // 보호된 라우트 컴포넌트

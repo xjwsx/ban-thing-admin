@@ -42,14 +42,32 @@ api.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터 - 오류 처리
+// 응답 인터셉터 - 토큰 만료 처리
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error) => {
-    // 401 오류는 각 API에서 개별적으로 처리하도록 함
-    // 자동 리다이렉트 없이 에러를 그대로 전달
+    // 401 오류 (토큰 만료 또는 인증 실패) 처리
+    if (error.response?.status === 401) {
+      // 로그인 API 호출이 아닌 경우에만 자동 리다이렉트
+      if (!error.config?.url?.includes('/admin/login')) {
+        console.log('🔓 토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
+        
+        // 로컬 스토리지 정리
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        
+        // API 헤더 정리
+        delete api.defaults.headers.common["Authorization"];
+        
+        // 로그인 페이지로 리다이렉트
+        window.location.href = "/";
+        
+        return Promise.reject(new Error('토큰이 만료되었습니다. 다시 로그인해주세요.'));
+      }
+    }
+    
     return Promise.reject(error);
   }
 );
