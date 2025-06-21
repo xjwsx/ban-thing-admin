@@ -204,8 +204,8 @@ export const getWithdrawals = async (params = {}) => {
       queryParams.append('reason', params.reason);
     }
 
-    console.log('🔍 탈퇴 내역 API 호출:', `/admin/reports/users?${queryParams.toString()}`);
-    return api.get(`/admin/reports/users?${queryParams.toString()}`);
+    console.log('🔍 탈퇴 내역 API 호출:', `/admin/deletions?${queryParams.toString()}`);
+    return api.get(`/admin/deletions?${queryParams.toString()}`);
 
     // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
     /*
