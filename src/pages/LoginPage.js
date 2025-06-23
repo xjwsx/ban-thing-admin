@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -6,6 +7,7 @@ import { Lock, User } from "lucide-react";
 
 const LoginPage = () => {
   const { login } = useAuthStore();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -28,6 +30,8 @@ const LoginPage = () => {
 
     try {
       await login(formData.username, formData.password);
+      // 로그인 성공 시 관리자 페이지로 이동
+      navigate('/admin/accounts');
     } catch (error) {
       console.error("Login error:", error);
       
