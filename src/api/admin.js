@@ -356,21 +356,19 @@ export const activateMembers = async (memberIds) => {
 // 신고 삭제
 export const deleteReports = async (reportIdList) => {
   try {
-    // 실제 API 호출
-    const response = await api.post('/items/report/delete', { reportIdList });
-    return response;
-
-    // Mock 응답 (테스트용 - 필요시 주석 해제)
-    /*
-    console.log('Mock: 신고 삭제 처리', reportIdList);
-    return Promise.resolve({
-      data: {
-        success: true,
-        message: `${reportIdList.length}건의 신고가 삭제되었습니다.`,
-        deletedCount: reportIdList.length
-      }
+    // reportIdList를 query parameter로 전송 (배열이면 첫 번째 값 사용, 아니면 그대로 사용)
+    const reportId = Array.isArray(reportIdList) ? reportIdList[0] : reportIdList;
+    const queryParams = new URLSearchParams({
+      reportIdList: reportId.toString()
     });
-    */
+    
+    console.log('🔍 신고 삭제 API 호출:', `/items/report/delete?${queryParams.toString()}`);
+    console.log('📤 요청 데이터:', { reportIdList: reportId });
+    
+    // POST 요청에서 query parameter 사용
+    const response = await api.post(`/items/report/delete?${queryParams.toString()}`);
+    console.log('📥 응답 데이터:', response.data);
+    return response;
   } catch (error) {
     console.error('신고 삭제 실패:', error);
     
