@@ -98,21 +98,31 @@ const ReportsPage = () => {
         size: itemsPerPage,
       };
 
-      // 시작일이 있으면 추가
-      if (startDate) {
+      // 시작일과 종료일 설정
+      if (startDate && endDate) {
+        // 둘 다 선택된 경우
         params.startDate = format(startDate, 'yyyy-MM-dd');
-      }
-
-      // 종료일이 있으면 추가
-      if (endDate) {
         params.endDate = format(endDate, 'yyyy-MM-dd');
+      } else {
+        // 선택되지 않은 경우 현재 달의 1일부터 오늘까지
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        params.startDate = format(firstDayOfMonth, 'yyyy-MM-dd');
+        params.endDate = format(today, 'yyyy-MM-dd');
+        
+        console.log('🗓️ 기본 날짜 범위 설정:', {
+          startDate: params.startDate,
+          endDate: params.endDate
+        });
       }
 
       const response = await getReports(params);
       
-      if (response.data && response.data.content) {
-        setReportsData(response.data.content);
-        setTotalElements(response.data.totalElements);
+      // 실제 API 응답 구조에 맞게 수정
+      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.content) {
+        setReportsData(response.data.data.content);
+        setTotalElements(response.data.data.totalElements);
       } else {
         setReportsData([]);
         setTotalElements(0);
@@ -173,6 +183,29 @@ const ReportsPage = () => {
     const end = Math.min(start + groupSize - 1, totalPages);
     
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  // 날짜 포맷 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return format(date, 'yyyy.MM.dd');
+  };
+
+  // API 상태를 UI 상태로 매핑
+  const mapStatus = (apiStatus) => {
+    switch (apiStatus) {
+      case 'ACTIVE':
+        return '미처리';
+      case 'CHECKED':
+        return '처리중';
+      case 'DELETED':
+        return '처리완료';
+      case 'INVALID':
+        return '무효처리';
+      default:
+        return '미처리';
+    }
   };
 
   function getStatusBadge(status) {
@@ -424,25 +457,25 @@ const ReportsPage = () => {
                 {currentItems.length > 0 ? (
                   currentItems.map((row) => (
                     <TableRow 
-                      key={row.id} 
+                      key={row.reportId} 
                       className="h-[44px] hover:bg-gray-50 cursor-pointer transition-colors"
                       onClick={() => handleRowClick(row)}
                     >
                       <TableCell className="p-1 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-center items-center">
                           <Checkbox
-                            checked={selectedRows.includes(row.id)}
-                            onCheckedChange={() => handleRowSelect(row.id)}
+                            checked={selectedRows.includes(row.reportId)}
+                            onCheckedChange={() => handleRowSelect(row.reportId)}
                           />
                         </div>
                       </TableCell>
                       <TableCell className="p-1">{row.reportId}</TableCell>
-                      <TableCell className="p-1">{row.title}</TableCell>
-                      <TableCell className="p-1">{row.mainReason}</TableCell>
-                      <TableCell className="p-1">{row.date}</TableCell>
+                      <TableCell className="p-1 max-w-[200px] truncate">{row.itemTitle}</TableCell>
+                      <TableCell className="p-1">{row.reason.replace(/['"]/g, '')}</TableCell>
+                      <TableCell className="p-1">{formatDate(row.createdAt)}</TableCell>
                       <TableCell className="p-1">{row.reporterId}</TableCell>
-                      <TableCell className="p-1">{row.reportedId}</TableCell>
-                      <TableCell className="p-1">{getStatusBadge(row.status)}</TableCell>
+                      <TableCell className="p-1">{row.reportedUserId}</TableCell>
+                      <TableCell className="p-1">{getStatusBadge(mapStatus(row.status))}</TableCell>
                     </TableRow>
                   ))
                 ) : (
