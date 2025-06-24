@@ -16,13 +16,12 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
       content: "상태좋아요~~!! 빠르게 구매하실 분~~~",
       tags: ["#초록색", "#초록색"]
     },
-    cleanChecklist: {
-      pollution: "1~3개",
-      usageCount: "5회 미만",
-      washingStatus: "세상품",
-      purchaseDate: "24년 7월 정도",
-      expirationDate: "00.00.00"
-    },
+          cleanChecklist: {
+        pollution: "1~3개",
+        usageCount: "5회 미만",
+        washingStatus: "세상품",
+        purchaseDate: "24년 7월 정도"
+      },
     image: "/api/placeholder/119/101" // 플레이스홀더 이미지
   };
 
@@ -45,13 +44,12 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         content: reportDetail.itemContent || "상품 설명이 없습니다.",
         tags: reportDetail.hashtags && Array.isArray(reportDetail.hashtags) ? reportDetail.hashtags : ["태그 없음"]
       },
-      cleanChecklist: {
-        pollution: reportDetail.pollution || "정보 없음",
-        usageCount: reportDetail.timeUsed || "정보 없음", 
-        washingStatus: reportDetail.cleaned || "정보 없음",
-        purchaseDate: reportDetail.purchasedDate || "정보 없음",
-        expirationDate: "00.00.00" // API에 유통기한 정보가 없으므로 기본값
-      },
+             cleanChecklist: {
+         pollution: reportDetail.pollution || "정보 없음",
+         usageCount: reportDetail.timeUsed || "정보 없음", 
+         washingStatus: reportDetail.cleaned || "정보 없음",
+         purchaseDate: reportDetail.purchasedDate || "정보 없음"
+       },
       image: "/api/placeholder/119/101" // 실제 상품 이미지 URL이 있다면 사용
     };
   }
@@ -149,10 +147,6 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">구매시기</div>
                       <div className="text-[13px] text-gray-900">{data.cleanChecklist.purchaseDate}</div>
-                    </div>
-                    <div className="flex gap-28">
-                      <div className="text-[13px] text-gray-600 w-20">유통기한</div>
-                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.expirationDate}</div>
                     </div>
                   </div>
                   
