@@ -480,7 +480,7 @@ const ReportsPage = () => {
                       </TableCell>
                       <TableCell className="p-1">{row.reportId || '-'}</TableCell>
                       <TableCell className="p-1 max-w-[200px] truncate">{row.itemTitle || '-'}</TableCell>
-                      <TableCell className="p-1">{row.reason ? row.reason.replace(/['"]/g, '') : '-'}</TableCell>
+                      <TableCell className="p-1">{row.hiReason ? row.hiReason.replace(/['"]/g, '') : '-'}</TableCell>
                       <TableCell className="p-1">{formatDate(row.createdAt)}</TableCell>
                       <TableCell className="p-1">{row.reporterId || '-'}</TableCell>
                       <TableCell className="p-1">{row.reportedUserId || '-'}</TableCell>

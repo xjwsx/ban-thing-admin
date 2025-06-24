@@ -31,18 +31,28 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
   
   if (reportDetail) {
     data = {
-      mainReason: reportDetail.mainReason || defaultData.mainReason,
-      subReason: reportDetail.subReason || defaultData.subReason,
+      mainReason: reportDetail.hiReason ? reportDetail.hiReason.replace(/['"]/g, '') : defaultData.mainReason,
+      subReason: reportDetail.loReason ? reportDetail.loReason.replace(/['"]/g, '') : defaultData.subReason,
       postInfo: {
-        title: reportDetail.title || defaultData.postInfo.title,
-        author: "태오엄마", // 실제 데이터에서는 reportDetail.author 등으로 수정
-        region: "연수동", // 실제 데이터에서는 reportDetail.region 등으로 수정
-        date: reportDetail.date || defaultData.postInfo.date,
-        content: "상태좋아요~~!! 빠르게 구매하실 분~~~", // 실제 데이터에서는 reportDetail.content 등으로 수정
-        tags: ["#초록색", "#초록색"] // 실제 데이터에서는 reportDetail.tags 등으로 수정
+        title: reportDetail.itemTitle || defaultData.postInfo.title,
+        author: reportDetail.sellerNickname || "태오엄마",
+        region: "연수동", // API에 지역 정보가 없으므로 기본값
+        date: reportDetail.itemCreatedAt ? new Date(reportDetail.itemCreatedAt).toLocaleDateString('ko-KR', { 
+          year: '2-digit', 
+          month: '2-digit', 
+          day: '2-digit' 
+        }).replace(/\./g, '.').replace(/\s/g, '') : defaultData.postInfo.date,
+        content: reportDetail.itemContent || "상품 설명이 없습니다.",
+        tags: reportDetail.hashtags && Array.isArray(reportDetail.hashtags) ? reportDetail.hashtags : ["태그 없음"]
       },
-      cleanChecklist: defaultData.cleanChecklist, // 실제 API에서 가져와야 할 데이터
-      image: "/api/placeholder/119/101" // 실제 데이터에서는 reportDetail.image 등으로 수정
+      cleanChecklist: {
+        pollution: reportDetail.pollution || "정보 없음",
+        usageCount: reportDetail.timeUsed || "정보 없음", 
+        washingStatus: reportDetail.cleaned || "정보 없음",
+        purchaseDate: reportDetail.purchasedDate || "정보 없음",
+        expirationDate: "00.00.00" // API에 유통기한 정보가 없으므로 기본값
+      },
+      image: "/api/placeholder/119/101" // 실제 상품 이미지 URL이 있다면 사용
     };
   }
 
@@ -126,23 +136,23 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                   <div className="flex-1 space-y-2">
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">오염</div>
-                      <div className="text-[13px] text-gray-900">1~3개</div>
+                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.pollution}</div>
                     </div>
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">사용횟수</div>
-                      <div className="text-[13px] text-gray-900">5회 미만</div>
+                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.usageCount}</div>
                     </div>
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">세탁유무</div>
-                      <div className="text-[13px] text-gray-900">새상품</div>
+                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.washingStatus}</div>
                     </div>
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">구매시기</div>
-                      <div className="text-[13px] text-gray-900">24년 7월 정도</div>
+                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.purchaseDate}</div>
                     </div>
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">유통기한</div>
-                      <div className="text-[13px] text-gray-900">00.00.00</div>
+                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.expirationDate}</div>
                     </div>
                   </div>
                   
