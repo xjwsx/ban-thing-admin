@@ -460,21 +460,19 @@ export const adminInvalidReports = async (reportIdList) => {
 // 신고 어드민 검토
 export const adminCheckReports = async (reportIdList) => {
   try {
-    // 실제 API 호출
-    const response = await api.post('/items/report/adminCheck', { reportIdList });
-    return response;
-
-    // Mock 응답 (테스트용 - 필요시 주석 해제)
-    /*
-    console.log('Mock: 신고 어드민 검토 처리', reportIdList);
-    return Promise.resolve({
-      data: {
-        success: true,
-        message: `${reportIdList.length}건의 신고가 검토 상태로 변경되었습니다.`,
-        checkedCount: reportIdList.length
-      }
+    // reportIdList를 콤마로 구분된 문자열로 변환
+    const reportIds = Array.isArray(reportIdList) ? reportIdList.join(',') : reportIdList.toString();
+    const queryParams = new URLSearchParams({
+      reportIdList: reportIds
     });
-    */
+    
+    console.log('🔍 신고 검토 API 호출:', `/items/report/check?${queryParams.toString()}`);
+    console.log('📤 요청 데이터:', { reportIdList: reportIds });
+    
+    // POST 요청에서 query parameter 사용
+    const response = await api.post(`/items/report/check?${queryParams.toString()}`);
+    console.log('📥 응답 데이터:', response.data);
+    return response;
   } catch (error) {
     console.error('신고 어드민 검토 실패:', error);
     
