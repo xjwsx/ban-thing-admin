@@ -219,14 +219,14 @@ const ReportsPage = () => {
 
   function getStatusBadge(status) {
     switch (status) {
-      case '처리완료':
-        return <div className="bg-[#F3F3F3] text-gray-400 font-medium px-3 py-1 rounded-md inline-block text-center">처리완료</div>;
-      case '미처리':
-        return <div className="bg-[#FFF5F5] text-[#FF8989] font-medium px-3 py-1 rounded-md inline-block text-center">미처리</div>;
-      case '처리중':
-        return <div className="bg-[#6A8BFF] text-white font-medium px-3 py-1 rounded-md inline-block text-center">처리중</div>;
-      case '무효처리':
-        return <div className="bg-white border-2 border-gray-200 text-gray-500 font-medium px-3 py-1 rounded-md inline-block text-center">무효처리</div>;
+      case 'DELETED':
+        return <div className="bg-[#F3F3F3] text-gray-400 font-medium px-3 py-1 rounded-md inline-block text-center">DELETED</div>;
+      case 'ACTIVE':
+        return <div className="bg-[#FFF5F5] text-[#FF8989] font-medium px-3 py-1 rounded-md inline-block text-center">ACTIVE</div>;
+      case 'CHECKED':
+        return <div className="bg-[#6A8BFF] text-white font-medium px-3 py-1 rounded-md inline-block text-center">CHECKED</div>;
+      case 'INVALID':
+        return <div className="bg-white border-2 border-gray-200 text-gray-500 font-medium px-3 py-1 rounded-md inline-block text-center">INVALID</div>;
       default:
         return <div className="bg-[#F3F3F3] text-gray-500 font-medium px-3 py-1 rounded-md inline-block text-center">{status}</div>;
     }
