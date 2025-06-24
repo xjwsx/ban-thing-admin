@@ -187,13 +187,22 @@ const ReportsPage = () => {
 
   // 날짜 포맷 함수
   const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return format(date, 'yyyy.MM.dd');
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      // 유효한 날짜인지 확인
+      if (isNaN(date.getTime())) return '-';
+      return format(date, 'yyyy.MM.dd');
+    } catch (error) {
+      console.error('날짜 포맷 오류:', error);
+      return '-';
+    }
   };
 
   // API 상태를 UI 상태로 매핑
   const mapStatus = (apiStatus) => {
+    if (!apiStatus) return '미처리';
+    
     switch (apiStatus) {
       case 'ACTIVE':
         return '미처리';
@@ -469,12 +478,12 @@ const ReportsPage = () => {
                           />
                         </div>
                       </TableCell>
-                      <TableCell className="p-1">{row.reportId}</TableCell>
-                      <TableCell className="p-1 max-w-[200px] truncate">{row.itemTitle}</TableCell>
-                      <TableCell className="p-1">{row.reason.replace(/['"]/g, '')}</TableCell>
+                      <TableCell className="p-1">{row.reportId || '-'}</TableCell>
+                      <TableCell className="p-1 max-w-[200px] truncate">{row.itemTitle || '-'}</TableCell>
+                      <TableCell className="p-1">{row.reason ? row.reason.replace(/['"]/g, '') : '-'}</TableCell>
                       <TableCell className="p-1">{formatDate(row.createdAt)}</TableCell>
-                      <TableCell className="p-1">{row.reporterId}</TableCell>
-                      <TableCell className="p-1">{row.reportedUserId}</TableCell>
+                      <TableCell className="p-1">{row.reporterId || '-'}</TableCell>
+                      <TableCell className="p-1">{row.reportedUserId || '-'}</TableCell>
                       <TableCell className="p-1">{getStatusBadge(mapStatus(row.status))}</TableCell>
                     </TableRow>
                   ))
