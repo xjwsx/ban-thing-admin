@@ -36,7 +36,7 @@ import {
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
 import ReportDetailModal from "../../components/ui/ReportDetailModal";
-import { getReports } from "../../api/admin";
+import { getReports, deleteReports, adminInvalidReports, adminCheckReports } from "../../api/admin";
 
 const ReportsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -221,25 +221,36 @@ const ReportsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleModalConfirm = () => {
-    // 실제 API 호출이나 상태 업데이트 로직을 여기에 추가
-    console.log(`${modalAction} action confirmed for items:`, selectedRows);
-    
-    // 여기에 실제 처리 로직 추가
-    if (modalAction === "delete") {
-      // 삭제 로직
-      setNotificationMessage("삭제가 완료되었습니다.");
-    } else if (modalAction === "invalid") {
-      // 무효처리 로직
-      setNotificationMessage("무효처리가 완료되었습니다.");
-    } else if (modalAction === "review") {
-      // 검토 로직
-      setNotificationMessage("검토가 완료되었습니다.");
+  const handleModalConfirm = async () => {
+    try {
+      setLoading(true);
+      
+      if (modalAction === "delete") {
+        // 삭제 API 호출
+        await deleteReports(selectedRows);
+        setNotificationMessage(`${selectedRows.length}건의 신고가 삭제되었습니다.`);
+      } else if (modalAction === "invalid") {
+        // 무효처리 API 호출
+        await adminInvalidReports(selectedRows);
+        setNotificationMessage(`${selectedRows.length}건의 신고가 무효처리되었습니다.`);
+      } else if (modalAction === "review") {
+        // 검토 API 호출
+        await adminCheckReports(selectedRows);
+        setNotificationMessage(`${selectedRows.length}건의 신고가 검토 상태로 변경되었습니다.`);
+      }
+      
+      // 성공 후 데이터 새로고침
+      await fetchReports();
+      
+    } catch (error) {
+      console.error(`${modalAction} 실패:`, error);
+      setNotificationMessage(`처리 중 오류가 발생했습니다: ${error.message}`);
+    } finally {
+      setLoading(false);
+      setIsModalOpen(false);
+      setSelectedRows([]);
+      setIsNotificationOpen(true);
     }
-    
-    setIsModalOpen(false);
-    setSelectedRows([]);
-    setIsNotificationOpen(true);
   };
 
   const handleModalClose = () => {
