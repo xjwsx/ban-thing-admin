@@ -125,7 +125,7 @@ const AdminLayout = ({ children }) => {
               <div
                 key={item.key}
                 onClick={item.onClick}
-                className={`flex items-center  gap-2 py-1.5 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700 ${
+                className={`flex items-center  gap-2 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700 ${
                   activePath === item.path ? "bg-white" : ""
                 } ${isExpanded ? "" : "justify-center mx-1"}`}
               >
