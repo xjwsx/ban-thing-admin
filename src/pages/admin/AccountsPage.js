@@ -127,12 +127,30 @@ const AccountsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportRecord]);
+  }, [currentPage, itemsPerPage, accountStatus, reportRecord]);
 
-  // 컴포넌트 마운트 시 데이터 로드
-  useEffect(() => {
-    fetchAccounts();
+  // 초기 데이터 로드를 위한 함수
+  const loadInitialData = useCallback(async () => {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    // 현재 달의 1일부터 오늘까지 자동 설정
+    setStartDate(firstDayOfMonth);
+    setEndDate(today);
+    
+    await fetchAccounts();
   }, [fetchAccounts]);
+
+  // 컴포넌트 마운트 시 초기 데이터 로드
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  // 페이지/필터 변경 시 데이터 로드 (날짜 제외)
+  useEffect(() => {
+    if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
+    fetchAccounts();
+  }, [currentPage, itemsPerPage, accountStatus, reportRecord]);
 
   const handleRowSelect = (userId) => {
     setSelectedRows((prev) => {
@@ -148,10 +166,10 @@ const AccountsPage = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     // 검색 시 첫 페이지로 이동 후 API 호출
     setCurrentPage(1);
-    // useEffect에 의해 fetchAccounts가 자동 호출됨
+    await fetchAccounts();
   };
 
   // 페이지네이션을 위한 그룹화 로직

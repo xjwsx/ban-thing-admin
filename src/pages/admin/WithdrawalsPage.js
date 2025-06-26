@@ -109,12 +109,30 @@ const WithdrawalsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, withdrawalReason]);
+  }, [currentPage, itemsPerPage, withdrawalReason]);
 
-  // 컴포넌트 마운트 시 데이터 로드
-  useEffect(() => {
-    fetchWithdrawals();
+  // 초기 데이터 로드를 위한 함수
+  const loadInitialData = useCallback(async () => {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    // 현재 달의 1일부터 오늘까지 자동 설정
+    setStartDate(firstDayOfMonth);
+    setEndDate(today);
+    
+    await fetchWithdrawals();
   }, [fetchWithdrawals]);
+
+  // 컴포넌트 마운트 시 초기 데이터 로드
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  // 페이지/필터 변경 시 데이터 로드 (날짜 제외)
+  useEffect(() => {
+    if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
+    fetchWithdrawals();
+  }, [currentPage, itemsPerPage, withdrawalReason]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
@@ -136,7 +154,7 @@ const WithdrawalsPage = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     // 검색 로직 구현
     console.log('필터 조건으로 검색:', {
       startDate,
@@ -146,7 +164,7 @@ const WithdrawalsPage = () => {
     });
     // 검색 후 첫 페이지로 이동하고 데이터 다시 로드
     setCurrentPage(1);
-    fetchWithdrawals();
+    await fetchWithdrawals();
   };
 
   // 페이지네이션을 위한 그룹화 로직
