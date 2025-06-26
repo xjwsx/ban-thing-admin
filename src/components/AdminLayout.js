@@ -125,12 +125,12 @@ const AdminLayout = ({ children }) => {
               <div
                 key={item.key}
                 onClick={item.onClick}
-                className={`flex items-center gap-2 py-1.5 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700 ${
+                className={`flex items-center justify-center gap-2 py-1.5 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700 ${
                   activePath === item.path ? "bg-white" : ""
                 } ${isExpanded ? "px-2" : "justify-center mx-1"}`}
               >
                 {item.icon && (
-                  <div className={`text-gray-500 ${isExpanded ? "min-w-[16px] flex items-center justify-center" : "w-[16px] h-[16px] flex items-center justify-center"}`}>
+                  <div className={`text-gray-500 ${isExpanded ? "min-w-[16px]" : "w-[16px] h-[16px] flex items-center justify-center"}`}>
                     {item.icon}
                   </div>
                 )}
