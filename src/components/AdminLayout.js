@@ -7,7 +7,7 @@ import {
   Flag,
   Settings2,
 } from "lucide-react";
-import BanthingIcon from "../assets/icon.svg?react";
+import banthingIcon from "../assets/banthingicon.png";
 // import { useAdminStore } from "../stores/adminStore"; // 개발용 비활성화
 
 const AdminLayout = ({ children }) => {
@@ -93,9 +93,9 @@ const AdminLayout = ({ children }) => {
               onClick={() => navigate("/admin/accounts")}
             >
               <div className="flex items-center gap-3">
-                <BanthingIcon 
-                  width={32} 
-                  height={32} 
+                <img 
+                  src={banthingIcon} 
+                  alt="BANTHING Icon" 
                   className="w-[32px] h-[32px] flex-shrink-0"
                 />
                 <div className="flex flex-col">
