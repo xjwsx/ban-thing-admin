@@ -349,6 +349,33 @@ export const activateMembers = async (memberIds) => {
   }
 };
 
+// 재가입 제한 처리
+export const restrictRejoinMembers = async (memberIds) => {
+  try {
+    console.log('🔍 재가입 제한 처리 API 호출:', '/admin/account/restrict-rejoin');
+    console.log('📤 요청 데이터:', { memberIds });
+    
+    const response = await api.post('/admin/account/restrict-rejoin', { memberIds });
+    console.log('📥 응답 데이터:', response.data);
+    return response;
+  } catch (error) {
+    console.error('재가입 제한 처리 실패:', error);
+    
+    // API 실패 시 사용자에게 친화적인 에러 메시지
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.');
+    } else if (error.response?.status === 401) {
+      throw new Error('인증이 필요합니다. 다시 로그인해주세요.');
+    } else if (error.response?.status === 403) {
+      throw new Error('권한이 없습니다.');
+    } else if (error.response?.status >= 500) {
+      throw new Error('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+    
+    throw error;
+  }
+};
+
 // ============================================================================
 // 신고 관리 API
 // ============================================================================

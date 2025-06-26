@@ -36,7 +36,7 @@ import {
 } from "../../components/ui/pagination";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import NotificationModal from "../../components/ui/NotificationModal";
-import { getWithdrawals } from "../../api/admin";
+import { getWithdrawals, restrictRejoinMembers } from "../../api/admin";
 
 const WithdrawalsPage = () => {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -169,20 +169,27 @@ const WithdrawalsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleModalConfirm = () => {
-    // 실제 API 호출이나 상태 업데이트 로직을 여기에 추가
-    console.log(`${modalAction} action confirmed for accounts:`, selectedRows);
-    
-    // 여기에 실제 처리 로직 추가
-    if (modalAction === "restriction") {
-      // 재가입 제한 로직
-      // 성공 후 알림 모달 표시
-      setNotificationMessage("재가입 제한 계정으로 설정되었습니다.");
+  const handleModalConfirm = async () => {
+    try {
+      console.log(`${modalAction} action confirmed for accounts:`, selectedRows);
+      
+      // 실제 API 호출
+      if (modalAction === "restriction") {
+        await restrictRejoinMembers(selectedRows);
+        setNotificationMessage(`${selectedRows.length}명의 계정이 재가입 제한으로 설정되었습니다.`);
+        
+        // 성공 시 데이터 새로고침
+        await fetchWithdrawals();
+      }
+      
+    } catch (error) {
+      setNotificationMessage(`작업 처리 중 오류가 발생했습니다: ${error.message}`);
+      console.error('재가입 제한 처리 실패:', error);
+    } finally {
+      setIsModalOpen(false);
+      setSelectedRows([]);
       setIsNotificationOpen(true);
     }
-    
-    setIsModalOpen(false);
-    setSelectedRows([]);
   };
 
   const handleModalClose = () => {
