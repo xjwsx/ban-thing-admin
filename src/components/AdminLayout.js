@@ -127,7 +127,7 @@ const AdminLayout = ({ children }) => {
                 onClick={item.onClick}
                 className={`flex items-center py-1.5 text-sm hover:bg-gray-100 rounded-md cursor-pointer transition-all text-gray-700 ${
                   activePath === item.path ? "bg-white" : ""
-                } ${isExpanded ? "" : "justify-center px-0"}`}
+                } ${isExpanded ? "" : "justify-center px-0 gap-2"}`}
               >
                 {item.icon && (
                   <div className={`text-gray-500 ${isExpanded ? "min-w-[16px]" : "w-[16px] h-[16px] flex items-center justify-center"}`}>
