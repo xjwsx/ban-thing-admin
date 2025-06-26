@@ -130,7 +130,7 @@ const AdminLayout = ({ children }) => {
                 } ${isExpanded ? "" : "justify-center px-0"}`}
               >
                 {item.icon && (
-                  <div className={`text-gray-500 ${isExpanded ? "min-w-[16px]" : "w-[16px] h-[16px] flex items-center justify-center"}`}>
+                  <div className={`text-gray-500 ${isExpanded ? "min-w-[16px] flex items-center justify-center" : "w-[16px] h-[16px] flex items-center justify-center"}`}>
                     {item.icon}
                   </div>
                 )}
