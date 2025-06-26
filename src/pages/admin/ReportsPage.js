@@ -135,12 +135,55 @@ const ReportsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate]);
+  }, [currentPage, itemsPerPage]);
 
-  // 컴포넌트 마운트 시 데이터 로드
+  // 초기 데이터 로드 함수
+  const loadInitialData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        page: 0, // 초기에는 첫 페이지
+        size: itemsPerPage,
+      };
+
+      // 초기 로드 시에는 현재 달의 1일부터 오늘까지를 기본 기간으로 설정
+      const today = new Date();
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      
+      params.startDate = format(firstDayOfMonth, 'yyyy-MM-dd');
+      params.endDate = format(today, 'yyyy-MM-dd');
+      
+      console.log('🗓️ 초기 데이터 로드 - 기본 날짜 범위:', {
+        startDate: params.startDate,
+        endDate: params.endDate
+      });
+
+      const response = await getReports(params);
+      
+      // 실제 API 응답 구조에 맞게 수정
+      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.content) {
+        setReportsData(response.data.data.content);
+        setTotalElements(response.data.data.totalElements);
+      } else {
+        setReportsData([]);
+        setTotalElements(0);
+      }
+    } catch (error) {
+      console.error('초기 데이터 로드 실패:', error);
+      setError(error.message || '데이터를 불러오는데 실패했습니다.');
+      setReportsData([]);
+      setTotalElements(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [itemsPerPage]);
+
+  // 컴포넌트 마운트 시 초기 데이터 로드
   useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+    loadInitialData();
+  }, [loadInitialData]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
