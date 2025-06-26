@@ -356,14 +356,14 @@ export const activateMembers = async (memberIds) => {
 // 신고 삭제
 export const deleteReports = async (reportIdList) => {
   try {
-    // reportIdList를 query parameter로 전송 (배열이면 첫 번째 값 사용, 아니면 그대로 사용)
-    const reportId = Array.isArray(reportIdList) ? reportIdList[0] : reportIdList;
+    // reportIdList를 콤마로 구분된 문자열로 변환
+    const reportIds = Array.isArray(reportIdList) ? reportIdList.join(',') : reportIdList.toString();
     const queryParams = new URLSearchParams({
-      reportIdList: reportId.toString()
+      reportIdList: reportIds
     });
     
     console.log('🔍 신고 삭제 API 호출:', `/items/report/delete?${queryParams.toString()}`);
-    console.log('📤 요청 데이터:', { reportIdList: reportId });
+    console.log('📤 요청 데이터:', { reportIdList: reportIds });
     
     // POST 요청에서 query parameter 사용
     const response = await api.post(`/items/report/delete?${queryParams.toString()}`);
@@ -426,14 +426,14 @@ export const adminDeleteReports = async (reportIdList) => {
 // 신고 어드민 무효
 export const adminInvalidReports = async (reportIdList) => {
   try {
-    // reportIdList를 query parameter로 전송 (배열이면 첫 번째 값 사용, 아니면 그대로 사용)
-    const reportId = Array.isArray(reportIdList) ? reportIdList[0] : reportIdList;
+    // reportIdList를 콤마로 구분된 문자열로 변환
+    const reportIds = Array.isArray(reportIdList) ? reportIdList.join(',') : reportIdList.toString();
     const queryParams = new URLSearchParams({
-      reportIdList: reportId.toString()
+      reportIdList: reportIds
     });
     
     console.log('🔍 신고 무효 API 호출:', `/items/report/invalid?${queryParams.toString()}`);
-    console.log('📤 요청 데이터:', { reportIdList: reportId });
+    console.log('📤 요청 데이터:', { reportIdList: reportIds });
     
     // POST 요청에서 query parameter 사용
     const response = await api.post(`/items/report/invalid?${queryParams.toString()}`);
