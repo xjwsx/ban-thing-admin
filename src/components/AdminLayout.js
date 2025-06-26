@@ -84,8 +84,8 @@ const AdminLayout = ({ children }) => {
           isExpanded ? "w-[255px]" : "w-14"
         }`}
       >
-        <div className="px-4 py-4 flex flex-col h-full">
-          <div className="flex items-center justify-between h-[52px] mb-4">
+        <div className={`py-4 flex flex-col h-full ${isExpanded ? "px-4" : "px-2"}`}>
+          <div className={`flex items-center h-[52px] mb-4 ${isExpanded ? "justify-between" : "justify-center"}`}>
             <div
               className={`font-medium text-gray-800 cursor-pointer transition-opacity duration-300 ease-in-out overflow-hidden ${
                 isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
@@ -106,7 +106,7 @@ const AdminLayout = ({ children }) => {
             </div>
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 hover:bg-gray-100 rounded text-gray-500"
+              className="p-1 hover:bg-gray-100 rounded text-gray-500 flex items-center justify-center"
               title={isExpanded ? "메뉴 접기" : "메뉴 펼치기"}
             >
               {isExpanded ? (
