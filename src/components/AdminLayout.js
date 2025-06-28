@@ -162,7 +162,7 @@ const AdminLayout = ({ children }) => {
                 >
                   <span className="mr-1.5 text-gray-500">admin</span>
                   <span className="mx-1.5">&gt;</span>
-                  <span className="ml-1.5">{item.label}</span>
+                  <span className={`ml-1.5 ${index === breadcrumbs.length - 1 ? 'underline' : ''}`}>{item.label}</span>
                 </span>
                 {index < breadcrumbs.length - 1 && <span className="mx-2 text-gray-400">{">"}</span>}
               </React.Fragment>
