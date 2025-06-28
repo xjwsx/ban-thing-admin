@@ -109,6 +109,8 @@ const AccountsPage = () => {
         params.reportRecord = reportRecord;
       }
 
+      console.log('API 호출 파라미터:', params); // 디버깅용 로그
+
       const response = await getAccounts(params);
       
       // 실제 API 응답 구조에 맞게 수정
@@ -127,7 +129,7 @@ const AccountsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, accountStatus, reportRecord]);
+  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportRecord]);
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
@@ -146,11 +148,11 @@ const AccountsPage = () => {
     loadInitialData();
   }, []);
 
-  // 페이지/필터 변경 시 데이터 로드 (날짜 제외)
+  // 페이지 변경 시 데이터 로드
   useEffect(() => {
     if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
     fetchAccounts();
-  }, [currentPage, itemsPerPage, accountStatus, reportRecord]);
+  }, [currentPage, fetchAccounts]);
 
   const handleRowSelect = (userId) => {
     setSelectedRows((prev) => {
