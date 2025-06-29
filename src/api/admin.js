@@ -247,12 +247,19 @@ export const suspendMembers = async (memberIds) => {
 // 계정 활성화 처리
 export const activateMembers = async (memberIds) => {
   try {
-    console.log('🔍 계정 활성화 처리 API 호출:', '/admin/account/activate');
-    console.log('📤 요청 데이터:', { memberIds });
+    const results = [];
     
-    const response = await api.post('/admin/account/activate', { memberIds });
-    console.log('📥 응답 데이터:', response.data);
-    return response;
+    // 각 사용자마다 개별 API 호출
+    for (const memberId of memberIds) {
+      console.log(`🔍 계정 활성화 처리 API 호출: /admin/${memberId}/activate`);
+      console.log('📤 요청 데이터:', { memberId });
+      
+      const response = await api.post(`/admin/${memberId}/activate`);
+      console.log('📥 응답 데이터:', response.data);
+      results.push(response);
+    }
+    
+    return results[0]; // 첫 번째 응답을 반환 (기존 호환성 유지)
   } catch (error) {
     console.error('계정 활성화 처리 실패:', error);
     
