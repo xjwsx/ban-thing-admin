@@ -461,6 +461,11 @@ const AccountsPage = () => {
                       return `${count}건`;
                     };
 
+                    // 신고 이력 스타일 (1건 이상이면 밑줄)
+                    const getReportStyle = (count) => {
+                      return count > 0 ? 'underline cursor-pointer' : '';
+                    };
+
                     return (
                       <TableRow 
                         key={row.userId || index} 
@@ -479,7 +484,7 @@ const AccountsPage = () => {
                         <TableCell className="p-2">{formatDate(row.createdAt)}</TableCell>
                         <TableCell className="p-2">{row.nickname || '-'}</TableCell>
                         <TableCell className="p-2">{getStatusText(row.status)}</TableCell>
-                        <TableCell className="p-2">{getReportText(row.reportCount)}</TableCell>
+                        <TableCell className={`p-2 ${getReportStyle(row.reportCount)}`}>{getReportText(row.reportCount)}</TableCell>
                         <TableCell className="p-2">-</TableCell>
                       </TableRow>
                     );
