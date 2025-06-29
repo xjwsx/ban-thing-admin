@@ -112,12 +112,33 @@ export const getReports = async (params = {}) => {
   try {
     const queryParams = new URLSearchParams();
 
-    // 필수 파라미터 순서: startDate, endDate, minReports, page, size
+    // 필수 파라미터 순서: startDate, endDate, page, size
     queryParams.append('startDate', params.startDate || '2025-01-01');
     queryParams.append('endDate', params.endDate || '2025-12-31');
-    queryParams.append('minReports', (params.minReports || 1).toString());
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
+
+    // 선택적 파라미터들 추가
+    if (params.hiReason && params.hiReason !== '') {
+      queryParams.append('hiReason', params.hiReason);
+    }
+    
+    if (params.loReason && params.loReason !== '') {
+      queryParams.append('loReason', params.loReason);
+    }
+    
+    if (params.keyword && params.keyword !== '') {
+      queryParams.append('keyword', params.keyword);
+    }
+    
+    if (params.status && params.status !== '') {
+      queryParams.append('status', params.status);
+    }
+
+    // 기존 minReports 파라미터 유지 (선택적)
+    if (params.minReports !== undefined && params.minReports !== null) {
+      queryParams.append('minReports', params.minReports.toString());
+    }
 
     console.log('🔍 신고 내역 API 호출:', `/admin/reports?${queryParams.toString()}`);
     return api.get(`/admin/reports?${queryParams.toString()}`);

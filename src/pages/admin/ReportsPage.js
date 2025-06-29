@@ -45,6 +45,7 @@ const ReportsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [mainReason, setMainReason] = useState(null);
+  const [loReason, setLoReason] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState(null);
   
@@ -117,6 +118,24 @@ const ReportsPage = () => {
         });
       }
 
+      // 새로운 필터 파라미터들 추가
+      if (mainReason && mainReason !== '') {
+        params.hiReason = mainReason;
+      }
+      
+      if (loReason && loReason !== '') {
+        params.loReason = loReason;
+      }
+      
+      if (keyword && keyword !== '') {
+        params.keyword = keyword;
+      }
+      
+      if (status && status !== '') {
+        params.status = status;
+      }
+
+      console.log('🔍 신고 내역 API 호출 파라미터:', params);
       const response = await getReports(params);
       
       // 실제 API 응답 구조에 맞게 수정
@@ -135,7 +154,7 @@ const ReportsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, startDate, endDate, mainReason, loReason, keyword, status]);
 
   // 초기 데이터 로드 함수
   const loadInitialData = useCallback(async () => {
@@ -211,6 +230,7 @@ const ReportsPage = () => {
       startDate,
       endDate,
       mainReason,
+      loReason,
       keyword,
       status
     });
