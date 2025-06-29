@@ -344,9 +344,8 @@ const AccountsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ACTIVE">정상</SelectItem>
-              <SelectItem value="BLOCKED">차단됨</SelectItem>
-              <SelectItem value="RESTRICTED">제한됨</SelectItem>
-              <SelectItem value="DORMANT">휴면</SelectItem>
+              <SelectItem value="DELETED">탈퇴</SelectItem>
+              <SelectItem value="SUSPENDED">정지</SelectItem>
             </SelectContent>
           </Select>
           
@@ -450,9 +449,8 @@ const AccountsPage = () => {
                     const getStatusText = (status) => {
                       switch(status) {
                         case 'ACTIVE': return '정상';
+                        case 'DELETED': return '탈퇴';
                         case 'SUSPENDED': return '정지';
-                        case 'WITHDRAWN': return '탈퇴';
-                        case 'DORMANT': return '휴면';
                         default: return status || '-';
                       }
                     };
