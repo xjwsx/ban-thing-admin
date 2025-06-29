@@ -59,38 +59,6 @@ export const getAccounts = async (params = {}) => {
     console.log('🔍 API 호출:', `/admin/account?${queryParams.toString()}`);
     return api.get(`/admin/account?${queryParams.toString()}`);
 
-    // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
-    /*
-    const mockAccounts = Array.from({ length: 25 }, (_, i) => ({
-      userId: 167235 - i,
-      nickname: `반띵#${4278232137 - i}`,
-      status: i % 4 === 0 ? "SUSPENDED" : i % 3 === 0 ? "DORMANT" : "ACTIVE",
-      reportCount: i % 5 === 0 ? 3 : i % 3 === 0 ? 1 : 0,
-      createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString()
-    }));
-
-    // 페이지네이션 시뮬레이션
-    const page = params.page || 0;
-    const size = params.size || 10;
-    const startIndex = page * size;
-    const endIndex = startIndex + size;
-    const paginatedData = mockAccounts.slice(startIndex, endIndex);
-
-    return Promise.resolve({
-      data: {
-        status: "success",
-        data: {
-          content: paginatedData,
-          totalElements: mockAccounts.length,
-          totalPages: Math.ceil(mockAccounts.length / size),
-          number: page,
-          size: size
-        },
-        message: null
-      }
-    });
-    */
-
   } catch (error) {
     console.error('계정 목록 조회 실패:', error);
     
@@ -118,22 +86,11 @@ export const getReports = async (params = {}) => {
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
 
-    // 선택적 파라미터들 추가
-    if (params.hiReason && params.hiReason !== '') {
-      queryParams.append('hiReason', params.hiReason);
-    }
-    
-    if (params.loReason && params.loReason !== '') {
-      queryParams.append('loReason', params.loReason);
-    }
-    
-    if (params.keyword && params.keyword !== '') {
-      queryParams.append('keyword', params.keyword);
-    }
-    
-    if (params.status && params.status !== '') {
-      queryParams.append('status', params.status);
-    }
+    // 필수 파라미터들 추가 (항상 포함)
+    queryParams.append('hiReason', params.hiReason || '');
+    queryParams.append('loReason', params.loReason || '');
+    queryParams.append('keyword', params.keyword || '');
+    queryParams.append('status', params.status || '');
 
     // 기존 minReports 파라미터 유지 (선택적)
     if (params.minReports !== undefined && params.minReports !== null) {
@@ -142,38 +99,6 @@ export const getReports = async (params = {}) => {
 
     console.log('🔍 신고 내역 API 호출:', `/admin/reports?${queryParams.toString()}`);
     return api.get(`/admin/reports?${queryParams.toString()}`);
-
-    // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
-    /*
-    const mockReports = Array.from({ length: 30 }, (_, i) => ({
-      id: (i + 1).toString(),
-      reportId: `RPT${1000 + i}`,
-      reportDate: "2024.12.15",
-      reportedUser: `신고받은사용자${i + 1}`,
-      reportingUser: `신고한사용자${i + 1}`,
-      reportReason: i % 4 === 0 ? "스팸/광고" : i % 3 === 0 ? "욕설/비방" : i % 2 === 0 ? "부적절한 콘텐츠" : "기타",
-      reportCount: Math.floor(Math.random() * 10) + 1,
-      status: i % 5 === 0 ? "처리완료" : i % 3 === 0 ? "검토중" : "대기중",
-      description: `신고 상세 내용 ${i + 1}`
-    }));
-
-    // 페이지네이션 시뮬레이션
-    const page = params.page || 0;
-    const size = params.size || 10;
-    const startIndex = page * size;
-    const endIndex = startIndex + size;
-    const paginatedData = mockReports.slice(startIndex, endIndex);
-
-    return Promise.resolve({
-      data: {
-        content: paginatedData,
-        totalElements: mockReports.length,
-        totalPages: Math.ceil(mockReports.length / size),
-        number: page,
-        size: size
-      }
-    });
-    */
 
   } catch (error) {
     console.error('신고 내역 조회 실패:', error);
@@ -209,37 +134,6 @@ export const getWithdrawals = async (params = {}) => {
 
     console.log('🔍 탈퇴 내역 API 호출:', `/admin/deletions?${queryParams.toString()}`);
     return api.get(`/admin/deletions?${queryParams.toString()}`);
-
-    // Mock 데이터 (API 실패 시 백업용 - 필요시 주석 해제)
-    /*
-    const mockWithdrawals = Array.from({ length: 25 }, (_, i) => ({
-      id: (i + 1).toString(),
-      withdrawalId: `WD${1000 + i}`,
-      withdrawalDate: "2024.12.15",
-      memberId: `USER${2000 + i}`,
-      nickname: `사용자${i + 1}`,
-      status: i % 4 === 0 ? "정지" : i % 3 === 0 ? "휴면" : "정상",
-      reportRecord: i % 5 === 0 ? "3건" : i % 3 === 0 ? "1건" : "없음",
-      restricted: i % 7 === 0 ? "제한" : "없음"
-    }));
-
-    // 페이지네이션 시뮬레이션
-    const page = params.page || 0;
-    const size = params.size || 10;
-    const startIndex = page * size;
-    const endIndex = startIndex + size;
-    const paginatedData = mockWithdrawals.slice(startIndex, endIndex);
-
-    return Promise.resolve({
-      data: {
-        content: paginatedData,
-        totalElements: mockWithdrawals.length,
-        totalPages: Math.ceil(mockWithdrawals.length / size),
-        number: page,
-        size: size
-      }
-    });
-    */
 
   } catch (error) {
     console.error('탈퇴 내역 조회 실패:', error);
@@ -441,18 +335,6 @@ export const adminDeleteReports = async (reportIdList) => {
     // 실제 API 호출
     const response = await api.post('/items/report/adminDelete', { reportIdList });
     return response;
-
-    // Mock 응답 (테스트용 - 필요시 주석 해제)
-    /*
-    console.log('Mock: 신고 어드민 삭제 처리', reportIdList);
-    return Promise.resolve({
-      data: {
-        success: true,
-        message: `${reportIdList.length}건의 신고가 관리자에 의해 삭제되었습니다.`,
-        deletedCount: reportIdList.length
-      }
-    });
-    */
   } catch (error) {
     console.error('신고 어드민 삭제 실패:', error);
     

@@ -118,22 +118,11 @@ const ReportsPage = () => {
         });
       }
 
-      // 새로운 필터 파라미터들 추가
-      if (mainReason && mainReason !== '') {
-        params.hiReason = mainReason;
-      }
-      
-      if (loReason && loReason !== '') {
-        params.loReason = loReason;
-      }
-      
-      if (keyword && keyword !== '') {
-        params.keyword = keyword;
-      }
-      
-      if (status && status !== '') {
-        params.status = status;
-      }
+      // 필터 파라미터들 추가 (항상 포함)
+      params.hiReason = mainReason || '';
+      params.loReason = loReason || '';
+      params.keyword = keyword || '';
+      params.status = status || '';
 
       console.log('🔍 신고 내역 API 호출 파라미터:', params);
       const response = await getReports(params);
