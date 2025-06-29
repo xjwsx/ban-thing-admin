@@ -280,12 +280,19 @@ export const activateMembers = async (memberIds) => {
 // 재가입 제한 처리
 export const restrictRejoinMembers = async (memberIds) => {
   try {
-    console.log('🔍 재가입 제한 처리 API 호출:', '/admin/account/restrict-rejoin');
-    console.log('📤 요청 데이터:', { memberIds });
+    const results = [];
     
-    const response = await api.post('/admin/account/restrict-rejoin', { memberIds });
-    console.log('📥 응답 데이터:', response.data);
-    return response;
+    // 각 사용자마다 개별 API 호출
+    for (const memberId of memberIds) {
+      console.log(`🔍 재가입 제한 처리 API 호출: /admin/rejoin-restriction?userId=${memberId}`);
+      console.log('📤 요청 데이터:', { userId: memberId });
+      
+      const response = await api.post(`/admin/rejoin-restriction?userId=${memberId}`);
+      console.log('📥 응답 데이터:', response.data);
+      results.push(response);
+    }
+    
+    return results[0]; // 첫 번째 응답을 반환 (기존 호환성 유지)
   } catch (error) {
     console.error('재가입 제한 처리 실패:', error);
     
