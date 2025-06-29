@@ -223,7 +223,7 @@ const AccountsPage = () => {
   // 신고이력 모달 핸들러
   const handleRowClick = (member) => {
     // getAccounts API 응답에 포함된 신고이력 데이터 사용
-    const reportHistory = member.reportHistory || [];
+    const reportHistory = member.reportDetails || [];
     
     setSelectedMemberReportData(reportHistory);
     setIsReportHistoryModalOpen(true);
