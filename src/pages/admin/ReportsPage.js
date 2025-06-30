@@ -131,10 +131,30 @@ const ReportsPage = () => {
       console.log('🔍 신고 내역 API 호출 파라미터:', params);
       const response = await getReports(params);
       
-      // 실제 API 응답 구조에 맞게 수정
-      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.content) {
-        setReportsData(response.data.data.content);
-        setTotalElements(response.data.data.totalElements);
+      // API 응답 처리 (에러 처리 강화)
+      if (response.data) {
+        if (response.data.status === 'success' && response.data.data && response.data.data.content) {
+          // 성공적인 응답
+          setReportsData(response.data.data.content);
+          setTotalElements(response.data.data.totalElements);
+        } else if (response.data.status === 'error') {
+          // API에서 에러 응답을 받은 경우
+          console.warn('API 에러:', response.data.message);
+          
+          // 이미지 인코딩 에러인 경우 사용자에게 알림
+          if (response.data.message && response.data.message.includes('Base64')) {
+            setError('이미지 처리 중 오류가 발생했습니다. 이미지 없이 데이터를 표시합니다.');
+          } else {
+            setError(response.data.message || '데이터를 불러오는데 실패했습니다.');
+          }
+          
+          setReportsData([]);
+          setTotalElements(0);
+        } else {
+          // 예상하지 못한 응답 구조
+          setReportsData([]);
+          setTotalElements(0);
+        }
       } else {
         setReportsData([]);
         setTotalElements(0);
@@ -174,10 +194,30 @@ const ReportsPage = () => {
 
       const response = await getReports(params);
       
-      // 실제 API 응답 구조에 맞게 수정
-      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.content) {
-        setReportsData(response.data.data.content);
-        setTotalElements(response.data.data.totalElements);
+      // API 응답 처리 (에러 처리 강화)
+      if (response.data) {
+        if (response.data.status === 'success' && response.data.data && response.data.data.content) {
+          // 성공적인 응답
+          setReportsData(response.data.data.content);
+          setTotalElements(response.data.data.totalElements);
+        } else if (response.data.status === 'error') {
+          // API에서 에러 응답을 받은 경우
+          console.warn('API 에러:', response.data.message);
+          
+          // 이미지 인코딩 에러인 경우 사용자에게 알림
+          if (response.data.message && response.data.message.includes('Base64')) {
+            setError('이미지 처리 중 오류가 발생했습니다. 이미지 없이 데이터를 표시합니다.');
+          } else {
+            setError(response.data.message || '데이터를 불러오는데 실패했습니다.');
+          }
+          
+          setReportsData([]);
+          setTotalElements(0);
+        } else {
+          // 예상하지 못한 응답 구조
+          setReportsData([]);
+          setTotalElements(0);
+        }
       } else {
         setReportsData([]);
         setTotalElements(0);
@@ -342,9 +382,20 @@ const ReportsPage = () => {
 
   // 신고상세 모달 핸들러
   const handleRowClick = (report) => {
-    // 해당 신고의 상세 정보를 설정 (실제로는 API에서 가져와야 함)
-    setSelectedReportDetail(report);
-    setIsReportDetailModalOpen(true);
+    try {
+      // 이미지 데이터 유효성 체크
+      if (report.images && Array.isArray(report.images) && report.images.length > 0) {
+        console.log('📷 이미지 데이터 확인됨:', report.images.length, '개');
+      }
+      
+      // 해당 신고의 상세 정보를 설정
+      setSelectedReportDetail(report);
+      setIsReportDetailModalOpen(true);
+    } catch (error) {
+      console.error('신고 상세보기 처리 중 오류:', error);
+      setNotificationMessage('신고 상세보기를 표시하는 중 오류가 발생했습니다.');
+      setIsNotificationOpen(true);
+    }
   };
 
   return (

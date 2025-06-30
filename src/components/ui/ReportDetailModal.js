@@ -25,17 +25,36 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
     image: "/api/placeholder/119/101" // 플레이스홀더 이미지
   };
 
-  // 이미지 처리 함수
+  // 이미지 처리 함수 (에러 처리 강화)
   const getImageSrc = (reportDetail) => {
-    if (reportDetail && reportDetail.images && Array.isArray(reportDetail.images) && reportDetail.images.length > 0) {
-      const base64Data = reportDetail.images[0];
-      // base64 데이터가 이미 data URL 형태인지 확인
-      if (base64Data.startsWith('data:image/')) {
-        return base64Data;
+    try {
+      if (reportDetail && reportDetail.images && Array.isArray(reportDetail.images) && reportDetail.images.length > 0) {
+        const base64Data = reportDetail.images[0];
+        
+        // 빈 문자열이나 null 체크
+        if (!base64Data || base64Data.trim() === '') {
+          console.warn('이미지 데이터가 비어있습니다.');
+          return "/api/placeholder/119/101";
+        }
+        
+        // base64 데이터가 이미 data URL 형태인지 확인
+        if (base64Data.startsWith('data:image/')) {
+          return base64Data;
+        }
+        
+        // base64 데이터 유효성 검사 (기본적인 문자 체크)
+        if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64Data)) {
+          console.warn('유효하지 않은 base64 데이터입니다.');
+          return "/api/placeholder/119/101";
+        }
+        
+        // base64 데이터만 있는 경우 data URL로 변환
+        return `data:image/png;base64,${base64Data}`;
       }
-      // base64 데이터만 있는 경우 data URL로 변환
-      return `data:image/png;base64,${base64Data}`;
+    } catch (error) {
+      console.error('이미지 처리 중 오류 발생:', error);
     }
+    
     return "/api/placeholder/119/101"; // 기본 플레이스홀더
   };
 
