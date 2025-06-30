@@ -167,6 +167,18 @@ const WithdrawalsPage = () => {
     await fetchWithdrawals();
   };
 
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    try {
+      const date = new Date(dateString);
+      return format(date, 'yyyy-MM-dd HH:mm');
+    } catch (error) {
+      console.error('날짜 포맷팅 오류:', error);
+      return dateString;
+    }
+  };
+
   // 페이지네이션을 위한 그룹화 로직
   const getPaginationGroup = () => {
     const groupSize = 5; // 한 그룹에 표시할 페이지 수
@@ -354,24 +366,24 @@ const WithdrawalsPage = () => {
                 {currentItems.length > 0 ? (
                   currentItems.map((row) => (
                     <TableRow 
-                      key={row.id} 
+                      key={row.userId} 
                       className="h-[44px] hover:bg-gray-50"
                     >
                       <TableCell className="p-2 text-center">
                         <div className="flex justify-center items-center">
                           <Checkbox
-                            checked={selectedRows.includes(row.id)}
-                            onCheckedChange={() => handleRowSelect(row.id)}
+                            checked={selectedRows.includes(row.userId)}
+                            onCheckedChange={() => handleRowSelect(row.userId)}
                           />
                         </div>
                       </TableCell>
-                      <TableCell className="p-2">{row.userId || row.memberId}</TableCell>
-                      <TableCell className="p-2">{row.joinDate}</TableCell>
-                      <TableCell className="p-2">{row.withdrawalDate}</TableCell>
-                      <TableCell className="p-2">{row.lastAccessDate || row.finalActivity}</TableCell>
+                      <TableCell className="p-2">{row.userId}</TableCell>
+                      <TableCell className="p-2">{formatDate(row.joinedAt)}</TableCell>
+                      <TableCell className="p-2">{formatDate(row.deletedAt)}</TableCell>
+                      <TableCell className="p-2">{formatDate(row.lastLoginAt)}</TableCell>
                       <TableCell className="p-2">{row.reason}</TableCell>
                       <TableCell className="p-2">{row.memo || '-'}</TableCell>
-                      <TableCell className="p-2">{row.isRestricted ? '제한' : '없음'}</TableCell>
+                      <TableCell className="p-2">{row.rejoinRestricted ? '제한' : '없음'}</TableCell>
                     </TableRow>
                   ))
                 ) : (
