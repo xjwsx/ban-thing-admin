@@ -45,7 +45,7 @@ const WithdrawalsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [keyword, setKeyword] = useState('');
-  const [withdrawalReason, setWithdrawalReason] = useState("");
+  const [minReports, setMinReports] = useState('');
   
   // 페이지네이션 상태 관리
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,9 +87,9 @@ const WithdrawalsPage = () => {
         params.endDate = format(endDate, 'yyyy-MM-dd');
       }
 
-      // 탈퇴 사유가 있으면 추가
-      if (withdrawalReason && withdrawalReason !== "") {
-        params.reason = withdrawalReason;
+      // 최소 신고 횟수가 있으면 추가
+      if (minReports && minReports !== "") {
+        params.minReports = parseInt(minReports, 10);
       }
 
       const response = await getWithdrawals(params);
@@ -109,7 +109,7 @@ const WithdrawalsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, withdrawalReason]);
+  }, [currentPage, itemsPerPage, minReports]);
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
@@ -132,7 +132,7 @@ const WithdrawalsPage = () => {
   useEffect(() => {
     if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
     fetchWithdrawals();
-  }, [currentPage, itemsPerPage, withdrawalReason]);
+  }, [currentPage, itemsPerPage, minReports]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
@@ -160,7 +160,7 @@ const WithdrawalsPage = () => {
       startDate,
       endDate,
       keyword,
-      withdrawalReason
+      minReports
     });
     // 검색 후 첫 페이지로 이동하고 데이터 다시 로드
     setCurrentPage(1);
@@ -285,24 +285,15 @@ const WithdrawalsPage = () => {
             </PopoverContent>
           </Popover>
             
-          {/* 탈퇴 사유 */}
-          <Select value={withdrawalReason} onValueChange={setWithdrawalReason}>
-            <SelectTrigger className="border border-gray-300 bg-white">
-              {withdrawalReason ? (
-                <SelectValue />
-              ) : (
-                <div className="text-gray-600">탈퇴 사유</div>
-              )}
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="reason1">찾는 물품이 없어요</SelectItem>
-              <SelectItem value="reason2">물품이 안 팔려요</SelectItem>
-              <SelectItem value="reason3">비매너 사용자를 만났어요</SelectItem>
-              <SelectItem value="reason4">상품을 찾기 불편해요</SelectItem>
-              <SelectItem value="reason5">개인정보를 삭제하고 싶어요</SelectItem>
-              <SelectItem value="reason6">기타</SelectItem>
-            </SelectContent>
-          </Select>
+          {/* 최소 신고 횟수 */}
+          <Input
+            placeholder="최소 신고 횟수"
+            className="h-[40px] w-full bg-white"
+            type="number"
+            min="0"
+            value={minReports}
+            onChange={(e) => setMinReports(e.target.value)}
+          />
 
           {/* 검색 키워드 */}
           <div className="relative">

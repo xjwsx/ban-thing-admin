@@ -125,13 +125,13 @@ export const getWithdrawals = async (params = {}) => {
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
 
-    // 탈퇴 사유가 있으면 추가
-    if (params.reason && params.reason !== "" && params.reason !== "all") {
-      queryParams.append('reason', params.reason);
+    // minReports 파라미터 추가
+    if (params.minReports !== undefined && params.minReports !== null) {
+      queryParams.append('minReports', params.minReports.toString());
     }
 
-    console.log('🔍 탈퇴 내역 API 호출:', `/admin/deletions?${queryParams.toString()}`);
-    return api.get(`/admin/deletions?${queryParams.toString()}`);
+    console.log('🔍 탈퇴 내역 API 호출:', `/admin/reports/users?${queryParams.toString()}`);
+    return api.get(`/admin/reports/users?${queryParams.toString()}`);
 
   } catch (error) {
     console.error('탈퇴 내역 조회 실패:', error);
