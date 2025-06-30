@@ -45,7 +45,7 @@ const WithdrawalsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [keyword, setKeyword] = useState('');
-  const [minReports, setMinReports] = useState('');
+  const [withdrawalReason, setWithdrawalReason] = useState('');
   
   // 페이지네이션 상태 관리
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,14 +87,17 @@ const WithdrawalsPage = () => {
         params.endDate = format(endDate, 'yyyy-MM-dd');
       }
 
-      // 최소 신고 횟수 (항상 포함)
-      params.minReports = minReports && minReports !== "" ? parseInt(minReports, 10) : 0;
+      // 탈퇴 사유가 있으면 추가
+      if (withdrawalReason && withdrawalReason !== "") {
+        params.reason = withdrawalReason;
+      }
 
       const response = await getWithdrawals(params);
       
-      if (response.data && response.data.content) {
-        setWithdrawalsData(response.data.content);
-        setTotalElements(response.data.totalElements);
+      // 원래 API 응답 구조로 복구
+      if (response.data && response.data.status === 'success' && response.data.data && response.data.data.content) {
+        setWithdrawalsData(response.data.data.content);
+        setTotalElements(response.data.data.totalElements);
       } else {
         setWithdrawalsData([]);
         setTotalElements(0);
@@ -107,7 +110,7 @@ const WithdrawalsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, minReports]);
+  }, [currentPage, itemsPerPage, withdrawalReason]);
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
@@ -130,7 +133,7 @@ const WithdrawalsPage = () => {
   useEffect(() => {
     if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
     fetchWithdrawals();
-  }, [currentPage, itemsPerPage, minReports]);
+  }, [currentPage, itemsPerPage, withdrawalReason]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
@@ -158,7 +161,7 @@ const WithdrawalsPage = () => {
       startDate,
       endDate,
       keyword,
-      minReports
+      withdrawalReason
     });
     // 검색 후 첫 페이지로 이동하고 데이터 다시 로드
     setCurrentPage(1);
@@ -283,15 +286,25 @@ const WithdrawalsPage = () => {
             </PopoverContent>
           </Popover>
             
-          {/* 최소 신고 횟수 */}
-          <Input
-            placeholder="최소 신고 횟수"
-            className="h-[40px] w-full bg-white"
-            type="number"
-            min="0"
-            value={minReports}
-            onChange={(e) => setMinReports(e.target.value)}
-          />
+          {/* 탈퇴 사유 */}
+          <Select value={withdrawalReason} onValueChange={setWithdrawalReason}>
+            <SelectTrigger className="border border-gray-300 bg-white">
+              {withdrawalReason ? (
+                <SelectValue />
+              ) : (
+                <div className="text-gray-600">탈퇴 사유</div>
+              )}
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="찾는 물품이 없어요">찾는 물품이 없어요</SelectItem>
+              <SelectItem value="물품이 안 팔려요">물품이 안 팔려요</SelectItem>
+              <SelectItem value="비매너 사용자를 만났어요">비매너 사용자를 만났어요</SelectItem>
+              <SelectItem value="상품을 찾기 불편해요">상품을 찾기 불편해요</SelectItem>
+              <SelectItem value="개인정보를 삭제하고 싶어요">개인정보를 삭제하고 싶어요</SelectItem>
+              <SelectItem value="서비스가 나와 맞지 않음">서비스가 나와 맞지 않음</SelectItem>
+              <SelectItem value="기타">기타</SelectItem>
+            </SelectContent>
+          </Select>
 
           {/* 검색 키워드 */}
           <div className="relative">
