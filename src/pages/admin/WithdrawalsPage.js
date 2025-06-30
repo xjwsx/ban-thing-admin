@@ -87,10 +87,8 @@ const WithdrawalsPage = () => {
         params.endDate = format(endDate, 'yyyy-MM-dd');
       }
 
-      // 최소 신고 횟수가 있으면 추가
-      if (minReports && minReports !== "") {
-        params.minReports = parseInt(minReports, 10);
-      }
+      // 최소 신고 횟수 (항상 포함)
+      params.minReports = minReports && minReports !== "" ? parseInt(minReports, 10) : 0;
 
       const response = await getWithdrawals(params);
       

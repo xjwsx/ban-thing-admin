@@ -125,10 +125,8 @@ export const getWithdrawals = async (params = {}) => {
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
 
-    // minReports 파라미터 추가
-    if (params.minReports !== undefined && params.minReports !== null) {
-      queryParams.append('minReports', params.minReports.toString());
-    }
+    // minReports 파라미터 추가 (필수)
+    queryParams.append('minReports', params.minReports || '0');
 
     console.log('🔍 탈퇴 내역 API 호출:', `/admin/reports/users?${queryParams.toString()}`);
     return api.get(`/admin/reports/users?${queryParams.toString()}`);
