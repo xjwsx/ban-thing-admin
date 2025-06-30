@@ -45,7 +45,6 @@ const ReportsPage = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [mainReason, setMainReason] = useState(null);
-  const [loReason, setLoReason] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [status, setStatus] = useState(null);
   
@@ -120,7 +119,6 @@ const ReportsPage = () => {
 
       // 필터 파라미터들 추가 (항상 포함)
       params.hiReason = mainReason || '';
-      params.loReason = loReason || '';
       params.keyword = keyword || '';
       params.status = status || '';
 
@@ -143,7 +141,7 @@ const ReportsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, mainReason, loReason, keyword, status]);
+  }, [currentPage, itemsPerPage, startDate, endDate, mainReason, keyword, status]);
 
   // 초기 데이터 로드 함수
   const loadInitialData = useCallback(async () => {
@@ -219,7 +217,6 @@ const ReportsPage = () => {
       startDate,
       endDate,
       mainReason,
-      loReason,
       keyword,
       status
     });

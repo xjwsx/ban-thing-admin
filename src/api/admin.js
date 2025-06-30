@@ -87,7 +87,6 @@ export const getReports = async (params = {}) => {
 
     // 필수 파라미터들 추가 (항상 포함)
     queryParams.append('hiReason', params.hiReason || '');
-    queryParams.append('loReason', params.loReason || '');
     queryParams.append('keyword', params.keyword || '');
     queryParams.append('status', params.status || '');
 
