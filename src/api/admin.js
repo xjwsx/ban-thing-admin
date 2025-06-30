@@ -119,14 +119,12 @@ export const getWithdrawals = async (params = {}) => {
   try {
     const queryParams = new URLSearchParams();
 
-    // 필수 파라미터 순서: startDate, endDate, page, size
+    // 필수 파라미터 순서: startDate, endDate, minReports, page, size
     queryParams.append('startDate', params.startDate || '2025-01-01');
     queryParams.append('endDate', params.endDate || '2025-12-31');
+    queryParams.append('minReports', params.minReports || '0');
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
-
-    // minReports 파라미터 추가 (필수)
-    queryParams.append('minReports', params.minReports || '0');
 
     console.log('🔍 탈퇴 내역 API 호출:', `/admin/reports/users?${queryParams.toString()}`);
     return api.get(`/admin/reports/users?${queryParams.toString()}`);
