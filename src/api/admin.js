@@ -85,10 +85,16 @@ export const getReports = async (params = {}) => {
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
 
-    // 필수 파라미터들 추가 (항상 포함)
-    queryParams.append('hiReason', params.hiReason || '');
-    queryParams.append('keyword', params.keyword || '');
-    queryParams.append('status', params.status || '');
+    // 선택적 파라미터들 (값이 있을 때만 포함)
+    if (params.hiReason && params.hiReason.trim() !== '') {
+      queryParams.append('hiReason', params.hiReason);
+    }
+    if (params.keyword && params.keyword.trim() !== '') {
+      queryParams.append('keyword', params.keyword);
+    }
+    if (params.status && params.status.trim() !== '') {
+      queryParams.append('status', params.status);
+    }
 
     // 기존 minReports 파라미터 유지 (선택적)
     if (params.minReports !== undefined && params.minReports !== null) {

@@ -117,10 +117,16 @@ const ReportsPage = () => {
         });
       }
 
-      // 필터 파라미터들 추가 (항상 포함)
-      params.hiReason = mainReason || '';
-      params.keyword = keyword || '';
-      params.status = status || '';
+      // 필터 파라미터들 추가 (값이 있을 때만 포함)
+      if (mainReason && mainReason.trim() !== '') {
+        params.hiReason = mainReason;
+      }
+      if (keyword && keyword.trim() !== '') {
+        params.keyword = keyword;
+      }
+      if (status && status.trim() !== '') {
+        params.status = status;
+      }
 
       console.log('🔍 신고 내역 API 호출 파라미터:', params);
       const response = await getReports(params);
@@ -406,8 +412,8 @@ const ReportsPage = () => {
               )}
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(reasonsMap).map(([value, label]) => (
-                <SelectItem key={value} value={value}>{label}</SelectItem>
+              {Object.entries(reasonsMap).map(([key, label]) => (
+                <SelectItem key={key} value={label}>{label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
