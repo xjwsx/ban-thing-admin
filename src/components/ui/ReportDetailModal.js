@@ -25,6 +25,20 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
     image: "/api/placeholder/119/101" // 플레이스홀더 이미지
   };
 
+  // 이미지 처리 함수
+  const getImageSrc = (reportDetail) => {
+    if (reportDetail && reportDetail.images && Array.isArray(reportDetail.images) && reportDetail.images.length > 0) {
+      const base64Data = reportDetail.images[0];
+      // base64 데이터가 이미 data URL 형태인지 확인
+      if (base64Data.startsWith('data:image/')) {
+        return base64Data;
+      }
+      // base64 데이터만 있는 경우 data URL로 변환
+      return `data:image/png;base64,${base64Data}`;
+    }
+    return "/api/placeholder/119/101"; // 기본 플레이스홀더
+  };
+
   // reportDetail이 있을 경우 데이터 구조 변환
   let data = defaultData;
   
@@ -44,13 +58,13 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         content: reportDetail.itemContent || "상품 설명이 없습니다.",
         tags: reportDetail.hashtags && Array.isArray(reportDetail.hashtags) ? reportDetail.hashtags : ["태그 없음"]
       },
-             cleanChecklist: {
-         pollution: reportDetail.pollution || "정보 없음",
-         usageCount: reportDetail.timeUsed || "정보 없음", 
-         washingStatus: reportDetail.cleaned || "정보 없음",
-         purchaseDate: reportDetail.purchasedDate || "정보 없음"
-       },
-      image: "/api/placeholder/119/101" // 실제 상품 이미지 URL이 있다면 사용
+      cleanChecklist: {
+        pollution: reportDetail.pollution || "정보 없음",
+        usageCount: reportDetail.timeUsed || "정보 없음", 
+        washingStatus: reportDetail.cleaned || "정보 없음",
+        purchaseDate: reportDetail.purchasedDate || "정보 없음"
+      },
+      image: getImageSrc(reportDetail)
     };
   }
 
@@ -156,7 +170,16 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                       src={data.image}
                       alt="제품 이미지"
                       className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
+                      onError={(e) => {
+                        e.target.src = "/api/placeholder/119/101";
+                      }}
                     />
+                    {/* 여러 이미지가 있을 경우 표시 */}
+                    {reportDetail && reportDetail.images && reportDetail.images.length > 1 && (
+                      <div className="text-[11px] text-gray-500 text-center mt-1">
+                        +{reportDetail.images.length - 1}장 더
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
