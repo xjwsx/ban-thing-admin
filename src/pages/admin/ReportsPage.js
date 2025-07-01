@@ -104,12 +104,13 @@ const ReportsPage = () => {
         params.startDate = format(startDate, 'yyyy-MM-dd');
         params.endDate = format(endDate, 'yyyy-MM-dd');
       } else {
-        // 선택되지 않은 경우 현재 달의 1일부터 오늘까지
+        // 선택되지 않은 경우 현재 년도의 1월 1일부터 12월 31일까지
         const today = new Date();
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const firstDayOfYear = new Date(today.getFullYear(), 0, 1); // 0은 1월을 의미
+        const lastDayOfYear = new Date(today.getFullYear(), 11, 31); // 11은 12월을 의미
         
-        params.startDate = format(firstDayOfMonth, 'yyyy-MM-dd');
-        params.endDate = format(today, 'yyyy-MM-dd');
+        params.startDate = format(firstDayOfYear, 'yyyy-MM-dd');
+        params.endDate = format(lastDayOfYear, 'yyyy-MM-dd');
         
         console.log('🗓️ 기본 날짜 범위 설정:', {
           startDate: params.startDate,
@@ -180,12 +181,13 @@ const ReportsPage = () => {
         size: itemsPerPage,
       };
 
-      // 초기 로드 시에는 현재 달의 1일부터 오늘까지를 기본 기간으로 설정
+      // 초기 로드 시에는 현재 년도의 1월 1일부터 12월 31일까지를 기본 기간으로 설정
       const today = new Date();
-      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      const firstDayOfYear = new Date(today.getFullYear(), 0, 1); // 0은 1월을 의미
+      const lastDayOfYear = new Date(today.getFullYear(), 11, 31); // 11은 12월을 의미
       
-      params.startDate = format(firstDayOfMonth, 'yyyy-MM-dd');
-      params.endDate = format(today, 'yyyy-MM-dd');
+      params.startDate = format(firstDayOfYear, 'yyyy-MM-dd');
+      params.endDate = format(lastDayOfYear, 'yyyy-MM-dd');
       
       console.log('🗓️ 초기 데이터 로드 - 기본 날짜 범위:', {
         startDate: params.startDate,
