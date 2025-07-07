@@ -4,6 +4,23 @@ import { X } from "lucide-react";
 const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
   if (!isOpen) return null;
 
+  // 주소에서 동 부분만 추출하는 함수
+  const extractRegion = (address) => {
+    if (!address) return "연수동"; // 기본값
+    
+    // 공백으로 분리하여 마지막 부분(동/리) 추출
+    const parts = address.trim().split(' ');
+    const lastPart = parts[parts.length - 1];
+    
+    // 동/리로 끝나는지 확인하고 반환
+    if (lastPart.endsWith('동') || lastPart.endsWith('리') || lastPart.endsWith('면') || lastPart.endsWith('읍')) {
+      return lastPart;
+    }
+    
+    // 동/리로 끝나지 않으면 전체 주소 반환
+    return address;
+  };
+
   // 기본 데이터 (reportDetail이 없을 때)
   const defaultData = {
     mainReason: "광고성콘텐츠에요",
@@ -69,7 +86,7 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
       postInfo: {
         title: reportDetail.itemTitle || defaultData.postInfo.title,
         author: reportDetail.sellerNickname || "태오엄마",
-        region: "연수동", // API에 지역 정보가 없으므로 기본값
+        region: extractRegion(reportDetail.address), // API에서 받은 address를 동 부분만 추출해서 사용
         date: reportDetail.itemCreatedAt ? new Date(reportDetail.itemCreatedAt).toLocaleDateString('ko-KR', { 
           year: '2-digit', 
           month: '2-digit', 
