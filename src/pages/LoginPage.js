@@ -54,11 +54,7 @@ const LoginPage = () => {
     }
   };
 
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleSubmit(e);
-  };
+
 
   return (
     <div className="flex items-center justify-center h-screen bg-background">
@@ -98,8 +94,7 @@ const LoginPage = () => {
           </div>
 
           <Button 
-            type="button" 
-            onClick={handleButtonClick}
+            type="submit" 
             className="w-full h-10" 
             disabled={loading}
           >
