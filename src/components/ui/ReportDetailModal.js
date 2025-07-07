@@ -76,18 +76,32 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         }).replace(/\./g, '.').replace(/\s/g, '') : defaultData.postInfo.date,
         content: reportDetail.itemContent || "상품 설명이 없습니다.",
         tags: (() => {
-          // 서버에서 "[]" 문자열로 오는 경우 처리
-          if (reportDetail.hashtags === "[]" || reportDetail.hashtags === null || reportDetail.hashtags === undefined) {
+          console.log('🏷️ 태그 데이터 확인:', reportDetail.hashtags, typeof reportDetail.hashtags);
+          
+          // null, undefined 처리
+          if (reportDetail.hashtags === null || reportDetail.hashtags === undefined) {
+            console.log('🏷️ 태그 데이터가 null/undefined -> 빈 배열 반환');
             return [];
           }
-          // 배열이면서 빈 배열인 경우
-          if (Array.isArray(reportDetail.hashtags) && reportDetail.hashtags.length === 0) {
+          
+          // 문자열 "[]" 처리
+          if (typeof reportDetail.hashtags === 'string' && reportDetail.hashtags === "[]") {
+            console.log('🏷️ 태그 데이터가 문자열 "[]" -> 빈 배열 반환');
             return [];
           }
-          // 정상적인 배열인 경우
-          if (Array.isArray(reportDetail.hashtags) && reportDetail.hashtags.length > 0) {
-            return reportDetail.hashtags;
+          
+          // 배열인 경우
+          if (Array.isArray(reportDetail.hashtags)) {
+            if (reportDetail.hashtags.length === 0) {
+              console.log('🏷️ 태그 배열이 비어있음 -> 빈 배열 반환');
+              return [];
+            } else {
+              console.log('🏷️ 정상적인 태그 배열:', reportDetail.hashtags);
+              return reportDetail.hashtags;
+            }
           }
+          
+          console.log('🏷️ 예상하지 못한 태그 데이터 타입 -> 빈 배열 반환');
           return [];
         })()
       },
@@ -161,18 +175,24 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                   <div className="flex gap-28">
                     <div className="text-[13px] text-gray-600 w-20">태그</div>
                     <div className="flex gap-2">
-                      {data.postInfo.tags.length === 0 ? (
-                        <span className="text-gray-900 text-[13px]">태그 없음</span>
-                      ) : (
-                        data.postInfo.tags.map((tag, index) => (
+                      {(() => {
+                        console.log('🏷️ UI 렌더링 - 태그 배열:', data.postInfo.tags, '길이:', data.postInfo.tags.length);
+                        
+                        if (!data.postInfo.tags || data.postInfo.tags.length === 0) {
+                          console.log('🏷️ 태그 없음으로 표시');
+                          return <span className="text-gray-900 text-[13px]">태그 없음</span>;
+                        }
+                        
+                        console.log('🏷️ 태그 목록 렌더링');
+                        return data.postInfo.tags.map((tag, index) => (
                           <span key={index} className="text-gray-900 text-[13px]">
                             {tag && tag.trim() !== '' ? 
                               (tag.startsWith('#') ? tag : `#${tag}`) : 
                               tag
                             }
                           </span>
-                        ))
-                      )}
+                        ));
+                      })()}
                     </div>
                   </div>
                 </div>
