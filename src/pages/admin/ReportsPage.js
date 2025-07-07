@@ -52,6 +52,9 @@ const ReportsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   
+  // 초기 로드 상태 관리
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  
   // 데이터 상태 관리
   const [reportsData, setReportsData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
@@ -231,6 +234,7 @@ const ReportsPage = () => {
       setTotalElements(0);
     } finally {
       setLoading(false);
+      setIsInitialLoad(false); // 초기 로드 완료 표시
     }
   }, [itemsPerPage]);
 
@@ -238,6 +242,12 @@ const ReportsPage = () => {
   useEffect(() => {
     loadInitialData();
   }, [loadInitialData]);
+
+  // 페이지 변경 시 데이터 로드
+  useEffect(() => {
+    if (isInitialLoad) return; // 초기 로드 중에는 호출하지 않음
+    fetchReports();
+  }, [currentPage, fetchReports, isInitialLoad]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
@@ -256,6 +266,7 @@ const ReportsPage = () => {
   };
 
   const handlePageChange = (pageNumber) => {
+    console.log('📄 신고내역 페이지 변경:', currentPage, '→', pageNumber);
     setCurrentPage(pageNumber);
   };
 

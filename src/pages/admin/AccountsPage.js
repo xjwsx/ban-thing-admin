@@ -52,6 +52,9 @@ const AccountsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
+  // 초기 로드 상태 관리
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -135,6 +138,7 @@ const AccountsPage = () => {
   const loadInitialData = useCallback(async () => {
     // 날짜 자동 설정 제거 - placeholder만 표시되도록 함
     await fetchAccounts();
+    setIsInitialLoad(false); // 초기 로드 완료
   }, [fetchAccounts]);
 
   // 컴포넌트 마운트 시 초기 데이터 로드
@@ -144,9 +148,9 @@ const AccountsPage = () => {
 
   // 페이지 변경 시 데이터 로드
   useEffect(() => {
-    if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
+    if (isInitialLoad) return; // 초기 로드 중에는 호출하지 않음
     fetchAccounts();
-  }, [currentPage, fetchAccounts]);
+  }, [currentPage, fetchAccounts, isInitialLoad]);
 
   const handleRowSelect = (userId) => {
     setSelectedRows((prev) => {
@@ -159,6 +163,7 @@ const AccountsPage = () => {
   };
 
   const handlePageChange = (pageNumber) => {
+    console.log('📄 계정관리 페이지 변경:', currentPage, '→', pageNumber);
     setCurrentPage(pageNumber);
   };
 

@@ -57,6 +57,9 @@ const WithdrawalsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
+  // 초기 로드 상태 관리
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  
   // 모달 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -123,6 +126,7 @@ const WithdrawalsPage = () => {
   const loadInitialData = useCallback(async () => {
     // 날짜 자동 설정 제거 - placeholder만 표시되도록 함
     await fetchWithdrawals();
+    setIsInitialLoad(false); // 초기 로드 완료
   }, [fetchWithdrawals]);
 
   // 컴포넌트 마운트 시 초기 데이터 로드
@@ -132,9 +136,9 @@ const WithdrawalsPage = () => {
 
   // 페이지/필터 변경 시 데이터 로드
   useEffect(() => {
-    if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
+    if (isInitialLoad) return; // 초기 로드 중에는 호출하지 않음
     fetchWithdrawals();
-  }, [currentPage, fetchWithdrawals]);
+  }, [currentPage, fetchWithdrawals, isInitialLoad]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
@@ -153,6 +157,7 @@ const WithdrawalsPage = () => {
   };
 
   const handlePageChange = (pageNumber) => {
+    console.log('📄 페이지 변경:', currentPage, '→', pageNumber);
     setCurrentPage(pageNumber);
   };
 
