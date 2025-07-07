@@ -92,6 +92,8 @@ const WithdrawalsPage = () => {
         params.reason = withdrawalReason;
       }
 
+      console.log('탈퇴 내역 API 호출 파라미터:', params); // 디버깅용 로그 추가
+
       const response = await getWithdrawals(params);
       
       // 원래 API 응답 구조로 복구
@@ -110,7 +112,7 @@ const WithdrawalsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, withdrawalReason]);
+  }, [currentPage, itemsPerPage, startDate, endDate, withdrawalReason]);
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
@@ -123,11 +125,11 @@ const WithdrawalsPage = () => {
     loadInitialData();
   }, []);
 
-  // 페이지/필터 변경 시 데이터 로드 (날짜 제외)
+  // 페이지/필터 변경 시 데이터 로드
   useEffect(() => {
     if (currentPage === 1) return; // 초기 로드에서는 호출하지 않음
     fetchWithdrawals();
-  }, [currentPage, itemsPerPage, withdrawalReason]);
+  }, [currentPage, fetchWithdrawals]);
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
