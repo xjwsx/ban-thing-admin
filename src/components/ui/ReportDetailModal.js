@@ -75,7 +75,7 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
           day: '2-digit' 
         }).replace(/\./g, '.').replace(/\s/g, '') : defaultData.postInfo.date,
         content: reportDetail.itemContent || "상품 설명이 없습니다.",
-        tags: reportDetail.hashtags && Array.isArray(reportDetail.hashtags) ? reportDetail.hashtags : ["태그 없음"]
+        tags: reportDetail.hashtags && Array.isArray(reportDetail.hashtags) && reportDetail.hashtags.length > 0 ? reportDetail.hashtags : []
       },
       cleanChecklist: {
         pollution: reportDetail.pollution || "정보 없음",
@@ -147,11 +147,15 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                   <div className="flex gap-28">
                     <div className="text-[13px] text-gray-600 w-20">태그</div>
                     <div className="flex gap-2">
-                      {data.postInfo.tags.map((tag, index) => (
-                        <span key={index} className="text-gray-900 text-[13px]">
-                          {tag}
-                        </span>
-                      ))}
+                      {data.postInfo.tags.length === 0 ? (
+                        <span className="text-gray-900 text-[13px]">태그 없음</span>
+                      ) : (
+                        data.postInfo.tags.map((tag, index) => (
+                          <span key={index} className="text-gray-900 text-[13px]">
+                            #{tag.startsWith('#') ? tag.slice(1) : tag}
+                          </span>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
