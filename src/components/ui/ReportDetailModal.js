@@ -16,13 +16,13 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
       content: "상태좋아요~~!! 빠르게 구매하실 분~~~",
       tags: ["#초록색", "#초록색"]
     },
-          cleanChecklist: {
-        pollution: "1~3개",
-        usageCount: "5회 미만",
-        washingStatus: "세상품",
-        purchaseDate: "24년 7월 정도",
-        expiryDate: "25년 7월 정도"
-      },
+    cleanChecklist: {
+      pollution: "1~3개",
+      usageCount: "5회 미만",
+      washingStatus: "세상품",
+      purchaseDate: "24년 7월 정도",
+      expiryDate: "25년 7월 정도"
+    },
     image: "/api/placeholder/119/101" // 플레이스홀더 이미지
   };
 
@@ -150,8 +150,8 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
           {/* 게시글 정보 섹션 */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 mb-2">게시글 정보</h3>
-            <div className="border border-gray-200 rounded-lg p-4 space-y-6 w-[501px] h-[386px]">
-              <div className="flex gap-6 w-[461px] h-[150px]">
+            <div className="border border-gray-200 rounded-lg p-4 space-y-6 w-[501px] h-[216px]">
+              <div className="flex gap-6 w-[461px] h-[180px]">
                 {/* 왼쪽: 게시글 상세 정보 */}
                 <div className="flex-1 space-y-2">
                   <div className="flex gap-28">
@@ -199,53 +199,52 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                   </div>
                 </div>
 
+                {/* 오른쪽: 제품 이미지 */}
+                <div className="flex-shrink-0 w-[119px] h-[101px]">
+                  <img
+                    src={data.image}
+                    alt="제품 이미지"
+                    className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/119/101";
+                    }}
+                  />
+                  {/* 여러 이미지가 있을 경우 표시 */}
+                  {reportDetail && reportDetail.images && reportDetail.images.length > 1 && (
+                    <div className="text-[11px] text-gray-500 text-center mt-1">
+                      +{reportDetail.images.length - 1}장 더
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
+          </div>
 
-              {/* 클린 체크리스트 섹션 */}
-              <div className="w-[461px] h-[164px]">
-                {/* 구분선 */}
-                <div className="border-t border-gray-200 mt-2 mb-5"></div>
-                <h4 className="text-[13px] font-semibold text-gray-900 mb-3">클린 체크리스트</h4>
-                <div className="flex gap-6">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex gap-28">
-                      <div className="text-[13px] text-gray-600 w-20">오염</div>
-                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.pollution}</div>
-                    </div>
-                    <div className="flex gap-28">
-                      <div className="text-[13px] text-gray-600 w-20">사용횟수</div>
-                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.usageCount}</div>
-                    </div>
-                    <div className="flex gap-28">
-                      <div className="text-[13px] text-gray-600 w-20">세탁유무</div>
-                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.washingStatus}</div>
-                    </div>
-                    <div className="flex gap-28">
-                      <div className="text-[13px] text-gray-600 w-20">구매시기</div>
-                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.purchaseDate}</div>
-                    </div>
-                    <div className="flex gap-28">
-                      <div className="text-[13px] text-gray-600 w-20">유통기한</div>
-                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.expiryDate}</div>
-                    </div>
+          {/* 클린 체크리스트 섹션 */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-900 mb-2">클린 체크리스트</h3>
+            <div className="border border-gray-200 rounded-lg p-4 w-[501px] h-[164px]">
+              <div className="flex gap-6 w-[461px] h-[132px]">
+                <div className="flex-1 space-y-2">
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">오염</div>
+                    <div className="text-[13px] text-gray-900">{data.cleanChecklist.pollution}</div>
                   </div>
-                  
-                  {/* 오른쪽: 제품 이미지 */}
-                  <div className="flex-shrink-0 w-[119px] h-[101px]">
-                    <img
-                      src={data.image}
-                      alt="제품 이미지"
-                      className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
-                      onError={(e) => {
-                        e.target.src = "/api/placeholder/119/101";
-                      }}
-                    />
-                    {/* 여러 이미지가 있을 경우 표시 */}
-                    {reportDetail && reportDetail.images && reportDetail.images.length > 1 && (
-                      <div className="text-[11px] text-gray-500 text-center mt-1">
-                        +{reportDetail.images.length - 1}장 더
-                      </div>
-                    )}
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">사용횟수</div>
+                    <div className="text-[13px] text-gray-900">{data.cleanChecklist.usageCount}</div>
+                  </div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">세탁유무</div>
+                    <div className="text-[13px] text-gray-900">{data.cleanChecklist.washingStatus}</div>
+                  </div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">구매시기</div>
+                    <div className="text-[13px] text-gray-900">{data.cleanChecklist.purchaseDate}</div>
+                  </div>
+                  <div className="flex gap-28">
+                    <div className="text-[13px] text-gray-600 w-20">유통기한</div>
+                    <div className="text-[13px] text-gray-900">{data.cleanChecklist.expiryDate}</div>
                   </div>
                 </div>
               </div>
