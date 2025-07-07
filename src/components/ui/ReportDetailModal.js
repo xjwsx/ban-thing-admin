@@ -152,7 +152,7 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
             <h3 className="text-sm font-semibold text-gray-900 mb-2">게시글 정보</h3>
             <div className="border border-gray-200 rounded-lg p-4 space-y-6 w-[501px] h-[216px]">
               <div className="flex gap-6 w-[461px] h-[180px]">
-                {/* 왼쪽: 게시글 상세 정보 */}
+                {/* 게시글 상세 정보 */}
                 <div className="flex-1 space-y-2">
                   <div className="flex gap-28">
                     <div className="text-[13px] text-gray-600 w-20">제목</div>
@@ -198,24 +198,6 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                     </div>
                   </div>
                 </div>
-
-                {/* 오른쪽: 제품 이미지 */}
-                <div className="flex-shrink-0 w-[119px] h-[101px]">
-                  <img
-                    src={data.image}
-                    alt="제품 이미지"
-                    className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
-                    onError={(e) => {
-                      e.target.src = "/api/placeholder/119/101";
-                    }}
-                  />
-                  {/* 여러 이미지가 있을 경우 표시 */}
-                  {reportDetail && reportDetail.images && reportDetail.images.length > 1 && (
-                    <div className="text-[11px] text-gray-500 text-center mt-1">
-                      +{reportDetail.images.length - 1}장 더
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
@@ -246,6 +228,24 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                     <div className="text-[13px] text-gray-600 w-20">유통기한</div>
                     <div className="text-[13px] text-gray-900">{data.cleanChecklist.expiryDate}</div>
                   </div>
+                </div>
+
+                {/* 제품 이미지 */}
+                <div className="flex-shrink-0 w-[119px] h-[101px]">
+                  <img
+                    src={data.image}
+                    alt="제품 이미지"
+                    className="w-[119px] h-[101px] object-cover rounded-lg border border-gray-200"
+                    onError={(e) => {
+                      e.target.src = "/api/placeholder/119/101";
+                    }}
+                  />
+                  {/* 여러 이미지가 있을 경우 표시 */}
+                  {reportDetail && reportDetail.images && reportDetail.images.length > 1 && (
+                    <div className="text-[11px] text-gray-500 text-center mt-1">
+                      +{reportDetail.images.length - 1}장 더
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
