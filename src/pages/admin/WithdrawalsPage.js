@@ -114,13 +114,7 @@ const WithdrawalsPage = () => {
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
-    const today = new Date();
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    
-    // 현재 달의 1일부터 오늘까지 자동 설정
-    setStartDate(firstDayOfMonth);
-    setEndDate(today);
-    
+    // 날짜 자동 설정 제거 - placeholder만 표시되도록 함
     await fetchWithdrawals();
   }, [fetchWithdrawals]);
 
