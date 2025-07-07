@@ -111,7 +111,7 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         usageCount: reportDetail.timeUsed || "정보 없음", 
         washingStatus: reportDetail.cleaned || "정보 없음",
         purchaseDate: reportDetail.purchasedDate || "정보 없음",
-        expiryDate: reportDetail.expiryDate || "없음"
+        expiryDate: reportDetail.expire || "없음"
       },
       image: getImageSrc(reportDetail)
     };
