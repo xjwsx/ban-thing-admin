@@ -20,7 +20,8 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         pollution: "1~3개",
         usageCount: "5회 미만",
         washingStatus: "세상품",
-        purchaseDate: "24년 7월 정도"
+        purchaseDate: "24년 7월 정도",
+        expiryDate: "25년 7월 정도"
       },
     image: "/api/placeholder/119/101" // 플레이스홀더 이미지
   };
@@ -109,7 +110,8 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
         pollution: reportDetail.pollution || "정보 없음",
         usageCount: reportDetail.timeUsed || "정보 없음", 
         washingStatus: reportDetail.cleaned || "정보 없음",
-        purchaseDate: reportDetail.purchasedDate || "정보 없음"
+        purchaseDate: reportDetail.purchasedDate || "정보 없음",
+        expiryDate: reportDetail.expiryDate || "정보 없음"
       },
       image: getImageSrc(reportDetail)
     };
@@ -221,6 +223,10 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                     <div className="flex gap-28">
                       <div className="text-[13px] text-gray-600 w-20">구매시기</div>
                       <div className="text-[13px] text-gray-900">{data.cleanChecklist.purchaseDate}</div>
+                    </div>
+                    <div className="flex gap-28">
+                      <div className="text-[13px] text-gray-600 w-20">유통기한</div>
+                      <div className="text-[13px] text-gray-900">{data.cleanChecklist.expiryDate}</div>
                     </div>
                   </div>
                   
