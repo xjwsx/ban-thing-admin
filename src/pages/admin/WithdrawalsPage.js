@@ -87,6 +87,11 @@ const WithdrawalsPage = () => {
         params.endDate = format(endDate, 'yyyy-MM-dd');
       }
 
+      // 키워드가 있으면 추가
+      if (keyword && keyword.trim() !== '') {
+        params.keyword = keyword.trim();
+      }
+
       // 탈퇴 사유가 있으면 추가
       if (withdrawalReason && withdrawalReason !== "") {
         params.reason = withdrawalReason;
@@ -112,7 +117,7 @@ const WithdrawalsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, withdrawalReason]);
+  }, [currentPage, itemsPerPage, startDate, endDate, keyword, withdrawalReason]);
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {

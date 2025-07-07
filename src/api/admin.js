@@ -131,6 +131,11 @@ export const getWithdrawals = async (params = {}) => {
     queryParams.append('page', (params.page || 0).toString());
     queryParams.append('size', (params.size || 10).toString());
 
+    // 키워드가 있으면 추가
+    if (params.keyword && params.keyword.trim() !== '') {
+      queryParams.append('keyword', params.keyword.trim());
+    }
+
     // 탈퇴 사유가 있으면 추가
     if (params.reason && params.reason !== "" && params.reason !== "all") {
       queryParams.append('reason', params.reason);
@@ -353,7 +358,6 @@ export const deleteReports = async (reportIdList) => {
     throw error;
   }
 };
-
 // 신고 어드민 삭제
 export const adminDeleteReports = async (reportIdList) => {
   try {
