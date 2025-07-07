@@ -405,55 +405,61 @@ const ReportsPage = () => {
       {/* 필터 섹션 */}
       <div className="space-y-4">
         <div className="grid grid-cols-4 gap-4">
-          {/* 시작일 */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between text-left font-normal bg-white"
-              >
-                {startDate ? (
-                  format(startDate, "yyyy-MM-dd")
-                ) : (
-                  <span className="text-muted-foreground">시작일</span>
-                )}
-                <CalendarIcon className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={setStartDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          {/* 날짜 범위 (시작일 ~ 종료일) */}
+          <div className="col-span-2 flex items-center gap-2">
+            {/* 시작일 */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between text-left font-normal bg-white"
+                >
+                  {startDate ? (
+                    format(startDate, "yyyy-MM-dd")
+                  ) : (
+                    <span className="text-muted-foreground">시작일</span>
+                  )}
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={setStartDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
 
-          {/* 종료일 */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between text-left font-normal bg-white"
-              >
-                {endDate ? (
-                  format(endDate, "yyyy-MM-dd")
-                ) : (
-                  <span className="text-muted-foreground">종료일</span>
-                )}
-                <CalendarIcon className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={setEndDate}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+            {/* ~ 표시 */}
+            <span className="text-gray-600 font-medium px-2">~</span>
+
+            {/* 종료일 */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between text-left font-normal bg-white"
+                >
+                  {endDate ? (
+                    format(endDate, "yyyy-MM-dd")
+                  ) : (
+                    <span className="text-muted-foreground">종료일</span>
+                  )}
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={setEndDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           
           {/* 신고 사유 */}
           <Select value={mainReason} onValueChange={setMainReason}>
