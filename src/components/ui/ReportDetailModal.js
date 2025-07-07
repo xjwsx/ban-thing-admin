@@ -75,7 +75,21 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
           day: '2-digit' 
         }).replace(/\./g, '.').replace(/\s/g, '') : defaultData.postInfo.date,
         content: reportDetail.itemContent || "상품 설명이 없습니다.",
-        tags: reportDetail.hashtags && Array.isArray(reportDetail.hashtags) && reportDetail.hashtags.length > 0 ? reportDetail.hashtags : []
+        tags: (() => {
+          // 서버에서 "[]" 문자열로 오는 경우 처리
+          if (reportDetail.hashtags === "[]" || reportDetail.hashtags === null || reportDetail.hashtags === undefined) {
+            return [];
+          }
+          // 배열이면서 빈 배열인 경우
+          if (Array.isArray(reportDetail.hashtags) && reportDetail.hashtags.length === 0) {
+            return [];
+          }
+          // 정상적인 배열인 경우
+          if (Array.isArray(reportDetail.hashtags) && reportDetail.hashtags.length > 0) {
+            return reportDetail.hashtags;
+          }
+          return [];
+        })()
       },
       cleanChecklist: {
         pollution: reportDetail.pollution || "정보 없음",
@@ -152,7 +166,10 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
                       ) : (
                         data.postInfo.tags.map((tag, index) => (
                           <span key={index} className="text-gray-900 text-[13px]">
-                            #{tag.startsWith('#') ? tag.slice(1) : tag}
+                            {tag && tag.trim() !== '' ? 
+                              (tag.startsWith('#') ? tag : `#${tag}`) : 
+                              tag
+                            }
                           </span>
                         ))
                       )}
