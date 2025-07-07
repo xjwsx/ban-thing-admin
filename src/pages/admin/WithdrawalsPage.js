@@ -236,61 +236,55 @@ const WithdrawalsPage = () => {
       {/* 필터 섹션 */}
       <div className="space-y-4">
         <div className="grid grid-cols-5 gap-4">
-          {/* 날짜 범위 (시작일 ~ 종료일) */}
-          <div className="flex items-center gap-2">
-            {/* 시작일 */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="flex-1 justify-between text-left font-normal bg-white"
-                >
-                  {startDate ? (
-                    format(startDate, "yyyy-MM-dd")
-                  ) : (
-                    <span className="text-muted-foreground">시작일</span>
-                  )}
-                  <CalendarIcon className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+          {/* 시작일 */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between text-left font-normal bg-white"
+              >
+                {startDate ? (
+                  format(startDate, "yyyy-MM-dd")
+                ) : (
+                  <span className="text-muted-foreground">시작일</span>
+                )}
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={setStartDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
 
-            {/* ~ 표시 */}
-            <span className="text-gray-600 font-medium">~</span>
-
-            {/* 종료일 */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="flex-1 justify-between text-left font-normal bg-white"
-                >
-                  {endDate ? (
-                    format(endDate, "yyyy-MM-dd")
-                  ) : (
-                    <span className="text-muted-foreground">종료일</span>
-                  )}
-                  <CalendarIcon className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          {/* 종료일 */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between text-left font-normal bg-white"
+              >
+                {endDate ? (
+                  format(endDate, "yyyy-MM-dd")
+                ) : (
+                  <span className="text-muted-foreground">종료일</span>
+                )}
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={setEndDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
             
           {/* 탈퇴 사유 */}
           <Select value={withdrawalReason} onValueChange={setWithdrawalReason}>
