@@ -171,7 +171,7 @@ const ReportsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, mainReason, keyword, status]);
+  }, [currentPage, itemsPerPage]); // 필터 관련 의존성 제거
 
   // 초기 데이터 로드 함수
   const loadInitialData = useCallback(async () => {
@@ -272,16 +272,21 @@ const ReportsPage = () => {
 
   const handleSearch = () => {
     // 검색 로직 구현
-    console.log('필터 조건으로 검색:', {
+    console.log('🔍 필터 조건으로 검색:', {
       startDate,
       endDate,
       mainReason,
       keyword,
       status
     });
-    // 검색 후 첫 페이지로 이동하고 데이터 다시 로드
-    setCurrentPage(1);
-    fetchReports();
+    
+    // 검색 시 첫 페이지로 이동
+    if (currentPage !== 1) {
+      setCurrentPage(1); // 페이지가 변경되면 useEffect에서 fetchReports 호출됨
+    } else {
+      // 이미 1페이지인 경우 직접 fetchReports 호출
+      fetchReports();
+    }
   };
 
   // 페이지네이션을 위한 그룹화 로직

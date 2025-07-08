@@ -112,6 +112,11 @@ const AccountsPage = () => {
         params.reportRecord = reportRecord;
       }
 
+      // 키워드가 있으면 추가
+      if (keyword && keyword !== "") {
+        params.keyword = keyword;
+      }
+
       console.log('API 호출 파라미터:', params); // 디버깅용 로그
 
       const response = await getAccounts(params);
@@ -132,7 +137,7 @@ const AccountsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportRecord]);
+  }, [currentPage, itemsPerPage]); // 필터 관련 의존성 제거
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
@@ -167,10 +172,23 @@ const AccountsPage = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleSearch = async () => {
-    // 검색 시 첫 페이지로 이동 후 API 호출
-    setCurrentPage(1);
-    await fetchAccounts();
+  const handleSearch = () => {
+    // 검색 로직 구현
+    console.log('🔍 필터 조건으로 검색:', {
+      startDate,
+      endDate,
+      accountStatus,
+      reportRecord,
+      keyword
+    });
+    
+    // 검색 시 첫 페이지로 이동
+    if (currentPage !== 1) {
+      setCurrentPage(1); // 페이지가 변경되면 useEffect에서 fetchAccounts 호출됨
+    } else {
+      // 이미 1페이지인 경우 직접 fetchAccounts 호출
+      fetchAccounts();
+    }
   };
 
   // 페이지네이션을 위한 그룹화 로직
