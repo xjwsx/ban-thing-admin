@@ -137,7 +137,7 @@ const AccountsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage]); // 필터 관련 의존성 제거
+  }, [currentPage, itemsPerPage, startDate, endDate, accountStatus, reportRecord, keyword]); // 필터 관련 의존성 다시 추가
 
   // 초기 데이터 로드를 위한 함수
   const loadInitialData = useCallback(async () => {
@@ -155,7 +155,8 @@ const AccountsPage = () => {
   useEffect(() => {
     if (isInitialLoad) return; // 초기 로드 중에는 호출하지 않음
     fetchAccounts();
-  }, [currentPage, fetchAccounts, isInitialLoad]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, isInitialLoad]); // fetchAccounts 의존성 제거
 
   const handleRowSelect = (userId) => {
     setSelectedRows((prev) => {

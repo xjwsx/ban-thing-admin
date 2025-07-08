@@ -171,7 +171,7 @@ const ReportsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage]); // 필터 관련 의존성 제거
+  }, [currentPage, itemsPerPage, startDate, endDate, mainReason, keyword, status]); // 필터 관련 의존성 다시 추가
 
   // 초기 데이터 로드 함수
   const loadInitialData = useCallback(async () => {
@@ -247,7 +247,8 @@ const ReportsPage = () => {
   useEffect(() => {
     if (isInitialLoad) return; // 초기 로드 중에는 호출하지 않음
     fetchReports();
-  }, [currentPage, fetchReports, isInitialLoad]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, isInitialLoad]); // fetchReports 의존성 제거
 
   // 전체 페이지 수 계산
   const totalPages = Math.ceil(totalElements / itemsPerPage);
