@@ -330,30 +330,18 @@ const ReportsPage = () => {
 
   // 모달 핸들러 함수들
   const handleDeleteClick = () => {
-    if (selectedRows.length === 0) {
-      alert("삭제할 항목을 선택해주세요.");
-      return;
-    }
     setModalMessage("해당 글을 삭제하시겠습니까?");
     setModalAction("delete");
     setIsModalOpen(true);
   };
 
   const handleInvalidClick = () => {
-    if (selectedRows.length === 0) {
-      alert("무효처리할 항목을 선택해주세요.");
-      return;
-    }
     setModalMessage("해당 글을 무효처리하시겠습니까?");
     setModalAction("invalid");
     setIsModalOpen(true);
   };
 
   const handleReviewClick = () => {
-    if (selectedRows.length === 0) {
-      alert("검토할 항목을 선택해주세요.");
-      return;
-    }
     setModalMessage("해당 글을 검토하시겠습니까?");
     setModalAction("review");
     setIsModalOpen(true);
@@ -545,9 +533,42 @@ const ReportsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleDeleteClick} disabled={loading}>삭제</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleInvalidClick} disabled={loading}>무효</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleReviewClick} disabled={loading}>검토</Button>
+        <Button 
+          variant="outline" 
+          className={`w-[104px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleDeleteClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          삭제
+        </Button>
+        <Button 
+          variant="outline" 
+          className={`w-[104px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleInvalidClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          무효
+        </Button>
+        <Button 
+          variant="outline" 
+          className={`w-[104px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleReviewClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          검토
+        </Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">

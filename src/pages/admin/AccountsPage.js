@@ -203,10 +203,6 @@ const AccountsPage = () => {
 
   // 모달 핸들러 함수들
   const handleWithdrawalClick = () => {
-    if (selectedRows.length === 0) {
-      alert("탈퇴시킬 회원을 선택해주세요.");
-      return;
-    }
     setModalMessage("해당 회원을 탈퇴시키겠습니까?");
     setModalDetails(null);
     setModalAction("withdrawal");
@@ -214,10 +210,6 @@ const AccountsPage = () => {
   };
 
   const handleSuspensionClick = () => {
-    if (selectedRows.length === 0) {
-      alert("정지시킬 회원을 선택해주세요.");
-      return;
-    }
     setModalMessage("해당 회원을 정지시키겠습니까?");
     setModalDetails(null);
     setModalAction("suspension");
@@ -225,10 +217,6 @@ const AccountsPage = () => {
   };
 
   const handleActivationClick = () => {
-    if (selectedRows.length === 0) {
-      alert("활성화할 회원을 선택해주세요.");
-      return;
-    }
     setModalMessage(`정지된 회원 ${selectedRows.length}명을 활성화시키겠습니까?`);
     setModalDetails([
       "정상/탈퇴된 계정은 변경되지 않습니다.",
@@ -423,9 +411,42 @@ const AccountsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleWithdrawalClick} disabled={loading}>회원 탈퇴</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleSuspensionClick} disabled={loading}>계정 정지</Button>
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[104px] h-[40px]" onClick={handleActivationClick} disabled={loading}>활성화</Button>
+        <Button 
+          variant="outline" 
+          className={`w-[104px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleWithdrawalClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          회원 탈퇴
+        </Button>
+        <Button 
+          variant="outline" 
+          className={`w-[104px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleSuspensionClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          계정 정지
+        </Button>
+        <Button 
+          variant="outline" 
+          className={`w-[104px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleActivationClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          활성화
+        </Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">
