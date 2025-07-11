@@ -328,8 +328,7 @@ const AccountsPage = () => {
               </PopoverContent>
             </Popover>
 
-            {/* ~ 표시 */}
-            <span className="text-gray-600 font-medium px-2">~</span>
+
 
             {/* 종료일 */}
             <Popover>
