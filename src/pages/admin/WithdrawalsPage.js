@@ -203,10 +203,6 @@ const WithdrawalsPage = () => {
 
   // 모달 핸들러 함수들
   const handleRejoinRestrictionClick = () => {
-    if (selectedRows.length === 0) {
-      alert("재가입 제한할 계정을 선택해주세요.");
-      return;
-    }
     setModalMessage("해당 계정 재가입을 제한 하시겠습니까?");
     setModalAction("restriction");
     setIsModalOpen(true);
@@ -349,7 +345,18 @@ const WithdrawalsPage = () => {
 
       {/* 테이블 헤더 버튼 */}
       <div className="flex gap-[8px]">
-        <Button variant="outline" className="bg-gray-100 hover:bg-gray-200 w-[109px] h-[40px] rounded" onClick={handleRejoinRestrictionClick} disabled={loading}>재가입 제한</Button>
+        <Button 
+          variant="outline" 
+          className={`w-[109px] h-[40px] rounded border ${
+            selectedRows.length === 0 
+              ? 'bg-[#F4F4F5] text-[#B6B6B6] border-[#F4F4F5] hover:bg-[#FAFAFA] hover:text-[#2B2B31] cursor-not-allowed' 
+              : 'bg-[#18181B] text-[#FFFFFF] border-[#18181B] hover:bg-[#18181B] hover:text-[#FFFFFF]'
+          }`}
+          onClick={handleRejoinRestrictionClick} 
+          disabled={selectedRows.length === 0 || loading}
+        >
+          재가입 제한
+        </Button>
       </div>
 
       <div className="flex flex-col h-full justify-between">
