@@ -113,10 +113,23 @@ const ReportDetailModal = ({ isOpen, onClose, reportDetail = null }) => {
             if (reportDetail.hashtags.length === 0) {
               console.log('🏷️ 태그 배열이 비어있음 -> 빈 배열 반환');
               return [];
-            } else {
-              console.log('🏷️ 정상적인 태그 배열:', reportDetail.hashtags);
-              return reportDetail.hashtags;
             }
+            
+            // 배열 안에 "[]" 문자열이나 빈 문자열만 있는 경우 필터링
+            const validTags = reportDetail.hashtags.filter(tag => 
+              tag && 
+              typeof tag === 'string' && 
+              tag.trim() !== '' && 
+              tag.trim() !== '[]'
+            );
+            
+            if (validTags.length === 0) {
+              console.log('🏷️ 유효한 태그가 없음 (빈 문자열 또는 "[]"만 존재) -> 빈 배열 반환');
+              return [];
+            }
+            
+            console.log('🏷️ 정상적인 태그 배열:', validTags);
+            return validTags;
           }
           
           console.log('🏷️ 예상하지 못한 태그 데이터 타입 -> 빈 배열 반환');
