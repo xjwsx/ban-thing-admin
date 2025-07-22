@@ -83,7 +83,7 @@ const ReportsPage = () => {
     "fraud": "사기 의심",
     "copyright": "전문 판매업자 의심",
     "illegal": "불쾌한 내용",
-    "offensive": "직성적 신고"
+    "offensive": "작성자 신고"
   };
 
   // API에서 신고 내역 데이터 가져오기
