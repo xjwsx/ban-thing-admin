@@ -47,8 +47,7 @@ const ReportHistoryModal = ({ isOpen, onClose, reportData = [] }) => {
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead className="text-center font-medium text-gray-700 py-3">신고 ID</TableHead>
-                  <TableHead className="text-center font-medium text-gray-700 py-3">상위 사유</TableHead>
-                  <TableHead className="text-center font-medium text-gray-700 py-3">하위 사유</TableHead>
+                  <TableHead className="text-center font-medium text-gray-700 py-3">신고 사유</TableHead>
                   <TableHead className="text-center font-medium text-gray-700 py-3">날짜</TableHead>
                   <TableHead className="text-center font-medium text-gray-700 py-3">신고자 ID</TableHead>
                 </TableRow>
@@ -58,15 +57,14 @@ const ReportHistoryModal = ({ isOpen, onClose, reportData = [] }) => {
                   reportData.map((item, index) => (
                     <TableRow key={index} className="border-b border-gray-100 hover:bg-gray-50">
                       <TableCell className="text-center py-3 text-gray-900">{item.reportId || "-"}</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">{item.hiReason ? item.hiReason.replace(/'/g, '') : "-"}</TableCell>
-                      <TableCell className="text-center py-3 text-gray-700">{item.loReason ? item.loReason.replace(/'/g, '') : "-"}</TableCell>
+                      <TableCell className="text-center py-3 text-gray-700">{item.reason || "-"}</TableCell>
                       <TableCell className="text-center py-3 text-gray-700">{formatDate(item.createdAt)}</TableCell>
                       <TableCell className="text-center py-3 text-gray-900">{item.reporterId || "-"}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
                       신고이력이 없습니다.
                     </TableCell>
                   </TableRow>
