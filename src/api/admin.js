@@ -50,6 +50,10 @@ export const getAccounts = async (params = {}) => {
     if (params.reportRecord && params.reportRecord !== "" && params.reportRecord !== "all") {
       queryParams.append('reportFilterType', params.reportRecord);
     }
+    
+    if (params.keyword && params.keyword.trim() !== '') {
+      queryParams.append('keyword', params.keyword.trim());
+    }
 
     // 3. 페이지네이션 파라미터 마지막
     queryParams.append('page', (params.page || 0).toString());
