@@ -76,13 +76,13 @@ const ReportsPage = () => {
 
   // 신고 사유 데이터 정의 (간소화)
   const reasonsMap = {
-    "advert": "광고성 콘텐츠",
-    "product_info": "상품 정보 부정확",
-    "prohibited_item": "거래 금지 품목",
-    "unsafe_trade": "안전한 거래 거부",
-    "fraud": "사기 의심",
-    "copyright": "전문 판매업자 의심",
-    "illegal": "불쾌한 내용",
+    "advert": "광고성 컨텐츠",
+    "product_info": "상품 정보가 부정확",
+    "prohibited_item": "거래 금지 품목으로 판단",
+    "unsafe_trade": "안전한 거래를 거부",
+    "fraud": "사기가 의심",
+    "copyright": "전문 판매업자",
+    "illegal": "콘텐츠 내용이 불쾌",
     "offensive": "작성자 신고"
   };
 
