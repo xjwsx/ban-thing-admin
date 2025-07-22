@@ -82,12 +82,8 @@ const ReportsPage = () => {
     "unsafe_trade": "안전한 거래 거부",
     "fraud": "사기 의심",
     "copyright": "전문 판매업자 의심",
-    "illegal": "불법한 내용",
-    "offensive": "직성적 신고",
-    "banned_account": "반려동물(식용 제외)",
-    "animal": "동일/유사한 제품을 단기간에 판매",
-    "trade_violation": "원금 거래 및 약투대납 유도",
-    "bad_user": "비매너 사용자"
+    "illegal": "불쾌한 내용",
+    "offensive": "직성적 신고"
   };
 
   // API에서 신고 내역 데이터 가져오기
